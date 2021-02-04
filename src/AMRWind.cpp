@@ -1,7 +1,7 @@
 #include "AMRWind.h"
-#include "amr-wind/incflo.h"
-#include "amr-wind/CFDSim.h"
-#include "amr-wind/core/SimTime.h"
+#include "amr-wind/incflo.H"
+#include "amr-wind/CFDSim.H"
+#include "amr-wind/core/SimTime.H"
 #include "AMReX.H"
 #include "AMReX_ParmParse.H"
 

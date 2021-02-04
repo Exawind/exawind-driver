@@ -1,4 +1,4 @@
-#include "amr-wind/incflo.h"
+#include "amr-wind/incflo.H"
 #include "AMRTiogaIface.h"
 
 namespace TIOGA {
