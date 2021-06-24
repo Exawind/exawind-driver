@@ -24,5 +24,7 @@ add_subdirectory(src)
 
 add_executable(nalu_amr_wind)
 add_subdirectory(app/nalu_amr)
+add_executable(nalu_amr_wind_exclusive)
+add_subdirectory(app/nalu_amr_exclusive)
 
 install(TARGETS nalu_amr_wind)
