@@ -28,3 +28,4 @@ add_executable(nalu_amr_wind_exclusive)
 add_subdirectory(app/nalu_amr_exclusive)
 
 install(TARGETS nalu_amr_wind)
+install(TARGETS nalu_amr_wind_exclusive)
