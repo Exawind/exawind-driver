@@ -44,13 +44,10 @@ geometry.is_periodic    =   0   1   1   # Periodicity x y z (0/1)
 
 incflo.delp             =   0.  0.  0.  # Prescribed (cyclic) pressure gradient
 
-<<<<<<< HEAD
 tagging.labels = sr
 tagging.sr.type = CartBoxRefinement
 tagging.sr.static_refinement_def = static_box.txt
 
-=======
->>>>>>> 7b2dbd9d3d44bc0b37919637c5c2a83d33d1445a
 # Boundary conditions
 xlo.type = "mass_inflow"
 xlo.velocity = 1.0 0.0 0.0
