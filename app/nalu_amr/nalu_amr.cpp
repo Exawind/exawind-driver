@@ -13,8 +13,7 @@ int main(int argc, char** argv)
     MPI_Comm_rank(MPI_COMM_WORLD, &prank);
 
     if (argc != 2) {
-        throw std::runtime_error(
-            "Usage: nalu_amr <inpfile>");
+        throw std::runtime_error("Usage: nalu_amr <inpfile>");
     }
 
     const std::string inpfile(argv[1]);
@@ -28,8 +27,7 @@ int main(int argc, char** argv)
     exwsim::AMRWind::initialize(MPI_COMM_WORLD, amr_inp);
 
     {
-        const auto nalu_vars =
-            node["nalu_vars"].as<std::vector<std::string>>();
+        const auto nalu_vars = node["nalu_vars"].as<std::vector<std::string>>();
         const auto amr_cvars =
             node["amr_cell_vars"].as<std::vector<std::string>>();
         const auto amr_nvars =

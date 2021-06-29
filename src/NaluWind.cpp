@@ -42,15 +42,13 @@ void NaluWind::init_prolog(bool multi_solver_mode)
 {
     m_sim.load(m_doc);
     if (m_sim.timeIntegrator_->overset_ != nullptr)
-        m_sim.timeIntegrator_->overset_->set_multi_solver_mode(multi_solver_mode);
+        m_sim.timeIntegrator_->overset_->set_multi_solver_mode(
+            multi_solver_mode);
     m_sim.breadboard();
     m_sim.init_prolog();
 }
 
-void NaluWind::init_epilog()
-{
-    m_sim.init_epilog();
-}
+void NaluWind::init_epilog() { m_sim.init_epilog(); }
 
 void NaluWind::prepare_solver_prolog()
 {
@@ -59,7 +57,7 @@ void NaluWind::prepare_solver_prolog()
 
 void NaluWind::prepare_solver_epilog()
 {
-    for (auto* realm: m_sim.timeIntegrator_->realmVec_)
+    for (auto* realm : m_sim.timeIntegrator_->realmVec_)
         realm->output_converged_results();
 }
 
@@ -75,14 +73,11 @@ void NaluWind::pre_advance_stage2()
 
 void NaluWind::advance_timestep()
 {
-    for (auto* realm: m_sim.timeIntegrator_->realmVec_)
+    for (auto* realm : m_sim.timeIntegrator_->realmVec_)
         realm->advance_time_step();
 }
 
-void NaluWind::post_advance()
-{
-    m_sim.timeIntegrator_->post_realm_advance();
-}
+void NaluWind::post_advance() { m_sim.timeIntegrator_->post_realm_advance(); }
 
 void NaluWind::pre_overset_conn_work()
 {

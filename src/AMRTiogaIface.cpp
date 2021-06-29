@@ -42,8 +42,8 @@ void AMRTiogaIface::register_mesh()
     const int nlevels = mesh.finestLevel() + 1;
     const int num_ghost = m_sim.pde_manager().num_ghost_state();
 
-    auto* amr_tg_iface = dynamic_cast<amr_wind::TiogaInterface*>(
-        m_sim.overset_manager());
+    auto* amr_tg_iface =
+        dynamic_cast<amr_wind::TiogaInterface*>(m_sim.overset_manager());
     auto& ad = amr_tg_iface->amr_overset_info();
     auto& mi = *m_info;
 
@@ -75,8 +75,8 @@ void AMRTiogaIface::register_solution(
     const std::vector<std::string>& cell_vars,
     const std::vector<std::string>& node_vars)
 {
-    auto* amr_tg_iface = dynamic_cast<amr_wind::TiogaInterface*>(
-        m_sim.overset_manager());
+    auto* amr_tg_iface =
+        dynamic_cast<amr_wind::TiogaInterface*>(m_sim.overset_manager());
     amr_tg_iface->register_solution(cell_vars, node_vars);
     auto& qcell = amr_tg_iface->qvars_cell();
     auto& qnode = amr_tg_iface->qvars_node();
