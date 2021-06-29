@@ -11,7 +11,7 @@ class CFDSim;
 namespace TIOGA {
 class tioga;
 struct AMRMeshInfo;
-}
+} // namespace TIOGA
 
 namespace exwsim {
 

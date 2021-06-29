@@ -9,7 +9,8 @@
 
 namespace exwsim {
 
-void AMRWind::initialize(MPI_Comm comm, const std::string& inpfile)
+void AMRWind::initialize(
+    MPI_Comm comm, const std::string& inpfile, std::ofstream& out)
 {
     int argc = 2;
     char** argv = new char*[argc];
@@ -18,14 +19,18 @@ void AMRWind::initialize(MPI_Comm comm, const std::string& inpfile)
     argv[0] = const_cast<char*>(exename);
     argv[1] = const_cast<char*>(inpfile.c_str());
 
-    amrex::Initialize(argc, argv, true, comm, []() {
-        amrex::ParmParse pp("amrex");
-        // Set the defaults so that we throw an exception instead of attempting
-        // to generate backtrace files. However, if the user has explicitly set
-        // these options in their input files respect those settings.
-        if (!pp.contains("throw_exception")) pp.add("throw_exception", 1);
-        if (!pp.contains("signal_handling")) pp.add("signal_handling", 0);
-    });
+    amrex::Initialize(
+        argc, argv, true, comm,
+        []() {
+            amrex::ParmParse pp("amrex");
+            // Set the defaults so that we throw an exception instead of
+            // attempting to generate backtrace files. However, if the user has
+            // explicitly set these options in their input files respect those
+            // settings.
+            if (!pp.contains("throw_exception")) pp.add("throw_exception", 1);
+            if (!pp.contains("signal_handling")) pp.add("signal_handling", 0);
+        },
+        out, out);
 
     delete[] argv;
 }

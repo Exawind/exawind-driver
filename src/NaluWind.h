@@ -24,11 +24,12 @@ public:
     static void initialize();
     static void finalize();
 
-    NaluWind(stk::ParallelMachine comm,
-             const std::string& inp_file,
-             TIOGA::tioga& tg);
+    NaluWind(
+        stk::ParallelMachine comm,
+        const std::string& inp_file,
+        TIOGA::tioga& tg);
 
-    void init_prolog(bool multi_solver_mode=true);
+    void init_prolog(bool multi_solver_mode = true);
     void init_epilog();
 
     void prepare_solver_prolog();
@@ -45,6 +46,6 @@ public:
     void update_solution();
 };
 
-}
+} // namespace exwsim
 
 #endif /* NALUWIND_H */

@@ -1,6 +1,7 @@
 #include "AMRWind.h"
 #include "NaluWind.h"
 #include "mpi.h"
+#include <filesystem>
 
 #include "yaml-cpp/yaml.h"
 #include "tioga.h"
@@ -43,9 +44,14 @@ int main(int argc, char** argv)
     const std::string amr_inp = node["amr_wind_inp"].as<std::string>();
     const std::string nalu_inp = node["nalu_wind_inp"].as<std::string>();
 
+    std::filesystem::path fpath_amr_inp(amr_inp);
+    const std::string amr_log =
+        fpath_amr_inp.replace_extension(".log").string();
+    std::ofstream out(amr_log);
+
     if (nalu_comm != MPI_COMM_NULL) exwsim::NaluWind::initialize();
     if (amr_comm != MPI_COMM_NULL)
-        exwsim::AMRWind::initialize(amr_comm, amr_inp);
+        exwsim::AMRWind::initialize(amr_comm, amr_inp, out);
 
     {
         const auto nalu_vars = node["nalu_vars"].as<std::vector<std::string>>();

@@ -14,7 +14,8 @@ private:
     AMRTiogaIface m_tgiface;
 
 public:
-    static void initialize(MPI_Comm comm, const std::string& inpfile);
+    static void
+    initialize(MPI_Comm comm, const std::string& inpfile, std::ofstream& out);
     static void finalize();
 
     AMRWind(TIOGA::tioga&);

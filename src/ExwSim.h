@@ -1,11 +1,6 @@
 #ifndef EXWSIM_H
 #define EXWSIM_H
 
-namespace exwsim {
-
-
-
-}
-
+namespace exwsim {}
 
 #endif /* EXWSIM_H */

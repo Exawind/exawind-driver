@@ -2,7 +2,11 @@ cmake_minimum_required(VERSION 3.14.0)
 
 project(exwsim CXX C Fortran)
 
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 find_package(MPI REQUIRED)
 find_package(Trilinos REQUIRED)
@@ -13,6 +17,7 @@ if (NALU_USES_OPENFAST)
   find_package(OpenFAST REQUIRED)
 endif()
 find_package(YAML-CPP 0.6.2 REQUIRED)
+find_package(Filesystem REQUIRED)
 
 set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
