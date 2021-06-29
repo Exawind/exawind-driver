@@ -71,9 +71,9 @@ int main(int argc, char** argv)
 
         MPI_Barrier(MPI_COMM_WORLD);
 
-        amrex::Print() << "Executing " << nsteps << " timesteps" << std::endl;
+        amrex::Print(std::cout)
+            << "Running " << nsteps << " timesteps" << std::endl;
         for (int i = 0; i < nsteps; ++i) {
-            amrex::Print() << "Timestep: " << i << std::endl;
             nalu.pre_advance_stage1();
             awind.pre_advance_stage1();
 

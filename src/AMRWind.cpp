@@ -2,6 +2,7 @@
 #include "amr-wind/incflo.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/core/SimTime.H"
+#include "amr-wind/utilities/console_io.H"
 #include "AMReX.H"
 #include "AMReX_ParmParse.H"
 
@@ -31,6 +32,8 @@ void AMRWind::initialize(
             if (!pp.contains("signal_handling")) pp.add("signal_handling", 0);
         },
         out, out);
+
+    amr_wind::io::print_banner(comm, amrex::OutStream());
 
     delete[] argv;
 }

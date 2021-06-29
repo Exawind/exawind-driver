@@ -104,11 +104,9 @@ int main(int argc, char** argv)
         MPI_Barrier(MPI_COMM_WORLD);
 
         if (amr_comm != MPI_COMM_NULL)
-            amrex::Print() << "Executing " << nsteps << " timesteps"
-                           << std::endl;
+            amrex::Print(std::cout)
+                << "Executing " << nsteps << " timesteps" << std::endl;
         for (int i = 0; i < nsteps; ++i) {
-            if (amr_comm != MPI_COMM_NULL)
-                amrex::Print() << "Timestep: " << i << std::endl;
             if (nalu_comm != MPI_COMM_NULL) nalu->pre_advance_stage1();
             if (amr_comm != MPI_COMM_NULL) awind->pre_advance_stage1();
 
