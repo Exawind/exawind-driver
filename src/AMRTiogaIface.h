@@ -13,7 +13,7 @@ class tioga;
 struct AMRMeshInfo;
 } // namespace TIOGA
 
-namespace exwsim {
+namespace exawind {
 
 class AMRTiogaIface
 {
@@ -39,6 +39,6 @@ private:
     std::unique_ptr<TIOGA::AMRMeshInfo> m_info;
 };
 
-} // namespace exwsim
+} // namespace exawind
 
 #endif /* AMRTIOGAIFACE_H */

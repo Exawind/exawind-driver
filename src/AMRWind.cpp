@@ -8,7 +8,7 @@
 
 #include "tioga.h"
 
-namespace exwsim {
+namespace exawind {
 
 void AMRWind::initialize(
     MPI_Comm comm, const std::string& inpfile, std::ofstream& out)
@@ -86,4 +86,4 @@ void AMRWind::register_solution(
 
 void AMRWind::update_solution() { m_tgiface.update_solution(); }
 
-} // namespace exwsim
+} // namespace exawind

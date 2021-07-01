@@ -1,7 +1,10 @@
 target_sources(${EXAWIND_LIB_NAME} PRIVATE
   AMRTiogaIface.cpp
+  AMRTiogaIface.h
   AMRWind.cpp
-  NaluWind.cpp)
+  AMRWind.h
+  NaluWind.cpp
+  NaluWind.h)
 
 target_include_directories(${EXAWIND_LIB_NAME} PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR})

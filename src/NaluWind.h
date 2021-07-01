@@ -12,7 +12,7 @@ namespace TIOGA {
 class tioga;
 }
 
-namespace exwsim {
+namespace exawind {
 
 class NaluWind
 {
@@ -46,6 +46,6 @@ public:
     void update_solution();
 };
 
-} // namespace exwsim
+} // namespace exawind
 
 #endif /* NALUWIND_H */

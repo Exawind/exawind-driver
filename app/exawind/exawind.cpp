@@ -19,7 +19,7 @@ int main(int argc, char** argv)
 
     const std::string inpfile(argv[1]);
     const YAML::Node doc(YAML::LoadFile(inpfile));
-    const YAML::Node node = doc["exwsim"];
+    const YAML::Node node = doc["exawind"];
 
     const std::string amr_inp = node["amr_wind_inp"].as<std::string>();
     const std::string nalu_inp = node["nalu_wind_inp"].as<std::string>();
@@ -29,8 +29,8 @@ int main(int argc, char** argv)
         fpath_amr_inp.replace_extension(".log").string();
     std::ofstream out(amr_log);
 
-    exwsim::NaluWind::initialize();
-    exwsim::AMRWind::initialize(MPI_COMM_WORLD, amr_inp, out);
+    exawind::NaluWind::initialize();
+    exawind::AMRWind::initialize(MPI_COMM_WORLD, amr_inp, out);
 
     {
         const auto nalu_vars = node["nalu_vars"].as<std::vector<std::string>>();
@@ -43,8 +43,8 @@ int main(int argc, char** argv)
         TIOGA::tioga tg;
         tg.setCommunicator(MPI_COMM_WORLD, prank, psize);
 
-        exwsim::NaluWind nalu(MPI_COMM_WORLD, nalu_inp, tg);
-        exwsim::AMRWind awind(tg);
+        exawind::NaluWind nalu(MPI_COMM_WORLD, nalu_inp, tg);
+        exawind::AMRWind awind(tg);
 
         awind.init_prolog();
         nalu.init_prolog();
@@ -106,8 +106,8 @@ int main(int argc, char** argv)
         }
     }
 
-    exwsim::AMRWind::finalize();
-    exwsim::NaluWind::finalize();
+    exawind::AMRWind::finalize();
+    exawind::NaluWind::finalize();
     MPI_Finalize();
 
     return 0;

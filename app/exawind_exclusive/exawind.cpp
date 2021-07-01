@@ -39,7 +39,7 @@ int main(int argc, char** argv)
 
     const std::string inpfile(argv[1]);
     const YAML::Node doc(YAML::LoadFile(inpfile));
-    const YAML::Node node = doc["exwsim"];
+    const YAML::Node node = doc["exawind"];
 
     const std::string amr_inp = node["amr_wind_inp"].as<std::string>();
     const std::string nalu_inp = node["nalu_wind_inp"].as<std::string>();
@@ -49,9 +49,9 @@ int main(int argc, char** argv)
         fpath_amr_inp.replace_extension(".log").string();
     std::ofstream out(amr_log);
 
-    if (nalu_comm != MPI_COMM_NULL) exwsim::NaluWind::initialize();
+    if (nalu_comm != MPI_COMM_NULL) exawind::NaluWind::initialize();
     if (amr_comm != MPI_COMM_NULL)
-        exwsim::AMRWind::initialize(amr_comm, amr_inp, out);
+        exawind::AMRWind::initialize(amr_comm, amr_inp, out);
 
     {
         const auto nalu_vars = node["nalu_vars"].as<std::vector<std::string>>();
@@ -64,11 +64,11 @@ int main(int argc, char** argv)
         TIOGA::tioga tg;
         tg.setCommunicator(MPI_COMM_WORLD, prank, psize);
 
-        exwsim::NaluWind* nalu;
-        exwsim::AMRWind* awind;
+        exawind::NaluWind* nalu;
+        exawind::AMRWind* awind;
         if (nalu_comm != MPI_COMM_NULL)
-            nalu = new exwsim::NaluWind(nalu_comm, nalu_inp, tg);
-        if (amr_comm != MPI_COMM_NULL) awind = new exwsim::AMRWind(tg);
+            nalu = new exawind::NaluWind(nalu_comm, nalu_inp, tg);
+        if (amr_comm != MPI_COMM_NULL) awind = new exawind::AMRWind(tg);
 
         if (amr_comm != MPI_COMM_NULL) awind->init_prolog(true);
         if (nalu_comm != MPI_COMM_NULL) nalu->init_prolog(true);
@@ -146,8 +146,8 @@ int main(int argc, char** argv)
         if (amr_comm != MPI_COMM_NULL) delete awind;
     }
 
-    if (amr_comm != MPI_COMM_NULL) exwsim::AMRWind::finalize();
-    if (nalu_comm != MPI_COMM_NULL) exwsim::NaluWind::finalize();
+    if (amr_comm != MPI_COMM_NULL) exawind::AMRWind::finalize();
+    if (nalu_comm != MPI_COMM_NULL) exawind::NaluWind::finalize();
     MPI_Finalize();
 
     return 0;

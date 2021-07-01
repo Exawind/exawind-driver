@@ -6,7 +6,7 @@
 #include "TiogaMeshInfo.h"
 #include "tioga.h"
 
-namespace exwsim {
+namespace exawind {
 
 namespace {
 
@@ -37,7 +37,7 @@ void AMRTiogaIface::post_overset_conn_work()
 
 void AMRTiogaIface::register_mesh()
 {
-    BL_PROFILE("exwsim::AMRTiogaIface::register_mesh");
+    BL_PROFILE("exawind::AMRTiogaIface::register_mesh");
     auto& mesh = m_sim.mesh();
     const int nlevels = mesh.finestLevel() + 1;
     const int num_ghost = m_sim.pde_manager().num_ghost_state();
@@ -98,4 +98,4 @@ void AMRTiogaIface::update_solution()
     m_sim.overset_manager()->update_solution();
 }
 
-} // namespace exwsim
+} // namespace exawind

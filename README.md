@@ -1,4 +1,4 @@
-# ExaWind Simulation Environment 
+# ExaWind Simulation Driver
 
 This repository contains a pure C++ driver API for coupling
 [Nalu-Wind](https://github.com/exawind/nalu-wind) and

@@ -5,7 +5,7 @@ namespace TIOGA {
 class tioga;
 }
 
-namespace exwsim {
+namespace exawind {
 
 class AMRWind
 {
@@ -38,4 +38,4 @@ public:
     void update_solution();
 };
 
-} // namespace exwsim
+} // namespace exawind

@@ -8,7 +8,7 @@
 #include "Kokkos_Core.hpp"
 #include "tioga.h"
 
-namespace exwsim {
+namespace exawind {
 
 void NaluWind::initialize() { Kokkos::initialize(); }
 
@@ -99,4 +99,4 @@ void NaluWind::update_solution()
     m_sim.timeIntegrator_->overset_->update_solution();
 }
 
-} // namespace exwsim
+} // namespace exawind
