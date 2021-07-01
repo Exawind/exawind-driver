@@ -27,7 +27,7 @@ linear_solvers:
 
 realms:
   - name: sphere
-    mesh: ../../mesh/oversetSphereTioga.g
+    mesh: ../../meshes/oversetSphereTioga.g
     use_edges: yes
     automatic_decomposition_type: rcb
 

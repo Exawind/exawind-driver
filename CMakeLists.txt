@@ -11,6 +11,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 option(EXAWIND_TEST_WITH_FCOMPARE "Check AMR-Wind test plots against gold files" OFF)
 option(EXAWIND_SAVE_GOLDS "Provide a directory in which to save golds during testing" OFF)
 
+set(CMAKE_PREFIX_PATH ${Trilinos_DIR} ${TIOGA_DIR}
+                      ${Nalu-Wind_DIR} ${AMR-Wind_DIR}
+                      ${HYPRE_DIR} ${NetCDF_DIR}
+                      ${YAML-CPP_DIR} ${OpenFAST_DIR} ${CMAKE_PREFIX_PATH})
 find_package(MPI REQUIRED)
 find_package(Trilinos REQUIRED)
 find_package(TIOGA REQUIRED)
@@ -44,6 +48,8 @@ add_subdirectory(app/exawind)
 add_executable(${EXAWIND_EXE_NAME}_exclusive)
 add_subdirectory(app/exawind_exclusive)
 
+enable_testing()
+include(CTest)
 add_subdirectory(test)
 
 install(TARGETS ${EXAWIND_EXE_NAME})

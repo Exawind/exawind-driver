@@ -3,7 +3,7 @@
 #=============================================================================
 
 # Check if mesh submodule is populated
-file(GLOB RESULT ${CMAKE_SOURCE_DIR}/test/mesh/*)
+file(GLOB RESULT ${CMAKE_SOURCE_DIR}/test/meshes/*)
 list(LENGTH RESULT RES_LEN)
 if(RES_LEN EQUAL 0)
   message(WARNING
@@ -16,8 +16,8 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CTestCustom.cmake ${CMAKE_BINARY_DIR}
 
 # Create symlinks to mesh and xml directories
 execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink
-                ${CMAKE_CURRENT_SOURCE_DIR}/mesh
-                ${CMAKE_CURRENT_BINARY_DIR}/mesh)
+                ${CMAKE_CURRENT_SOURCE_DIR}/meshes
+                ${CMAKE_CURRENT_BINARY_DIR}/meshes)
 
 #=============================================================================
 # Functions for adding tests / Categories of tests
