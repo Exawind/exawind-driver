@@ -1,11 +1,12 @@
-target_sources(exwsim PRIVATE
+target_sources(${EXAWIND_LIB_NAME} PRIVATE
   AMRTiogaIface.cpp
   AMRWind.cpp
   NaluWind.cpp)
 
-target_include_directories(exwsim PUBLIC
+target_include_directories(${EXAWIND_LIB_NAME} PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(exwsim PUBLIC
+
+target_link_libraries(${EXAWIND_LIB_NAME} PUBLIC
   AMR-Wind::amrwind_api
   Nalu-Wind::nalu
   std::filesystem)
