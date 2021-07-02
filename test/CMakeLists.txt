@@ -14,11 +14,6 @@ endif()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CTestCustom.cmake ${CMAKE_BINARY_DIR}/CTestCustom.cmake)
 
-# Create symlinks to mesh and xml directories
-execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink
-                ${CMAKE_CURRENT_SOURCE_DIR}/meshes
-                ${CMAKE_CURRENT_BINARY_DIR}/meshes)
-
 #=============================================================================
 # Functions for adding tests / Categories of tests
 #=============================================================================
@@ -40,6 +35,9 @@ macro(setup_test)
     if(EXAWIND_TEST_WITH_FCOMPARE)
       set(FCOMPARE_COMMAND "&& ${MPI_COMMANDS} ${FCOMPARE_EXE} ${FCOMPARE_TOLERANCE} ${PLOT_GOLD} ${PLOT_TEST}")
     endif()
+    execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink
+                    ${CMAKE_CURRENT_SOURCE_DIR}/meshes
+                    ${CMAKE_CURRENT_TEST_BINARY_DIR}/meshes)
 endmacro(setup_test)
 
 # Standard regression test
