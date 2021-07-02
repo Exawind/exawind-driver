@@ -1,5 +1,6 @@
 #include "AMRWind.h"
 #include "NaluWind.h"
+#include "Timers.h"
 #include "mpi.h"
 #include <filesystem>
 
@@ -14,7 +15,7 @@ int main(int argc, char** argv)
     MPI_Comm_rank(MPI_COMM_WORLD, &prank);
 
     if (argc != 2) {
-        throw std::runtime_error("Usage: nalu_amr <inpfile>");
+        throw std::runtime_error("Usage: exawind <inpfile>");
     }
 
     const std::string inpfile(argv[1]);
@@ -73,36 +74,86 @@ int main(int argc, char** argv)
 
         amrex::Print(std::cout)
             << "Running " << nsteps << " timesteps" << std::endl;
-        for (int i = 0; i < nsteps; ++i) {
-            nalu.pre_advance_stage1();
-            awind.pre_advance_stage1();
 
+        const std::vector<std::string> names{"Pre", "Conn", "Solve", "Post"};
+        exawind::Timers nalu_timers(names);
+        exawind::Timers awind_timers(names);
+        exawind::Timers tg_timers({"Conn"});
+
+        const int root = 0;
+        for (int i = 0; i < nsteps; ++i) {
+            amrex::Print(std::cout) << "Timestep " << i << std::endl;
+            nalu_timers.tick("Pre");
+            nalu.pre_advance_stage1();
+            nalu_timers.tock("Pre");
+            awind_timers.tick("Pre");
+            awind.pre_advance_stage1();
+            awind_timers.tock("Pre");
+
+            nalu_timers.tick("Conn");
             nalu.pre_overset_conn_work();
+            nalu_timers.tock("Conn");
+            awind_timers.tick("Conn");
             awind.pre_overset_conn_work();
+            awind_timers.tock("Conn");
+            tg_timers.tick("Conn");
             tg.profile();
             tg.performConnectivity();
             tg.performConnectivityAMR();
+            tg_timers.tock("Conn");
+            nalu_timers.tick("Conn", true);
             nalu.post_overset_conn_work();
+            nalu_timers.tock("Conn");
+            awind_timers.tick("Conn");
             awind.post_overset_conn_work();
+            awind_timers.tock("Conn");
             MPI_Barrier(MPI_COMM_WORLD);
 
+            nalu_timers.tick("Pre", true);
             nalu.pre_advance_stage2();
+            nalu_timers.tock("Pre");
+            awind_timers.tick("Pre");
             awind.pre_advance_stage2();
+            awind_timers.tock("Pre");
 
+            nalu_timers.tick("Conn", true);
             nalu.register_solution(nalu_vars);
+            nalu_timers.tock("Conn");
+            awind_timers.tick("Conn");
             awind.register_solution(amr_cvars, amr_nvars);
+            awind_timers.tock("Conn");
+            tg_timers.tick("Conn");
             tg.dataUpdate_AMR();
+            tg_timers.tock("Conn");
+            nalu_timers.tick("Conn", true);
             nalu.update_solution();
+            nalu_timers.tock("Conn");
+            awind_timers.tick("Conn");
             awind.update_solution();
+            awind_timers.tock("Conn");
             MPI_Barrier(MPI_COMM_WORLD);
 
+            nalu_timers.tick("Solve");
             nalu.advance_timestep();
+            nalu_timers.tock("Solve");
+            awind_timers.tick("Solve");
             awind.advance_timestep();
+            awind_timers.tock("Solve");
             MPI_Barrier(MPI_COMM_WORLD);
 
+            nalu_timers.tick("Post");
             nalu.post_advance();
+            nalu_timers.tock("Post");
+            awind_timers.tick("Post");
             awind.post_advance();
+            awind_timers.tock("Post");
             MPI_Barrier(MPI_COMM_WORLD);
+
+            amrex::Print(std::cout)
+                << "WallClockTime [s] at step " << i << std::endl;
+            exawind::summarize_timers("Nalu-Wind", nalu_timers, MPI_COMM_WORLD);
+            exawind::summarize_timers("AMR-Wind", awind_timers, MPI_COMM_WORLD);
+            exawind::summarize_timers("Tioga", tg_timers, MPI_COMM_WORLD);
         }
     }
 
