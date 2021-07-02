@@ -37,7 +37,7 @@ macro(setup_test)
     endif()
     execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink
                     ${CMAKE_CURRENT_SOURCE_DIR}/meshes
-                    ${CMAKE_CURRENT_TEST_BINARY_DIR}/meshes)
+                    ${CURRENT_TEST_BINARY_DIR}/meshes)
 endmacro(setup_test)
 
 # Standard regression test
