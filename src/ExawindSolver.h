@@ -13,32 +13,11 @@ public:
 
     void call_init_prolog(bool multi_solver_mode = true)
     {
-        const std::string name = "Init";
-        m_timers.tick(name);
         init_prolog(multi_solver_mode);
-        m_timers.tock(name);
     };
-    void call_init_epilog()
-    {
-        const std::string name = "Init";
-        m_timers.tick(name, true);
-        init_epilog();
-        m_timers.tock(name);
-    };
-    void call_prepare_solver_prolog()
-    {
-        const std::string name = "Init";
-        m_timers.tick(name, true);
-        prepare_solver_prolog();
-        m_timers.tock(name);
-    };
-    void call_prepare_solver_epilog()
-    {
-        const std::string name = "Init";
-        m_timers.tick(name, true);
-        prepare_solver_epilog();
-        m_timers.tock(name);
-    };
+    void call_init_epilog() { init_epilog(); };
+    void call_prepare_solver_prolog() { prepare_solver_prolog(); };
+    void call_prepare_solver_epilog() { prepare_solver_epilog(); };
     void call_pre_advance_stage1()
     {
         const std::string name = "Pre";
@@ -110,8 +89,7 @@ public:
     virtual std::string identifier() { return "ExawindSolver"; }
     virtual MPI_Comm comm() = 0;
     //! Timer names
-    const std::vector<std::string> m_names{
-        "Init", "Pre", "Conn", "Solve", "Post"};
+    const std::vector<std::string> m_names{"Pre", "Conn", "Solve", "Post"};
     //! Timers
     Timers m_timers;
 
