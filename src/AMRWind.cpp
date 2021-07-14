@@ -48,6 +48,7 @@ AMRWind::AMRWind(
     , m_tgiface(m_incflo.sim(), tg)
     , m_cell_vars(cell_vars)
     , m_node_vars(node_vars)
+    , m_comm(amrex::ParallelContext::CommunicatorSub())
 {
     m_incflo.sim().activate_overset();
 }

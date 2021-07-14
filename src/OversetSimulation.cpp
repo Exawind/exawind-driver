@@ -52,22 +52,20 @@ void OversetSimulation::initialize()
             "solver");
     }
 
-    m_timers.tick("Init");
-    for (auto& ss : m_solvers) ss->init_prolog(true);
+    for (auto& ss : m_solvers) ss->call_init_prolog(true);
 
     determine_overset_interval();
 
     perform_overset_connectivity();
 
     for (auto& ss : m_solvers) {
-        ss->init_epilog();
-        ss->prepare_solver_prolog();
+        ss->call_init_epilog();
+        ss->call_prepare_solver_prolog();
     }
 
     exchange_solution();
 
-    for (auto& ss : m_solvers) ss->prepare_solver_epilog();
-    m_timers.tock("Init");
+    for (auto& ss : m_solvers) ss->call_prepare_solver_epilog();
 
     MPI_Barrier(m_comm);
     m_initialized = true;
@@ -75,29 +73,32 @@ void OversetSimulation::initialize()
 
 void OversetSimulation::perform_overset_connectivity()
 {
-    for (auto& ss : m_solvers) ss->pre_overset_conn_work();
+    for (auto& ss : m_solvers) ss->call_pre_overset_conn_work();
 
+    m_timers.tick("TGConn");
     if (m_has_amr) m_tg.preprocess_amr_data();
-
     m_tg.profile();
     m_tg.performConnectivity();
     if (m_has_amr) m_tg.performConnectivityAMR();
+    m_timers.tock("TGConn");
 
-    for (auto& ss : m_solvers) ss->post_overset_conn_work();
+    for (auto& ss : m_solvers) ss->call_post_overset_conn_work();
 }
 
 void OversetSimulation::exchange_solution()
 {
 
-    for (auto& ss : m_solvers) ss->register_solution();
+    for (auto& ss : m_solvers) ss->call_register_solution();
 
+    m_timers.tick("TGConn");
     if (m_has_amr) {
         m_tg.dataUpdate_AMR();
     } else {
         throw std::runtime_error("Invalid overset exchange");
     }
+    m_timers.tock("TGConn");
 
-    for (auto& ss : m_solvers) ss->update_solution();
+    for (auto& ss : m_solvers) ss->call_update_solution();
 }
 
 void OversetSimulation::run_timesteps(int nsteps)
@@ -114,34 +115,24 @@ void OversetSimulation::run_timesteps(int nsteps)
         std::to_string(tstart));
 
     for (int nt = tstart; nt < tend; ++nt) {
-        m_timers.tick("Pre");
-        for (auto& ss : m_solvers) ss->pre_advance_stage1();
-        m_timers.tock("Pre");
+        for (auto& ss : m_solvers) ss->call_pre_advance_stage1();
 
-        m_timers.tick("Conn");
         if (do_connectivity(nt)) perform_overset_connectivity();
-        m_timers.tock("Conn");
 
-        m_timers.tick("Pre", true);
-        for (auto& ss : m_solvers) ss->pre_advance_stage2();
-        m_timers.tock("Pre");
+        for (auto& ss : m_solvers) ss->call_pre_advance_stage2();
 
-        m_timers.tick("Conn", true);
         exchange_solution();
-        m_timers.tock("Conn");
 
-        m_timers.tick("Solve");
-        for (auto& ss : m_solvers) ss->advance_timestep();
-        m_timers.tock("Solve");
+        for (auto& ss : m_solvers) ss->call_advance_timestep();
 
-        m_timers.tick("Post");
-        for (auto& ss : m_solvers) ss->post_advance();
-        m_timers.tock("Post");
+        for (auto& ss : m_solvers) ss->call_post_advance();
 
         MPI_Barrier(m_comm);
         const auto timings = m_timers.get_timings(m_comm, m_printer.io_rank());
-        m_printer.echo("WCTime: " + std::to_string(nt));
+        m_printer.echo("Wallclock times at step "+ std::to_string(nt));
+        m_printer.echo("OversetSimulation WCTime:");
         m_printer.echo(timings);
+        for (auto& ss : m_solvers) ss->echo_timers();
     }
 
     m_last_timestep = tend;

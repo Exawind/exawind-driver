@@ -1,11 +1,46 @@
 #ifndef TIMERS_H
 #define TIMERS_H
 
-#include "Timer.h"
 #include "mpi.h"
 #include <algorithm>
+#include <chrono>
+#include <numeric>
 
 namespace exawind {
+
+// This bit almost straight from: https://stackoverflow.com/a/21995693
+template <
+    class TimeT = std::chrono::milliseconds,
+    class ClockT = std::chrono::steady_clock>
+class Timer
+{
+    using timep_t = typename ClockT::time_point;
+    timep_t _start = ClockT::now(), _end = {};
+    TimeT _increment;
+
+public:
+    void tick(const bool incremental = false)
+    {
+        _start = ClockT::now();
+        if ((incremental) && (_end != timep_t{})) {
+            _start -= _increment;
+        }
+        _end = timep_t{};
+        _increment = duration();
+    }
+
+    void tock()
+    {
+        _end = ClockT::now();
+        _increment = duration();
+    }
+
+    template <class TT = TimeT>
+    TT duration() const
+    {
+        return std::chrono::duration_cast<TT>(_end - _start);
+    }
+};
 
 struct Timers
 {
@@ -80,6 +115,10 @@ struct Timers
                 " (min: " + std::to_string(mintimes.at(i) / ms2s) +
                 ", max: " + std::to_string(maxtimes.at(i) / ms2s) + ")\n");
         }
+        const double total = std::accumulate(
+            avgtimes.begin(), avgtimes.end(),
+            decltype(avgtimes)::value_type(0.0));
+        out.append("  Total: " + std::to_string(total / ms2s) + "\n");
         return out;
     };
 };
