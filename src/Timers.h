@@ -112,12 +112,12 @@ struct Timers
             out.append(
                 m_names.at(i) + ": " + std::to_string(mintimes.at(i) / ms2s) +
                 " " + std::to_string(avgtimes.at(i) / ms2s) + " " +
-                std::to_string(maxtimes.at(i) / ms2s));
+                std::to_string(maxtimes.at(i) / ms2s) + " ");
         }
         const double total = std::accumulate(
             avgtimes.begin(), avgtimes.end(),
             decltype(avgtimes)::value_type(0.0));
-        out.append("  Total: " + std::to_string(total / ms2s));
+        out.append("Total: " + std::to_string(total / ms2s));
         return out;
     };
 };
