@@ -74,14 +74,15 @@ public:
         update_solution();
         m_timers.tock(name);
     };
-    void echo_timers()
+    void echo_timers(const int step)
     {
         int rank, minrank;
         MPI_Allreduce(&rank, &minrank, 1, MPI_INT, MPI_MIN, comm());
         ParallelPrinter printer(comm(), minrank);
         const auto timings = m_timers.get_timings(comm(), printer.io_rank());
-        printer.echo(identifier() + " WCTime:");
-        printer.echo(timings);
+        printer.echo(
+            identifier() + " WCTime at step: " + std::to_string(step) + " " +
+            timings);
     }
     virtual bool is_unstructured() { return false; };
     virtual bool is_amr() { return false; };
