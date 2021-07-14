@@ -20,31 +20,28 @@ public:
     static void
     initialize(MPI_Comm comm, const std::string& inpfile, std::ofstream& out);
     static void finalize();
-
     AMRWind(
         const std::vector<std::string>&,
         const std::vector<std::string>&,
         TIOGA::tioga&);
-
-    void init_prolog(bool multi_solver_mode = true) override;
-    void init_epilog() override;
-
-    void prepare_solver_prolog() override;
-    void prepare_solver_epilog() override;
-
-    void pre_advance_stage1() override;
-    void pre_advance_stage2() override;
-    void advance_timestep() override;
-    void post_advance() override;
-
-    void pre_overset_conn_work() override;
-    void post_overset_conn_work() override;
-    void register_solution() override;
-    void update_solution() override;
     bool is_unstructured() override { return false; }
     bool is_amr() override { return true; }
     int overset_update_interval() override;
     std::string identifier() override { return "AMR-Wind"; }
+
+protected:
+    void init_prolog(bool multi_solver_mode = true) override;
+    void init_epilog() override;
+    void prepare_solver_prolog() override;
+    void prepare_solver_epilog() override;
+    void pre_advance_stage1() override;
+    void pre_advance_stage2() override;
+    void advance_timestep() override;
+    void post_advance() override;
+    void pre_overset_conn_work() override;
+    void post_overset_conn_work() override;
+    void register_solution() override;
+    void update_solution() override;
 };
 
 } // namespace exawind
