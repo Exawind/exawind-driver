@@ -3,6 +3,7 @@
 
 #include "Timer.h"
 #include "mpi.h"
+#include <algorithm>
 
 namespace exawind {
 
@@ -45,39 +46,42 @@ struct Timers
         assert(itr != m_names.cend());
         return std::distance(m_names.begin(), itr);
     }
+
+    std::string get_timings(MPI_Comm comm, int root = 0)
+    {
+        const auto len = m_timers.size();
+        const auto times = counts();
+        std::vector<double> maxtimes(len, 0.0);
+        std::vector<double> mintimes(len, 0.0);
+        std::vector<double> avgtimes(len, 0.0);
+        MPI_Reduce(
+            times.data(), maxtimes.data(), len, MPI_DOUBLE, MPI_MAX, root,
+            comm);
+        MPI_Reduce(
+            times.data(), mintimes.data(), len, MPI_DOUBLE, MPI_MIN, root,
+            comm);
+        MPI_Reduce(
+            times.data(), avgtimes.data(), len, MPI_DOUBLE, MPI_SUM, root,
+            comm);
+
+        int psize;
+        MPI_Comm_size(comm, &psize);
+        for (auto& elem : avgtimes) {
+            elem /= psize;
+        }
+
+        MPI_Barrier(comm);
+        std::string out{""};
+        const double ms2s = 1000.0;
+        for (int i = 0; i < len; i++) {
+            out.append(
+                "  " + m_names.at(i) + ": " +
+                std::to_string(avgtimes.at(i) / ms2s) +
+                " (min: " + std::to_string(mintimes.at(i) / ms2s) +
+                ", max: " + std::to_string(maxtimes.at(i) / ms2s) + ")\n");
+        }
+        return out;
+    };
 };
-
-void summarize_timers(const std::string name, Timers timers, MPI_Comm comm)
-{
-    const int root = 0;
-    int psize;
-    MPI_Comm_size(comm, &psize);
-
-    const auto len = timers.m_timers.size();
-    const auto times = timers.counts();
-    std::vector<double> maxtimes(len, 0.0);
-    std::vector<double> mintimes(len, 0.0);
-    std::vector<double> avgtimes(len, 0.0);
-    MPI_Reduce(
-        times.data(), maxtimes.data(), len, MPI_DOUBLE, MPI_MAX, root, comm);
-    MPI_Reduce(
-        times.data(), mintimes.data(), len, MPI_DOUBLE, MPI_MIN, root, comm);
-    MPI_Reduce(
-        times.data(), avgtimes.data(), len, MPI_DOUBLE, MPI_SUM, root, comm);
-    for (auto& elem : avgtimes) {
-        elem /= psize;
-    }
-
-    MPI_Barrier(MPI_COMM_WORLD);
-    amrex::Print(std::cout) << name << std::endl;
-    const double ms2s = 1000.0;
-    for (int i = 0; i < len; i++) {
-        amrex::Print(std::cout)
-            << "   " << timers.m_names.at(i) << ": " << avgtimes.at(i) / ms2s
-            << " (min: " << mintimes.at(i) / ms2s
-            << ", max: " << maxtimes.at(i) / ms2s << ")" << std::endl;
-    }
-};
-
 } // namespace exawind
 #endif /* TIMERS_H */

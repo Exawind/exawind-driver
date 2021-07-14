@@ -20,8 +20,11 @@ void NaluWind::finalize()
 }
 
 NaluWind::NaluWind(
-    stk::ParallelMachine comm, const std::string& inpfile, TIOGA::tioga& tg)
-    : m_doc(YAML::LoadFile(inpfile)), m_sim(m_doc)
+    stk::ParallelMachine comm,
+    const std::string& inpfile,
+    const std::vector<std::string>& fnames,
+    TIOGA::tioga& tg)
+    : m_doc(YAML::LoadFile(inpfile)), m_fnames(fnames), m_sim(m_doc)
 {
     auto& env = sierra::nalu::NaluEnv::self();
     env.parallelCommunicator_ = comm;
@@ -89,14 +92,24 @@ void NaluWind::post_overset_conn_work()
     m_sim.timeIntegrator_->overset_->post_overset_conn_work();
 }
 
-void NaluWind::register_solution(const std::vector<std::string>& fnames)
+void NaluWind::register_solution()
 {
-    m_sim.timeIntegrator_->overset_->register_solution(fnames);
+    m_sim.timeIntegrator_->overset_->register_solution(m_fnames);
 }
 
 void NaluWind::update_solution()
 {
     m_sim.timeIntegrator_->overset_->update_solution();
+}
+
+int NaluWind::overset_update_interval()
+{
+    for (auto& realm : m_sim.timeIntegrator_->realmVec_) {
+        if (realm->does_mesh_move()) {
+            return 1;
+        }
+    }
+    return 100000000;
 }
 
 } // namespace exawind

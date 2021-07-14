@@ -3,8 +3,12 @@ target_sources(${EXAWIND_LIB_NAME} PRIVATE
   AMRTiogaIface.h
   AMRWind.cpp
   AMRWind.h
+  ExawindSolver.h
   NaluWind.cpp
-  NaluWind.h)
+  NaluWind.h
+  OversetSimulation.cpp
+  OversetSimulation.h
+  ParallelPrinter.h)
 
 target_include_directories(${EXAWIND_LIB_NAME} PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR})

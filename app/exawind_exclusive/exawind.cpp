@@ -1,5 +1,6 @@
 #include "AMRWind.h"
 #include "NaluWind.h"
+#include "OversetSimulation.h"
 #include "mpi.h"
 #include <filesystem>
 
@@ -24,14 +25,15 @@ int main(int argc, char** argv)
     }
 
     const int num_nalu_ranks = 1;
+    const int num_amr_ranks = psize - num_nalu_ranks;
 
-    int nalu_range[1][3] = {0, num_nalu_ranks - 1, 1};
-    int amr_range[1][3] = {num_nalu_ranks, psize - 1, 1};
+    int amr_range[1][3] = {0, num_amr_ranks - 1, 1};
+    int nalu_range[1][3] = {num_amr_ranks, psize - 1, 1};
 
     MPI_Group world_group, nalu_group, amr_group;
     MPI_Comm_group(MPI_COMM_WORLD, &world_group);
-    MPI_Group_range_incl(world_group, 1, nalu_range, &nalu_group);
     MPI_Group_range_incl(world_group, 1, amr_range, &amr_group);
+    MPI_Group_range_incl(world_group, 1, nalu_range, &nalu_group);
 
     MPI_Comm amr_comm, nalu_comm;
     MPI_Comm_create(MPI_COMM_WORLD, amr_group, &amr_comm);
@@ -49,9 +51,16 @@ int main(int argc, char** argv)
         fpath_amr_inp.replace_extension(".log").string();
     std::ofstream out(amr_log);
 
-    if (nalu_comm != MPI_COMM_NULL) exawind::NaluWind::initialize();
+    exawind::OversetSimulation sim(MPI_COMM_WORLD);
+    sim.echo(
+        "Initializing AMR-Wind on " + std::to_string(num_amr_ranks) +
+        " MPI ranks");
     if (amr_comm != MPI_COMM_NULL)
         exawind::AMRWind::initialize(amr_comm, amr_inp, out);
+    sim.echo(
+        "Initializing Nalu-Wind on " + std::to_string(num_nalu_ranks) +
+        " MPI ranks");
+    if (nalu_comm != MPI_COMM_NULL) exawind::NaluWind::initialize();
 
     {
         const auto nalu_vars = node["nalu_vars"].as<std::vector<std::string>>();
@@ -59,91 +68,19 @@ int main(int argc, char** argv)
             node["amr_cell_vars"].as<std::vector<std::string>>();
         const auto amr_nvars =
             node["amr_node_vars"].as<std::vector<std::string>>();
-        const int nsteps = node["num_timesteps"].as<int>();
+        const int num_timesteps = node["num_timesteps"].as<int>();
 
-        TIOGA::tioga tg;
-        tg.setCommunicator(MPI_COMM_WORLD, prank, psize);
-
-        exawind::NaluWind* nalu;
-        exawind::AMRWind* awind;
         if (nalu_comm != MPI_COMM_NULL)
-            nalu = new exawind::NaluWind(nalu_comm, nalu_inp, tg);
-        if (amr_comm != MPI_COMM_NULL) awind = new exawind::AMRWind(tg);
-
-        if (amr_comm != MPI_COMM_NULL) awind->init_prolog(true);
-        if (nalu_comm != MPI_COMM_NULL) nalu->init_prolog(true);
-        if (nalu_comm != MPI_COMM_NULL) nalu->pre_overset_conn_work();
-        if (amr_comm != MPI_COMM_NULL) awind->pre_overset_conn_work();
-        // if (amr_comm != MPI_COMM_NULL) // Need to understand why these are in
-        // python but don't work here
-        //  tg.preprocess_amr_data();
-        tg.profile();
-        tg.performConnectivity();
-        // if (amr_comm != MPI_COMM_NULL) // Need to understand why these are in
-        // python but don't work here
-        //  tg.performConnectivityAMR();
-        if (nalu_comm != MPI_COMM_NULL) nalu->post_overset_conn_work();
-        if (amr_comm != MPI_COMM_NULL) awind->post_overset_conn_work();
-        if (nalu_comm != MPI_COMM_NULL) nalu->init_epilog();
-        if (amr_comm != MPI_COMM_NULL) awind->init_epilog();
-        if (nalu_comm != MPI_COMM_NULL) nalu->prepare_solver_prolog();
-        if (amr_comm != MPI_COMM_NULL) awind->prepare_solver_prolog();
-
-        if (nalu_comm != MPI_COMM_NULL) nalu->register_solution(nalu_vars);
+            sim.register_solver<exawind::NaluWind>(
+                nalu_comm, nalu_inp, nalu_vars);
         if (amr_comm != MPI_COMM_NULL)
-            awind->register_solution(amr_cvars, amr_nvars);
-        // if (amr_comm != MPI_COMM_NULL) // Need to understand why these are in
-        // python but don't work here
-        //  tg.dataUpdate_AMR();
-        if (nalu_comm != MPI_COMM_NULL) nalu->update_solution();
-        if (amr_comm != MPI_COMM_NULL) awind->update_solution();
+            sim.register_solver<exawind::AMRWind>(amr_cvars, amr_nvars);
 
-        if (nalu_comm != MPI_COMM_NULL) nalu->prepare_solver_epilog();
-        if (amr_comm != MPI_COMM_NULL) awind->prepare_solver_epilog();
+        sim.echo("Initializing overset simulation");
+        sim.initialize();
+        sim.echo("Initialization successful");
 
-        MPI_Barrier(MPI_COMM_WORLD);
-
-        if (amr_comm != MPI_COMM_NULL)
-            amrex::Print(std::cout)
-                << "Executing " << nsteps << " timesteps" << std::endl;
-        for (int i = 0; i < nsteps; ++i) {
-            if (nalu_comm != MPI_COMM_NULL) nalu->pre_advance_stage1();
-            if (amr_comm != MPI_COMM_NULL) awind->pre_advance_stage1();
-
-            if (nalu_comm != MPI_COMM_NULL) nalu->pre_overset_conn_work();
-            if (amr_comm != MPI_COMM_NULL) awind->pre_overset_conn_work();
-            // if (amr_comm != MPI_COMM_NULL) // Need to understand why these
-            // are in python but don't work here
-            //  tg.preprocess_amr_data();
-            tg.profile();
-            tg.performConnectivity();
-            // if (amr_comm != MPI_COMM_NULL) // Need to understand why these
-            // are in python but don't work here
-            //  tg.performConnectivityAMR();
-            if (nalu_comm != MPI_COMM_NULL) nalu->post_overset_conn_work();
-            if (amr_comm != MPI_COMM_NULL) awind->post_overset_conn_work();
-
-            if (nalu_comm != MPI_COMM_NULL) nalu->pre_advance_stage2();
-            if (amr_comm != MPI_COMM_NULL) awind->pre_advance_stage2();
-
-            if (nalu_comm != MPI_COMM_NULL) nalu->register_solution(nalu_vars);
-            if (amr_comm != MPI_COMM_NULL)
-                awind->register_solution(amr_cvars, amr_nvars);
-            // if (amr_comm != MPI_COMM_NULL) // Need to understand why these
-            // are in python but don't work here
-            //  tg.dataUpdate_AMR();
-            if (nalu_comm != MPI_COMM_NULL) nalu->update_solution();
-            if (amr_comm != MPI_COMM_NULL) awind->update_solution();
-
-            if (nalu_comm != MPI_COMM_NULL) nalu->advance_timestep();
-            if (amr_comm != MPI_COMM_NULL) awind->advance_timestep();
-
-            if (nalu_comm != MPI_COMM_NULL) nalu->post_advance();
-            if (amr_comm != MPI_COMM_NULL) awind->post_advance();
-            MPI_Barrier(MPI_COMM_WORLD);
-        }
-        if (nalu_comm != MPI_COMM_NULL) delete nalu;
-        if (amr_comm != MPI_COMM_NULL) delete awind;
+        sim.run_timesteps(num_timesteps);
     }
 
     if (amr_comm != MPI_COMM_NULL) exawind::AMRWind::finalize();

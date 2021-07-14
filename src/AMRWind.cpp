@@ -40,7 +40,14 @@ void AMRWind::initialize(
 
 void AMRWind::finalize() { amrex::Finalize(); }
 
-AMRWind::AMRWind(TIOGA::tioga& tg) : m_incflo(), m_tgiface(m_incflo.sim(), tg)
+AMRWind::AMRWind(
+    const std::vector<std::string>& cell_vars,
+    const std::vector<std::string>& node_vars,
+    TIOGA::tioga& tg)
+    : m_incflo()
+    , m_tgiface(m_incflo.sim(), tg)
+    , m_cell_vars(cell_vars)
+    , m_node_vars(node_vars)
 {
     m_incflo.sim().activate_overset();
 }
@@ -77,13 +84,16 @@ void AMRWind::pre_overset_conn_work() { m_tgiface.pre_overset_conn_work(); }
 
 void AMRWind::post_overset_conn_work() { m_tgiface.post_overset_conn_work(); }
 
-void AMRWind::register_solution(
-    const std::vector<std::string>& cell_vars,
-    const std::vector<std::string>& node_vars)
+void AMRWind::register_solution()
 {
-    m_tgiface.register_solution(cell_vars, node_vars);
+    m_tgiface.register_solution(m_cell_vars, m_node_vars);
 }
 
 void AMRWind::update_solution() { m_tgiface.update_solution(); }
 
+int AMRWind::overset_update_interval()
+{
+    const int regrid_int = m_incflo.sim().time().regrid_interval();
+    return regrid_int > 0 ? regrid_int : 100000000;
+}
 } // namespace exawind

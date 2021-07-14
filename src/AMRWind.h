@@ -1,5 +1,6 @@
 #include "amr-wind/incflo.H"
 #include "AMRTiogaIface.h"
+#include "ExawindSolver.h"
 
 namespace TIOGA {
 class tioga;
@@ -7,35 +8,43 @@ class tioga;
 
 namespace exawind {
 
-class AMRWind
+class AMRWind : public ExawindSolver
 {
 private:
     incflo m_incflo;
     AMRTiogaIface m_tgiface;
+    std::vector<std::string> m_cell_vars;
+    std::vector<std::string> m_node_vars;
 
 public:
     static void
     initialize(MPI_Comm comm, const std::string& inpfile, std::ofstream& out);
     static void finalize();
 
-    AMRWind(TIOGA::tioga&);
+    AMRWind(
+        const std::vector<std::string>&,
+        const std::vector<std::string>&,
+        TIOGA::tioga&);
 
-    void init_prolog(bool multi_solver_mode = true);
-    void init_epilog();
+    void init_prolog(bool multi_solver_mode = true) override;
+    void init_epilog() override;
 
-    void prepare_solver_prolog();
-    void prepare_solver_epilog();
+    void prepare_solver_prolog() override;
+    void prepare_solver_epilog() override;
 
-    void pre_advance_stage1();
-    void pre_advance_stage2();
-    void advance_timestep();
-    void post_advance();
+    void pre_advance_stage1() override;
+    void pre_advance_stage2() override;
+    void advance_timestep() override;
+    void post_advance() override;
 
-    void pre_overset_conn_work();
-    void post_overset_conn_work();
-    void register_solution(
-        const std::vector<std::string>&, const std::vector<std::string>&);
-    void update_solution();
+    void pre_overset_conn_work() override;
+    void post_overset_conn_work() override;
+    void register_solution() override;
+    void update_solution() override;
+    bool is_unstructured() override { return false; }
+    bool is_amr() override { return true; }
+    int overset_update_interval() override;
+    std::string identifier() override { return "AMR-Wind"; }
 };
 
 } // namespace exawind
