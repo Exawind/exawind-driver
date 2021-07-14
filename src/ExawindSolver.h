@@ -2,6 +2,7 @@
 #define EXAWINDSOLVER_H
 
 #include "Timers.h"
+#include "ParallelPrinter.h"
 
 namespace exawind {
 
@@ -94,10 +95,23 @@ public:
         update_solution();
         m_timers.tock(name);
     };
+    void echo_timers()
+    {
+        int rank, minrank;
+        MPI_Allreduce(&rank, &minrank, 1, MPI_INT, MPI_MIN, comm());
+        ParallelPrinter printer(comm(), minrank);
+        const auto timings = m_timers.get_timings(comm(), printer.io_rank());
+        printer.echo(identifier() + " WCTime:");
+        printer.echo(timings);
+    }
     virtual bool is_unstructured() { return false; };
     virtual bool is_amr() { return false; };
     virtual int overset_update_interval() { return 100000000; };
     virtual std::string identifier() { return "ExawindSolver"; }
+    virtual MPI_Comm comm() = 0;
+    //! Timer names
+    const std::vector<std::string> m_names{
+        "Init", "Pre", "Conn", "Solve", "Post"};
     //! Timers
     Timers m_timers;
 
@@ -114,9 +128,6 @@ protected:
     virtual void post_overset_conn_work() = 0;
     virtual void register_solution() = 0;
     virtual void update_solution() = 0;
-    //! Timer names
-    const std::vector<std::string> m_names{
-        "Init", "Pre", "Conn", "Solve", "Post"};
 };
 
 } // namespace exawind

@@ -130,15 +130,10 @@ void OversetSimulation::run_timesteps(int nsteps)
 
         MPI_Barrier(m_comm);
         const auto timings = m_timers.get_timings(m_comm, m_printer.io_rank());
-        m_printer.echo("WCTime: " + std::to_string(nt));
+        m_printer.echo("Wallclock times at step "+ std::to_string(nt));
+        m_printer.echo("OversetSimulation WCTime:");
         m_printer.echo(timings);
-        for (auto& ss : m_solvers) {
-            const auto ss_timings =
-                ss->m_timers.get_timings(m_comm, m_printer.io_rank());
-            m_printer.echo(
-                "WCTime for " + ss->identifier() + ": " + std::to_string(nt));
-            m_printer.echo(timings);
-        }
+        for (auto& ss : m_solvers) ss->echo_timers();
     }
 
     m_last_timestep = tend;

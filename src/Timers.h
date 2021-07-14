@@ -4,6 +4,7 @@
 #include "mpi.h"
 #include <algorithm>
 #include <chrono>
+#include <numeric>
 
 namespace exawind {
 
@@ -114,6 +115,10 @@ struct Timers
                 " (min: " + std::to_string(mintimes.at(i) / ms2s) +
                 ", max: " + std::to_string(maxtimes.at(i) / ms2s) + ")\n");
         }
+        const double total = std::accumulate(
+            avgtimes.begin(), avgtimes.end(),
+            decltype(avgtimes)::value_type(0.0));
+        out.append("  Total: " + std::to_string(total / ms2s) + "\n");
         return out;
     };
 };

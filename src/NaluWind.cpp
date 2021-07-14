@@ -24,7 +24,10 @@ NaluWind::NaluWind(
     const std::string& inpfile,
     const std::vector<std::string>& fnames,
     TIOGA::tioga& tg)
-    : m_doc(YAML::LoadFile(inpfile)), m_fnames(fnames), m_sim(m_doc)
+    : m_comm(comm)
+    , m_doc(YAML::LoadFile(inpfile))
+    , m_fnames(fnames)
+    , m_sim(m_doc)
 {
     auto& env = sierra::nalu::NaluEnv::self();
     env.parallelCommunicator_ = comm;

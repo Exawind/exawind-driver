@@ -34,6 +34,7 @@ public:
     bool is_amr() override { return false; }
     int overset_update_interval() override;
     std::string identifier() override { return "Nalu-Wind"; }
+    MPI_Comm comm() override { return m_comm; }
 
 protected:
     void init_prolog(bool multi_solver_mode = true) override;
@@ -48,6 +49,7 @@ protected:
     void post_overset_conn_work() override;
     void register_solution() override;
     void update_solution() override;
+    MPI_Comm m_comm;
 };
 
 } // namespace exawind
