@@ -52,7 +52,6 @@ void OversetSimulation::initialize()
             "solver");
     }
 
-    m_timers.tick("Init");
     for (auto& ss : m_solvers) ss->call_init_prolog(true);
 
     determine_overset_interval();
@@ -67,7 +66,6 @@ void OversetSimulation::initialize()
     exchange_solution();
 
     for (auto& ss : m_solvers) ss->call_prepare_solver_epilog();
-    m_timers.tock("Init");
 
     MPI_Barrier(m_comm);
     m_initialized = true;
@@ -77,11 +75,13 @@ void OversetSimulation::perform_overset_connectivity()
 {
     for (auto& ss : m_solvers) ss->call_pre_overset_conn_work();
 
+    m_timers.tick("TGConn");
     if (m_has_amr) m_tg.preprocess_amr_data();
 
     m_tg.profile();
     m_tg.performConnectivity();
     if (m_has_amr) m_tg.performConnectivityAMR();
+    m_timers.tock("TGConn");
 
     for (auto& ss : m_solvers) ss->call_post_overset_conn_work();
 }
@@ -91,11 +91,13 @@ void OversetSimulation::exchange_solution()
 
     for (auto& ss : m_solvers) ss->call_register_solution();
 
+    m_timers.tick("TGConn");
     if (m_has_amr) {
         m_tg.dataUpdate_AMR();
     } else {
         throw std::runtime_error("Invalid overset exchange");
     }
+    m_timers.tock("TGConn");
 
     for (auto& ss : m_solvers) ss->call_update_solution();
 }
@@ -114,34 +116,29 @@ void OversetSimulation::run_timesteps(int nsteps)
         std::to_string(tstart));
 
     for (int nt = tstart; nt < tend; ++nt) {
-        m_timers.tick("Pre");
         for (auto& ss : m_solvers) ss->call_pre_advance_stage1();
-        m_timers.tock("Pre");
 
-        m_timers.tick("Conn");
         if (do_connectivity(nt)) perform_overset_connectivity();
-        m_timers.tock("Conn");
 
-        m_timers.tick("Pre", true);
         for (auto& ss : m_solvers) ss->call_pre_advance_stage2();
-        m_timers.tock("Pre");
 
-        m_timers.tick("Conn", true);
         exchange_solution();
-        m_timers.tock("Conn");
 
-        m_timers.tick("Solve");
         for (auto& ss : m_solvers) ss->call_advance_timestep();
-        m_timers.tock("Solve");
 
-        m_timers.tick("Post");
         for (auto& ss : m_solvers) ss->call_post_advance();
-        m_timers.tock("Post");
 
         MPI_Barrier(m_comm);
         const auto timings = m_timers.get_timings(m_comm, m_printer.io_rank());
         m_printer.echo("WCTime: " + std::to_string(nt));
         m_printer.echo(timings);
+        for (auto& ss : m_solvers) {
+            const auto ss_timings =
+                ss->m_timers.get_timings(m_comm, m_printer.io_rank());
+            m_printer.echo(
+                "WCTime for " + ss->identifier() + ": " + std::to_string(nt));
+            m_printer.echo(timings);
+        }
     }
 
     m_last_timestep = tend;
