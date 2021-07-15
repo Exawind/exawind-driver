@@ -132,7 +132,7 @@ void OversetSimulation::run_timesteps(int nsteps)
         m_printer.echo(
             "OversetSimulation WCTime at step: " + std::to_string(nt) + " " +
             timings);
-        for (auto& ss : m_solvers) ss->echo_timers();
+        for (auto& ss : m_solvers) ss->echo_timers(nt);
     }
 
     m_last_timestep = tend;
