@@ -4,6 +4,7 @@ target_sources(${EXAWIND_LIB_NAME} PRIVATE
   AMRWind.cpp
   AMRWind.h
   ExawindSolver.h
+  MPIUtilities.h
   NaluWind.cpp
   NaluWind.h
   OversetSimulation.cpp
