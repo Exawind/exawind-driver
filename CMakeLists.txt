@@ -45,12 +45,9 @@ add_subdirectory(src)
 set(EXAWIND_EXE_NAME "exawind")
 add_executable(${EXAWIND_EXE_NAME})
 add_subdirectory(app/exawind)
-add_executable(${EXAWIND_EXE_NAME}_exclusive)
-add_subdirectory(app/exawind_exclusive)
 
 enable_testing()
 include(CTest)
 add_subdirectory(test)
 
 install(TARGETS ${EXAWIND_EXE_NAME})
-install(TARGETS ${EXAWIND_EXE_NAME}_exclusive)
