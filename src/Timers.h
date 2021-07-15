@@ -110,15 +110,14 @@ struct Timers
         const double ms2s = 1000.0;
         for (int i = 0; i < len; i++) {
             out.append(
-                "  " + m_names.at(i) + ": " +
-                std::to_string(avgtimes.at(i) / ms2s) +
-                " (min: " + std::to_string(mintimes.at(i) / ms2s) +
-                ", max: " + std::to_string(maxtimes.at(i) / ms2s) + ")\n");
+                m_names.at(i) + ": " + std::to_string(mintimes.at(i) / ms2s) +
+                " " + std::to_string(avgtimes.at(i) / ms2s) + " " +
+                std::to_string(maxtimes.at(i) / ms2s) + " ");
         }
         const double total = std::accumulate(
             avgtimes.begin(), avgtimes.end(),
             decltype(avgtimes)::value_type(0.0));
-        out.append("  Total: " + std::to_string(total / ms2s) + "\n");
+        out.append("Total: " + std::to_string(total / ms2s));
         return out;
     };
 };
