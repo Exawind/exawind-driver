@@ -48,29 +48,29 @@ public:
     };
     void call_pre_overset_conn_work()
     {
-        const std::string name = "Conn";
+        const std::string name = "PreConn";
         m_timers.tick(name);
         pre_overset_conn_work();
         m_timers.tock(name);
     };
     void call_post_overset_conn_work()
     {
-        const std::string name = "Conn";
-        m_timers.tick(name, true);
+        const std::string name = "PostConn";
+        m_timers.tick(name);
         post_overset_conn_work();
         m_timers.tock(name);
     };
     void call_register_solution()
     {
-        const std::string name = "Conn";
-        m_timers.tick(name, true);
+        const std::string name = "Register";
+        m_timers.tick(name);
         register_solution();
         m_timers.tock(name);
     };
     void call_update_solution()
     {
-        const std::string name = "Conn";
-        m_timers.tick(name, true);
+        const std::string name = "Update";
+        m_timers.tick(name);
         update_solution();
         m_timers.tock(name);
     };
@@ -90,7 +90,8 @@ public:
     virtual std::string identifier() { return "ExawindSolver"; }
     virtual MPI_Comm comm() = 0;
     //! Timer names
-    const std::vector<std::string> m_names{"Pre", "Conn", "Solve", "Post"};
+    const std::vector<std::string> m_names{
+        "Pre", "PreConn", "PostConn", "Register", "Update", "Solve", "Post"};
     //! Timers
     Timers m_timers;
 
