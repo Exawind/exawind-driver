@@ -118,8 +118,9 @@ void OversetSimulation::run_timesteps(int nsteps)
 
     for (int nt = tstart; nt < tend; ++nt) {
 
-        mem_usage(true);
-
+        mem_usage_all(nt);
+        for (auto& ss : m_solvers) ss->mem_usage();
+     
         for (auto& ss : m_solvers) ss->call_pre_advance_stage1();
 
         if (do_connectivity(nt)) perform_overset_connectivity();
@@ -148,7 +149,7 @@ bool OversetSimulation::do_connectivity(const int tstep)
     return (tstep > 0) && (tstep % m_overset_update_interval) == 0;
 }
 
-long OversetSimulation::mem_usage(const bool writefile)
+long OversetSimulation::mem_usage_all(const int step)
 {
     struct rusage usage;
     int i;
@@ -165,28 +166,29 @@ long OversetSimulation::mem_usage(const bool writefile)
     // gather all memory usage to proc 0
     std::vector<long> memall(psize);
     MPI_Gather(&mem,1,MPI_LONG,memall.data(),1,MPI_LONG,0,m_comm);
-    
-    if (prank == 0 && writefile) {
+   
+    // FIXME: once we can distinguash between different instances 
+    // of same solver we will move to separate output files
+    if (prank == 0) {
         std::string filename = "memusage.dat";
         std::ofstream fp;
-        fp.open(filename.c_str(), std::ios_base::app);
+
+        if(step == m_last_timestep + 1){ 
+            fp.open(filename.c_str(), std::ios_base::out);
+            fp << "# time step, memory usage in MBs" << std::endl;
+        } else {
+            fp.open(filename.c_str(), std::ios_base::app);
+        }
+        
+        fp << std::to_string(step);
         for(int i = 0; i < psize; ++i) {
-            fp << memall[i] << ' ';
+            fp << ' ' <<  memall[i];
         }
         fp << std::endl;
         fp.close();
     }
 
-    long totalmem = 0;
-    long minmem = memall[0];
-    long maxmem = memall[0];
-    for(int i = 0; i < psize; ++i){
-        totalmem += memall[i];
-        if(memall[i] > maxmem) maxmem = memall[i];
-        if(memall[i] < minmem) minmem = memall[i];
-    }
-
-    return totalmem;
+    return mem;
 }
 
 } // namespace exawind

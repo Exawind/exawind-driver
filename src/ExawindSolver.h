@@ -3,6 +3,8 @@
 
 #include "Timers.h"
 #include "ParallelPrinter.h"
+#include <sys/resource.h>
+#include <fstream>
 
 namespace exawind {
 
@@ -77,6 +79,7 @@ public:
     void echo_timers(const int step)
     {
         int rank, minrank;
+        MPI_Comm_rank(comm(), &rank);
         MPI_Allreduce(&rank, &minrank, 1, MPI_INT, MPI_MIN, comm());
         ParallelPrinter printer(comm(), minrank);
         const auto timings = m_timers.get_timings(comm(), printer.io_rank());
@@ -84,6 +87,42 @@ public:
             identifier() + " WCTime at step: " + std::to_string(step);
         printer.echo(out + " " + timings);
     }
+
+    long mem_usage()
+    {
+        struct rusage usage;
+        getrusage(RUSAGE_SELF, &usage);
+        
+        // convert to MB
+        long mem = (long) ((double) usage.ru_maxrss)/1024.0;
+
+        int myrank, psize, minrank;
+        MPI_Comm_rank(comm(), &myrank);
+        MPI_Comm_size(comm(), &psize);
+
+        MPI_Allreduce(&myrank, &minrank, 1, MPI_INT, MPI_MIN, comm());
+        
+        // gather all memory usage to proc 0
+        long minmem = -1;
+        long totmem = -1;
+        long maxmem = -1;
+        MPI_Reduce(&mem, &minmem, 1, MPI_LONG, MPI_MIN, minrank, comm());
+        MPI_Reduce(&mem, &totmem, 1, MPI_LONG, MPI_SUM, minrank, comm());
+        MPI_Reduce(&mem, &maxmem, 1, MPI_LONG, MPI_MAX, minrank, comm());
+
+        ParallelPrinter printer(comm(), minrank);
+        const std::string out =
+            identifier() + " Memory Usage" 
+             + " min: " + std::to_string(minmem) 
+             + " avg: " + std::to_string((long) ((double) totmem/(double) psize)) 
+             + " max: " + std::to_string(maxmem)
+             + " total: " + std::to_string(totmem);
+        printer.echo(out);
+
+        return mem;
+
+    }
+
     virtual bool is_unstructured() { return false; };
     virtual bool is_amr() { return false; };
     virtual int overset_update_interval() { return 100000000; };
