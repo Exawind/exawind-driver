@@ -1,6 +1,7 @@
 #include "OversetSimulation.h"
 #include <algorithm>
 #include <sys/resource.h>
+#include <fstream>
 
 namespace exawind {
 
@@ -147,30 +148,45 @@ bool OversetSimulation::do_connectivity(const int tstep)
     return (tstep > 0) && (tstep % m_overset_update_interval) == 0;
 }
 
-long OversetSimulation::mem_usage(bool writefile)
+long OversetSimulation::mem_usage(const bool writefile)
 {
     struct rusage usage;
     int i;
     getrusage(RUSAGE_SELF, &usage);
-    /* convert to MB */
+    // convert to MB
     long mem = (long) ((double) usage.ru_maxrss)/1024.0;
 
     int psize, prank;
     MPI_Comm_size(m_comm, &psize);
     MPI_Comm_rank(m_comm, &prank);
 
-    /* gather all memory usage to proc 0 */
-    long memall[psize];
-    MPI_Gather(&mem,1,MPI_LONG,&memall,1,MPI_LONG,0,m_comm);
+    if(psize < 1) return -1;
+
+    // gather all memory usage to proc 0
+    std::vector<long> memall(psize);
+    MPI_Gather(&mem,1,MPI_LONG,memall.data(),1,MPI_LONG,0,m_comm);
+    
     if (prank == 0 && writefile) {
-        FILE *fp;
-        char filename[] = "memusage.dat";
-        fp = fopen(filename,"a");
-        for(i = 0; i < psize; i++) fprintf(fp,"%ld ",memall[i]);
-        fprintf(fp,"\n");
-        fclose(fp);
+        std::string filename = "memusage.dat";
+        std::ofstream fp;
+        fp.open(filename.c_str(), std::ios_base::app);
+        for(int i = 0; i < psize; ++i) {
+            fp << memall[i] << ' ';
+        }
+        fp << std::endl;
+        fp.close();
     }
-    return mem;
+
+    long totalmem = 0;
+    long minmem = memall[0];
+    long maxmem = memall[0];
+    for(int i = 0; i < psize; ++i){
+        totalmem += memall[i];
+        if(memall[i] > maxmem) maxmem = memall[i];
+        if(memall[i] < minmem) minmem = memall[i];
+    }
+
+    return totalmem;
 }
 
 } // namespace exawind
