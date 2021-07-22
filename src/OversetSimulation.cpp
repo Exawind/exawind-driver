@@ -152,10 +152,9 @@ bool OversetSimulation::do_connectivity(const int tstep)
 long OversetSimulation::mem_usage_all(const int step)
 {
     struct rusage usage;
-    int i;
     getrusage(RUSAGE_SELF, &usage);
     // convert to MB
-    long mem = (long) ((double) usage.ru_maxrss)/1024.0;
+    const long mem = (long) ((double) usage.ru_maxrss)/1024.0;
 
     int psize, prank;
     MPI_Comm_size(m_comm, &psize);

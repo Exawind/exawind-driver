@@ -94,7 +94,7 @@ public:
         getrusage(RUSAGE_SELF, &usage);
         
         // convert to MB
-        long mem = (long) ((double) usage.ru_maxrss)/1024.0;
+        const long mem = (long) ((double) usage.ru_maxrss)/1024.0;
 
         int myrank, psize, minrank;
         MPI_Comm_rank(comm(), &myrank);
