@@ -1,5 +1,6 @@
 #include "OversetSimulation.h"
 #include <algorithm>
+#include <sys/resource.h>
 
 namespace exawind {
 
@@ -115,6 +116,9 @@ void OversetSimulation::run_timesteps(int nsteps)
         std::to_string(tstart));
 
     for (int nt = tstart; nt < tend; ++nt) {
+
+        mem_usage(true);
+
         for (auto& ss : m_solvers) ss->call_pre_advance_stage1();
 
         if (do_connectivity(nt)) perform_overset_connectivity();
@@ -141,6 +145,32 @@ void OversetSimulation::run_timesteps(int nsteps)
 bool OversetSimulation::do_connectivity(const int tstep)
 {
     return (tstep > 0) && (tstep % m_overset_update_interval) == 0;
+}
+
+long OversetSimulation::mem_usage(bool writefile)
+{
+    struct rusage usage;
+    int i;
+    getrusage(RUSAGE_SELF, &usage);
+    /* convert to MB */
+    long mem = (long) ((double) usage.ru_maxrss)/1024.0;
+
+    int psize, prank;
+    MPI_Comm_size(m_comm, &psize);
+    MPI_Comm_rank(m_comm, &prank);
+
+    /* gather all memory usage to proc 0 */
+    long memall[psize];
+    MPI_Gather(&mem,1,MPI_LONG,&memall,1,MPI_LONG,0,m_comm);
+    if (prank == 0 && writefile) {
+        FILE *fp;
+        char filename[] = "memusage.dat";
+        fp = fopen(filename,"a");
+        for(i = 0; i < psize; i++) fprintf(fp,"%ld ",memall[i]);
+        fprintf(fp,"\n");
+        fclose(fp);
+    }
+    return mem;
 }
 
 } // namespace exawind
