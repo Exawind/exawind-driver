@@ -24,7 +24,7 @@ long OversetSimulation::mem_usage_all(const int step)
     std::vector<long> memall(psize);
     MPI_Gather(&mem,1,MPI_LONG,memall.data(),1,MPI_LONG,0,m_comm);
    
-    // FIXME: once we can distinguash between different instances 
+    // FIXME: once we can distinguish between different instances 
     // of same solver we will move to separate output files 
     // and put in ExawindSolver
     if (prank == 0) {
