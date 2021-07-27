@@ -9,7 +9,8 @@ target_sources(${EXAWIND_LIB_NAME} PRIVATE
   NaluWind.h
   OversetSimulation.cpp
   OversetSimulation.h
-  ParallelPrinter.h)
+  ParallelPrinter.h
+  MemUsage.cpp)
 
 target_include_directories(${EXAWIND_LIB_NAME} PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR})
