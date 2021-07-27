@@ -115,4 +115,6 @@ int NaluWind::overset_update_interval()
     return 100000000;
 }
 
+int NaluWind::time_index() { return m_sim.timeIntegrator_->timeStepCount_; }
+
 } // namespace exawind

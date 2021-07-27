@@ -77,6 +77,7 @@ public:
     void echo_timers(const int step)
     {
         int rank, minrank;
+        MPI_Comm_rank(comm(), &rank);
         MPI_Allreduce(&rank, &minrank, 1, MPI_INT, MPI_MIN, comm());
         ParallelPrinter printer(comm(), minrank);
         const auto timings = m_timers.get_timings(comm(), printer.io_rank());
@@ -87,6 +88,7 @@ public:
     virtual bool is_unstructured() { return false; };
     virtual bool is_amr() { return false; };
     virtual int overset_update_interval() { return 100000000; };
+    virtual int time_index() = 0;
     virtual std::string identifier() { return "ExawindSolver"; }
     virtual MPI_Comm comm() = 0;
     //! Timer names

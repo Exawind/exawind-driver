@@ -27,6 +27,7 @@ public:
     bool is_unstructured() override { return false; }
     bool is_amr() override { return true; }
     int overset_update_interval() override;
+    int time_index() override;
     std::string identifier() override { return "AMR-Wind"; }
     MPI_Comm comm() override { return m_comm; }
 
