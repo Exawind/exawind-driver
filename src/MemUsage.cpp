@@ -1,8 +1,5 @@
 #include "OversetSimulation.h"
 #include "ExawindSolver.h"
-//#include "OversetSimulation.h"
-//#include "Timers.h"
-//#include "ParallelPrinter.h"
 #include <fstream>
 
 #ifdef __linux__
