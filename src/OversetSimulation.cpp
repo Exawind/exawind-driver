@@ -166,7 +166,7 @@ long OversetSimulation::mem_usage_all(const int step)
     // of same solver we will move to separate output files
     // and put in ExawindSolver
     if (m_printer.is_io_rank()) {
-        std::string filename = "memusage.dat";
+        const std::string filename = "memusage.dat";
         std::ofstream fp;
 
         if (step == m_last_timestep + 1) {
