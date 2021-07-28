@@ -156,8 +156,6 @@ long OversetSimulation::mem_usage_all(const int step)
     int psize;
     MPI_Comm_size(m_comm, &psize);
 
-    if (psize < 1) return -1;
-
     // gather all memory usage
     std::vector<long> memall(psize);
     MPI_Gather(
