@@ -76,10 +76,7 @@ public:
     };
     void echo_timers(const int step)
     {
-        int rank, minrank;
-        MPI_Comm_rank(comm(), &rank);
-        MPI_Allreduce(&rank, &minrank, 1, MPI_INT, MPI_MIN, comm());
-        ParallelPrinter printer(comm(), minrank);
+        ParallelPrinter printer(comm());
         const auto timings = m_timers.get_timings(comm(), printer.io_rank());
         const std::string out =
             identifier() + " WCTime at step: " + std::to_string(step);
