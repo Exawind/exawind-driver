@@ -177,8 +177,8 @@ long OversetSimulation::mem_usage_all(const int step)
         }
 
         fp << std::to_string(step);
-        for (int i = 0; i < psize; ++i) {
-            fp << ' ' << memall[i];
+        for (const auto& mem : memall) {
+            fp << ' ' << mem;
         }
         fp << std::endl;
         fp.close();
