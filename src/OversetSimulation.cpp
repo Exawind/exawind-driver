@@ -1,5 +1,7 @@
 #include "OversetSimulation.h"
+#include "MemoryUsage.h"
 #include <algorithm>
+#include <fstream>
 
 namespace exawind {
 
@@ -122,6 +124,10 @@ void OversetSimulation::run_timesteps(int nsteps)
         std::to_string(tstart));
 
     for (int nt = tstart; nt < tend; ++nt) {
+
+        mem_usage_all(nt);
+        for (auto& ss : m_solvers) ss->mem_usage();
+
         for (auto& ss : m_solvers) ss->call_pre_advance_stage1();
 
         if (do_connectivity(nt)) perform_overset_connectivity();
@@ -148,6 +154,43 @@ void OversetSimulation::run_timesteps(int nsteps)
 bool OversetSimulation::do_connectivity(const int tstep)
 {
     return (tstep > 0) && (tstep % m_overset_update_interval) == 0;
+}
+
+long OversetSimulation::mem_usage_all(const int step)
+{
+    const long mem = memory_usage();
+
+    int psize;
+    MPI_Comm_size(m_comm, &psize);
+
+    // gather all memory usage
+    std::vector<long> memall(psize);
+    MPI_Gather(
+        &mem, 1, MPI_LONG, memall.data(), 1, MPI_LONG, m_printer.io_rank(),
+        m_comm);
+
+    // FIXME: once we can distinguish between different instances
+    // of same solver we will move to separate output files
+    // and put in ExawindSolver
+    if (m_printer.is_io_rank()) {
+        const std::string filename = "memusage.dat";
+        std::ofstream fp;
+
+        if (step == m_last_timestep + 1) {
+            fp.open(filename.c_str(), std::ios_base::out);
+            fp << "# time step, memory usage in MBs" << std::endl;
+        } else {
+            fp.open(filename.c_str(), std::ios_base::app);
+        }
+
+        fp << std::to_string(step);
+        for (const auto& mem : memall) {
+            fp << ' ' << mem;
+        }
+        fp << std::endl;
+        fp.close();
+    }
+    return mem;
 }
 
 } // namespace exawind
