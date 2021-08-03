@@ -69,6 +69,13 @@ void OversetSimulation::initialize()
 
     for (auto& ss : m_solvers) ss->call_prepare_solver_epilog();
 
+    if (!(std::all_of(m_solvers.begin() + 1, m_solvers.end(), [&](auto& ss) {
+            return ss->time_index() == m_solvers.at(0)->time_index();
+        }))) {
+        throw std::runtime_error("Mismatch in solver time steps.");
+    }
+    m_last_timestep = m_solvers.at(0)->time_index();
+
     MPI_Barrier(m_comm);
     m_initialized = true;
 }

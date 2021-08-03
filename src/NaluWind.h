@@ -33,6 +33,7 @@ public:
     bool is_unstructured() override { return true; }
     bool is_amr() override { return false; }
     int overset_update_interval() override;
+    int time_index() override;
     std::string identifier() override { return "Nalu-Wind"; }
     MPI_Comm comm() override { return m_comm; }
 

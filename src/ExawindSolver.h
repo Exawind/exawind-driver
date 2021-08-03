@@ -87,6 +87,7 @@ public:
     virtual bool is_unstructured() { return false; };
     virtual bool is_amr() { return false; };
     virtual int overset_update_interval() { return 100000000; };
+    virtual int time_index() = 0;
     virtual std::string identifier() { return "ExawindSolver"; }
     virtual MPI_Comm comm() = 0;
     //! Timer names

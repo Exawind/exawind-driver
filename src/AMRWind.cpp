@@ -97,4 +97,7 @@ int AMRWind::overset_update_interval()
     const int regrid_int = m_incflo.sim().time().regrid_interval();
     return regrid_int > 0 ? regrid_int : 100000000;
 }
+
+int AMRWind::time_index() { return m_incflo.sim().time().time_index(); }
+
 } // namespace exawind
