@@ -69,6 +69,10 @@ public:
 
     //! Print something
     void echo(const std::string& out) { m_printer.echo(out); }
+
+    //! track memory usage and print to file
+    long mem_usage_all(const int step);
+
 };
 
 } // namespace exawind

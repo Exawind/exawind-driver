@@ -24,6 +24,7 @@ public:
     };
 
     int io_rank() { return m_io_rank; };
+    bool is_io_rank() { return m_rank == m_io_rank; };
 };
 } // namespace exawind
 #endif /* PARALLELPRINTER_H */
