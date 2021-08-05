@@ -1,5 +1,6 @@
 #ifndef PARALLELPRINTER_H
 #define PARALLELPRINTER_H
+#include <ostream>
 #include "mpi.h"
 
 namespace exawind {
