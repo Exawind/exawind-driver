@@ -1,5 +1,6 @@
 #ifndef PARALLELPRINTER_H
 #define PARALLELPRINTER_H
+#include <iostream>
 #include <ostream>
 #include "mpi.h"
 
