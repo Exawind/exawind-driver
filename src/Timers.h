@@ -7,6 +7,7 @@
 #include <chrono>
 #include <numeric>
 #include <cassert>
+#include <string>
 
 namespace exawind {
 
