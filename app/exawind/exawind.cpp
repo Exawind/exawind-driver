@@ -77,19 +77,31 @@ int main(int argc, char** argv)
                       << std::endl;
     }
 
-    MPI_Comm amr_comm =
-        exawind::create_subcomm(MPI_COMM_WORLD, num_awind_ranks, 0);
-    MPI_Comm nalu_comm = exawind::create_subcomm(
-        MPI_COMM_WORLD, num_nwind_ranks, psize - num_nwind_ranks);
-
     const YAML::Node doc(YAML::LoadFile(inpfile));
     const YAML::Node node = doc["exawind"];
     const std::string amr_inp = node["amr_wind_inp"].as<std::string>();
-    const std::string nalu_inp = node["nalu_wind_inp"].as<std::string>();
     std::filesystem::path fpath_amr_inp(amr_inp);
     const std::string amr_log =
         fpath_amr_inp.replace_extension(".log").string();
     std::ofstream out(amr_log);
+
+    const auto nalu_inps = node["nalu_wind_inp"].as<std::vector<std::string>>();
+    const int num_nwsolvers = nalu_inps.size();
+    if (num_nwind_ranks % num_nwsolvers != 0) {
+        throw std::runtime_error(
+            "Number of Nalu-Wind ranks is not divisible by the number of "
+            "Nalu-Wind solver instances.");
+    }
+    const int num_nwind_ranks_per_instance = num_nwind_ranks / num_nwsolvers;
+
+    MPI_Comm amr_comm =
+        exawind::create_subcomm(MPI_COMM_WORLD, num_awind_ranks, 0);
+    std::vector<MPI_Comm> nalu_comms;
+    for (int i = 0; i < num_nwsolvers; i++) {
+        nalu_comms.push_back(exawind::create_subcomm(
+            MPI_COMM_WORLD, num_nwind_ranks_per_instance,
+            psize - num_nwind_ranks + i * num_nwind_ranks_per_instance));
+    }
 
     exawind::OversetSimulation sim(MPI_COMM_WORLD);
     sim.echo(
@@ -98,9 +110,14 @@ int main(int argc, char** argv)
     if (amr_comm != MPI_COMM_NULL)
         exawind::AMRWind::initialize(amr_comm, amr_inp, out);
     sim.echo(
-        "Initializing Nalu-Wind on " + std::to_string(num_nwind_ranks) +
-        " MPI ranks");
-    if (nalu_comm != MPI_COMM_NULL) exawind::NaluWind::initialize();
+        "Initializing " + std::to_string(num_nwsolvers) +
+        " Nalu-Wind instances, each of them on " +
+        std::to_string(num_nwind_ranks_per_instance) + " MPI ranks");
+    if (std::none_of(
+            nalu_comms.begin(), nalu_comms.end(),
+            [](const auto& comm) { return comm != MPI_COMM_NULL; })) {
+        exawind::NaluWind::initialize();
+    }
 
     {
         const auto nalu_vars = node["nalu_vars"].as<std::vector<std::string>>();
@@ -110,9 +127,11 @@ int main(int argc, char** argv)
             node["amr_node_vars"].as<std::vector<std::string>>();
         const int num_timesteps = node["num_timesteps"].as<int>();
 
-        if (nalu_comm != MPI_COMM_NULL)
-            sim.register_solver<exawind::NaluWind>(
-                nalu_comm, nalu_inp, nalu_vars);
+        for (int i = 0; i < num_nwsolvers; i++) {
+            if (nalu_comms.at(i) != MPI_COMM_NULL)
+                sim.register_solver<exawind::NaluWind>(
+                    nalu_comms.at(i), nalu_inps.at(i), nalu_vars);
+        }
         if (amr_comm != MPI_COMM_NULL)
             sim.register_solver<exawind::AMRWind>(amr_cvars, amr_nvars);
 
@@ -124,7 +143,11 @@ int main(int argc, char** argv)
     }
 
     if (amr_comm != MPI_COMM_NULL) exawind::AMRWind::finalize();
-    if (nalu_comm != MPI_COMM_NULL) exawind::NaluWind::finalize();
+    if (std::none_of(
+            nalu_comms.begin(), nalu_comms.end(),
+            [](const auto& comm) { return comm != MPI_COMM_NULL; })) {
+        exawind::NaluWind::finalize();
+    }
     MPI_Finalize();
 
     return 0;
