@@ -90,23 +90,22 @@ int main(int argc, char** argv)
     if (num_nwind_ranks < num_nwsolvers) {
         throw std::runtime_error(
             "Number of Nalu-Wind ranks is less than the number of Nalu-Wind "
-            "instances. Please have at least one rank per instance.");
+            "solvers. Please have at least one rank per solver.");
     }
     const int ranks_per_nw_solver = num_nwind_ranks / num_nwsolvers;
-    std::vector<int> num_nw_instance_ranks(num_nwsolvers, ranks_per_nw_solver);
+    std::vector<int> num_nw_solver_ranks(num_nwsolvers, ranks_per_nw_solver);
     const int remainder = num_nwind_ranks % num_nwsolvers;
     if (remainder != 0) {
         std::fill(
-            num_nw_instance_ranks.begin() + num_nwsolvers - remainder,
-            num_nw_instance_ranks.end(), ranks_per_nw_solver + 1);
+            num_nw_solver_ranks.begin() + num_nwsolvers - remainder,
+            num_nw_solver_ranks.end(), ranks_per_nw_solver + 1);
     }
-    const int num_nwind_ranks_per_instance = num_nwind_ranks / num_nwsolvers;
 
     MPI_Comm amr_comm =
         exawind::create_subcomm(MPI_COMM_WORLD, num_awind_ranks, 0);
     std::vector<MPI_Comm> nalu_comms;
     int start = psize - num_nwind_ranks;
-    for (const auto& nr : num_nw_instance_ranks) {
+    for (const auto& nr : num_nw_solver_ranks) {
         nalu_comms.push_back(
             exawind::create_subcomm(MPI_COMM_WORLD, nr, start));
         start += nr;
@@ -120,7 +119,7 @@ int main(int argc, char** argv)
         exawind::AMRWind::initialize(amr_comm, amr_inp, out);
     sim.echo(
         "Initializing " + std::to_string(num_nwsolvers) +
-        " Nalu-Wind instances, equally partitioned on a total of " +
+        " Nalu-Wind solvers, equally partitioned on a total of " +
         std::to_string(num_nwind_ranks) + " MPI ranks");
     if (std::any_of(nalu_comms.begin(), nalu_comms.end(), [](const auto& comm) {
             return comm != MPI_COMM_NULL;
