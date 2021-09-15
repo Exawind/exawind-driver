@@ -1,7 +1,8 @@
 # Example input file
 
 exawind:
-  nalu_wind_inp: sphere-nalu.yaml
+  nalu_wind_inp:
+    - sphere-nalu.yaml
   amr_wind_inp: sphere-amr.inp
   num_timesteps: 10
 
