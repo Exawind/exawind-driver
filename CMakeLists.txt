@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.14.0 FATAL_ERROR)
 project(exawind CXX C Fortran)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+include(exawind-utils)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -10,6 +11,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(EXAWIND_TEST_WITH_FCOMPARE "Check AMR-Wind test plots against gold files" OFF)
 option(EXAWIND_SAVE_GOLDS "Provide a directory in which to save golds during testing" OFF)
+option(EXAWIND_ENABLE_CUDA "Enable CUDA" OFF)
+
+if(EXAWIND_ENABLE_CUDA)
+  enable_language(CUDA)
+endif()
 
 set(CMAKE_PREFIX_PATH ${Trilinos_DIR} ${TIOGA_DIR}
                       ${Nalu-Wind_DIR} ${AMR-Wind_DIR}
@@ -22,7 +28,7 @@ find_package(Nalu-Wind REQUIRED)
 find_package(AMR-Wind REQUIRED)
 find_package(YAML-CPP 0.6.2 REQUIRED)
 find_package(Filesystem REQUIRED)
-if (NALU_USES_OPENFAST)
+if(NALU_USES_OPENFAST)
   find_package(OpenFAST REQUIRED)
 endif()
 
@@ -45,6 +51,13 @@ add_subdirectory(src)
 set(EXAWIND_EXE_NAME "exawind")
 add_executable(${EXAWIND_EXE_NAME})
 add_subdirectory(app/exawind)
+
+if(EXAWIND_ENABLE_CUDA)
+  set(ewtargets "${EXAWIND_LIB_NAME};${EXAWIND_EXE_NAME}")
+  foreach(tgt IN LISTS ewtargets)
+    set_cuda_build_properties(${tgt})
+  endforeach()
+endif()
 
 enable_testing()
 include(CTest)
