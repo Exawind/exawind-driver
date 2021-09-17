@@ -15,6 +15,7 @@ option(EXAWIND_ENABLE_CUDA "Enable CUDA" OFF)
 
 if(EXAWIND_ENABLE_CUDA)
   enable_language(CUDA)
+  find_package(CUDAToolkit REQUIRED)
 endif()
 
 set(CMAKE_PREFIX_PATH ${Trilinos_DIR} ${TIOGA_DIR}
