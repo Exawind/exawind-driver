@@ -11,24 +11,23 @@
 
 namespace exawind {
 
-// This bit almost straight from: https://stackoverflow.com/a/21995693
-template <
-    class TimeT = std::chrono::milliseconds,
-    class ClockT = std::chrono::steady_clock>
 class Timer
 {
-    using timep_t = typename ClockT::time_point;
-    timep_t _start = ClockT::now(), _end = {};
+    using ClockT = std::chrono::steady_clock;
+    using TimePt = std::chrono::time_point<ClockT>;
+    using TimeT = std::chrono::milliseconds;
+
+    TimePt _start = ClockT::now(), _end = {};
     TimeT _increment;
 
 public:
     void tick(const bool incremental = false)
     {
         _start = ClockT::now();
-        if ((incremental) && (_end != timep_t{})) {
+        if ((incremental) && (_end != TimePt{})) {
             _start -= _increment;
         }
-        _end = timep_t{};
+        _end = TimePt{};
         _increment = duration();
     }
 
@@ -38,16 +37,15 @@ public:
         _increment = duration();
     }
 
-    template <class TT = TimeT>
-    TT duration() const
+    TimeT duration() const
     {
-        return std::chrono::duration_cast<TT>(_end - _start);
+        return std::chrono::duration_cast<TimeT>(_end - _start);
     }
 };
 
 struct Timers
 {
-    std::vector<Timer<>> m_timers;
+    std::vector<Timer> m_timers;
     std::vector<std::string> m_names;
 
     Timers(const std::vector<std::string>& names) : m_names(names)
