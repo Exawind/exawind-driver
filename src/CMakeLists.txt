@@ -21,5 +21,4 @@ target_link_libraries(${EXAWIND_LIB_NAME} PUBLIC
   AMR-Wind::amrwind_api
   AMR-Wind::buildInfoamrwind_obj
   AMReX::amrex
-  Nalu-Wind::nalu
-  std::filesystem)
+  Nalu-Wind::nalu)
