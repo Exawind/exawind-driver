@@ -134,7 +134,7 @@ void OversetSimulation::run_timesteps(int nsteps)
 
         for (auto& ss : m_solvers) ss->call_pre_advance_stage2();
 
-        //exchange_solution();
+        exchange_solution();
 
         for (auto& ss : m_solvers) ss->call_advance_timestep();
 
