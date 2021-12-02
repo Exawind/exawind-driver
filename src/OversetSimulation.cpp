@@ -26,7 +26,7 @@ void OversetSimulation::check_solver_types()
         std::any_of(m_solvers.begin(), m_solvers.end(), [](const auto& ss) {
             return ss->is_unstructured();
         });
-    MPI_Allreduce(flag, gflag, 2, MPI_CXX_BOOL, MPI_LOR, m_comm);
+    MPI_Allreduce(flag, gflag, 2, MPI_C_BOOL, MPI_LOR, m_comm);
     m_has_amr = gflag[0];
     m_has_unstructured = gflag[1];
 }
@@ -134,7 +134,7 @@ void OversetSimulation::run_timesteps(int nsteps)
 
         for (auto& ss : m_solvers) ss->call_pre_advance_stage2();
 
-        exchange_solution();
+        //exchange_solution();
 
         for (auto& ss : m_solvers) ss->call_advance_timestep();
 
