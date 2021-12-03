@@ -3,7 +3,9 @@
 #include "OversetSimulation.h"
 #include "MPIUtilities.h"
 #include "mpi.h"
+#ifdef EXAWIND_HAS_STD_FILESYSTEM
 #include <filesystem>
+#endif
 
 #include "yaml-cpp/yaml.h"
 #include "tioga.h"
@@ -80,9 +82,13 @@ int main(int argc, char** argv)
     const YAML::Node doc(YAML::LoadFile(inpfile));
     const YAML::Node node = doc["exawind"];
     const std::string amr_inp = node["amr_wind_inp"].as<std::string>();
+#ifdef EXAWIND_HAS_STD_FILESYSTEM
     std::filesystem::path fpath_amr_inp(amr_inp);
     const std::string amr_log =
         fpath_amr_inp.replace_extension(".log").string();
+#else
+    const std::string amr_log = "amr-wind.log";
+#endif
     std::ofstream out(amr_log);
 
     const auto nalu_inps = node["nalu_wind_inp"].as<std::vector<std::string>>();
