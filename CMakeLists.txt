@@ -12,10 +12,18 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 option(EXAWIND_TEST_WITH_FCOMPARE "Check AMR-Wind test plots against gold files" OFF)
 option(EXAWIND_SAVE_GOLDS "Provide a directory in which to save golds during testing" OFF)
 option(EXAWIND_ENABLE_CUDA "Enable CUDA" OFF)
+option(EXAWIND_ENABLE_ROCM "Enable HIP" OFF)
 
 if(EXAWIND_ENABLE_CUDA)
   enable_language(CUDA)
   find_package(CUDAToolkit REQUIRED)
+endif()
+
+if(EXAWIND_ENABLE_ROCM)
+  find_package(hip REQUIRED)
+  find_package(rocrand REQUIRED CONFIG)
+  find_package(rocprim REQUIRED CONFIG)
+  find_package(hiprand REQUIRED CONFIG)
 endif()
 
 set(CMAKE_PREFIX_PATH ${Trilinos_DIR} ${TIOGA_DIR}
