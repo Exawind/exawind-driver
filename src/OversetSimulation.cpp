@@ -58,13 +58,13 @@ void OversetSimulation::initialize()
 
     determine_overset_interval();
 
-    perform_overset_connectivity();
 
     for (auto& ss : m_solvers) {
         ss->call_init_epilog();
         ss->call_prepare_solver_prolog();
     }
 
+    perform_overset_connectivity();
     exchange_solution();
 
     for (auto& ss : m_solvers) ss->call_prepare_solver_epilog();
