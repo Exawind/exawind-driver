@@ -39,6 +39,13 @@ public:
         advance_timestep();
         m_timers.tock(name);
     };
+    void call_nonlinear_iteration(const int n)
+    {
+        const std::string name = "Solve nonlinear iteration";
+        m_timers.tick(name);
+        nonlinear_iteration(n);
+        m_timers.tock(name);
+    };
     void call_post_advance()
     {
         const std::string name = "Post";
@@ -105,6 +112,7 @@ protected:
     virtual void pre_advance_stage1() = 0;
     virtual void pre_advance_stage2() = 0;
     virtual void advance_timestep() = 0;
+    virtual void nonlinear_iteration(const int) = 0;
     virtual void post_advance() = 0;
     virtual void pre_overset_conn_work() = 0;
     virtual void post_overset_conn_work() = 0;

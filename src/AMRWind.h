@@ -39,6 +39,7 @@ protected:
     void pre_advance_stage1() override;
     void pre_advance_stage2() override;
     void advance_timestep() override;
+    void nonlinear_iteration(const int) override;
     void post_advance() override;
     void pre_overset_conn_work() override;
     void post_overset_conn_work() override;
