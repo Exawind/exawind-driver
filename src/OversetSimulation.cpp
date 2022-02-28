@@ -113,7 +113,7 @@ void OversetSimulation::exchange_solution()
     for (auto& ss : m_solvers) ss->call_update_solution();
 }
 
-void OversetSimulation::run_timesteps(int nsteps)
+void OversetSimulation::run_timesteps(int nl_its, int nsteps)
 {
 
     if (!m_initialized) {
@@ -141,7 +141,7 @@ void OversetSimulation::run_timesteps(int nsteps)
 
         for (auto& ss : m_solvers) ss->call_advance_timestep();
         exchange_solution();
-        for (auto& ss : m_solvers) ss->call_nonlinear_iteration(3);
+        for (auto& ss : m_solvers) ss->call_nonlinear_iteration(nl_its);
 
         for (auto& ss : m_solvers) ss->call_post_advance();
 

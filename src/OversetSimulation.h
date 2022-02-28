@@ -65,7 +65,7 @@ public:
     void exchange_solution();
 
     //! Run prescribed number of timesteps
-    void run_timesteps(int nsteps = 1);
+    void run_timesteps(int nl_its, int nsteps = 1);
 
     //! Print something
     void echo(const std::string& out) { m_printer.echo(out); }
