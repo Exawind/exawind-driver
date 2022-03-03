@@ -72,11 +72,11 @@ int main(int argc, char** argv)
 
     if (num_awind_ranks + num_nwind_ranks < psize) {
         if (prank == 0)
-            std::cout << "Warning: using fewer ranks than available ranks: MPI "
-                         "size = " +
-                             std::to_string(psize) + "; Num ranks used = " +
-                             std::to_string(num_awind_ranks + num_nwind_ranks)
-                      << std::endl;
+            throw std::runtime_error(
+                "Abort: using fewer ranks than available ranks: MPI "
+                "size = " +
+                std::to_string(psize) + "; Num ranks used = " +
+                std::to_string(num_awind_ranks + num_nwind_ranks));
     }
 
     const YAML::Node doc(YAML::LoadFile(inpfile));
