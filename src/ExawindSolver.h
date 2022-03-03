@@ -41,7 +41,7 @@ public:
     };
     void call_nonlinear_iteration(const int n)
     {
-        const std::string name = "Solve nonlinear iteration";
+        const std::string name = "SolveNonlinearIteration";
         m_timers.tick(name);
         nonlinear_iteration(n);
         m_timers.tock(name);
@@ -100,7 +100,7 @@ public:
     virtual int get_ncomps() { return 0; };
     //! Timer names
     const std::vector<std::string> m_names{
-        "Pre", "PreConn", "PostConn", "Register", "Update", "Solve", "Post"};
+      "Pre", "PreConn", "PostConn", "Register", "Update", "Solve", "Post", "SolveNonlinearIteration"};
     //! Timers
     Timers m_timers;
 
