@@ -7,16 +7,24 @@
 
 #include "Kokkos_Core.hpp"
 #include "tioga.h"
+#include "HypreNGP.h"
 
 namespace exawind {
 
-void NaluWind::initialize() { Kokkos::initialize(); }
+void NaluWind::initialize() {
+    Kokkos::initialize();
+    // Hypre initialization
+    nalu_hypre::hypre_initialize();
+}
 
 void NaluWind::finalize()
 {
-    if (Kokkos::is_initialized()) {
-        Kokkos::finalize();
-    }
+  // Hypre cleanup
+  nalu_hypre::hypre_finalize();
+
+  if (Kokkos::is_initialized()) {
+      Kokkos::finalize();
+  }
 }
 
 NaluWind::NaluWind(
