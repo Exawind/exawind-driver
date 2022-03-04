@@ -39,11 +39,11 @@ public:
         advance_timestep();
         m_timers.tock(name);
     };
-    void call_nonlinear_iteration(const int n)
+    void call_nonlinear_iterations(const int n)
     {
-        const std::string name = "SolveNonlinearIteration";
+        const std::string name = "SolveNonlinearIterations";
         m_timers.tick(name);
-        nonlinear_iteration(n);
+        nonlinear_iterations(n);
         m_timers.tock(name);
     };
     void call_post_advance()
@@ -100,7 +100,7 @@ public:
     virtual int get_ncomps() { return 0; };
     //! Timer names
     const std::vector<std::string> m_names{
-      "Pre", "PreConn", "PostConn", "Register", "Update", "Solve", "Post", "SolveNonlinearIteration"};
+      "Pre", "PreConn", "PostConn", "Register", "Update", "Solve", "Post", "SolveNonlinearIterations"};
     //! Timers
     Timers m_timers;
 
@@ -112,7 +112,7 @@ protected:
     virtual void pre_advance_stage1() = 0;
     virtual void pre_advance_stage2() = 0;
     virtual void advance_timestep() = 0;
-    virtual void nonlinear_iteration(const int) = 0;
+    virtual void nonlinear_iterations(const int) = 0;
     virtual void post_advance() = 0;
     virtual void pre_overset_conn_work() = 0;
     virtual void post_overset_conn_work() = 0;
