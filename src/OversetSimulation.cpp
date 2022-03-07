@@ -140,8 +140,11 @@ void OversetSimulation::run_timesteps(int nl_its, int nsteps)
         exchange_solution();
 
         for (auto& ss : m_solvers) ss->call_advance_timestep();
-        exchange_solution();
-        for (auto& ss : m_solvers) ss->call_nonlinear_iterations(nl_its);
+
+        if (nl_its > 0) {
+            exchange_solution();
+            for (auto& ss : m_solvers) ss->call_nonlinear_iterations(nl_its);
+        }
 
         for (auto& ss : m_solvers) ss->call_post_advance();
 

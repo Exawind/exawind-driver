@@ -78,7 +78,7 @@ void AMRWind::pre_advance_stage1()
 void AMRWind::pre_advance_stage2() { m_incflo.pre_advance_stage2(); }
 
 void AMRWind::advance_timestep() { m_incflo.advance(); }
-void AMRWind::nonlinear_iterations(const int) {}
+
 void AMRWind::post_advance() { m_incflo.post_advance_work(); }
 
 void AMRWind::pre_overset_conn_work() { m_tgiface.pre_overset_conn_work(); }
