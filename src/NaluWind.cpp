@@ -91,7 +91,7 @@ void NaluWind::advance_timestep()
         realm->advance_time_step();
 }
 
-void NaluWind::nonlinear_iterations(const int n)
+void NaluWind::additional_picard_iterations(const int n)
 {
     for (auto* realm : m_sim.timeIntegrator_->realmVec_)
         realm->nonlinear_iterations(n);

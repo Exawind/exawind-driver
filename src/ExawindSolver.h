@@ -39,11 +39,11 @@ public:
         advance_timestep();
         m_timers.tock(name);
     };
-    void call_nonlinear_iterations(const int n)
+    void call_additional_picard_iterations(const int n)
     {
         const std::string name = "SolveNonlinearIterations";
         m_timers.tick(name);
-        nonlinear_iterations(n);
+        additional_picard_iterations(n);
         m_timers.tock(name);
     };
     void call_post_advance()
@@ -112,7 +112,7 @@ protected:
     virtual void pre_advance_stage1() = 0;
     virtual void pre_advance_stage2() = 0;
     virtual void advance_timestep() = 0;
-    virtual void nonlinear_iterations(const int) = 0;
+    virtual void additional_picard_iterations(const int) = 0;
     virtual void post_advance() = 0;
     virtual void pre_overset_conn_work() = 0;
     virtual void post_overset_conn_work() = 0;
