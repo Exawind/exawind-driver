@@ -102,7 +102,12 @@ void OversetSimulation::exchange_solution()
     m_timers.tick("TGConn");
     if (m_has_amr) {
         m_tg.dataUpdate_AMR();
-    } 
+    } else {
+        const int row = 0;
+        // TODO: need a way to count nodal variable in nalu-wind, right now hard-coded to 4
+        m_tg.dataUpdate(4,row);
+    }
+ 
     m_timers.tock("TGConn");
 
     for (auto& ss : m_solvers) ss->call_update_solution();

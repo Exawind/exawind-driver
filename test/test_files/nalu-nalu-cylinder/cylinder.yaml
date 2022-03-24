@@ -2,9 +2,9 @@
 
 exawind:
   nalu_wind_inp:
-    - rotcyl-back.yaml
-    - rotcyl-cyl.yaml
-  num_timesteps: 100
+    - back.yaml
+    - cyl.yaml
+  num_timesteps: 10
   additional_picard_iterations: 2
 
   # Variables for overset exchange

@@ -73,10 +73,7 @@ realms:
     - wall_boundary_condition: bc_5
       target_name: wall
       wall_user_data:
-        user_function_name:
-         velocity: wind_energy
-        user_function_string_parameters:
-         velocity: [interior]
+         velocity: [0.0, 0.0, 0.0]
 
     - symmetry_boundary_condition: bc_6
       target_name: side11
@@ -98,14 +95,6 @@ realms:
             mesh_parts: [ Unspecified-2-HEX ]
             wall_parts: [ wall ]
             ovset_parts: [ overset1 ]
-
-    mesh_motion:
-      - name: interior
-        mesh_parts: [ Unspecified-2-HEX ]
-        motion:
-         - type: rotation
-           omega: 6.00
-           axis: [0.0, 1.0, 0.0]
 
     solution_options:
       name: myOptions
