@@ -72,7 +72,7 @@ int main(int argc, char** argv)
 
     const YAML::Node doc(YAML::LoadFile(inpfile));
     const YAML::Node node = doc["exawind"];
-    std::string amr_inp = "dummy";// = node["amr_wind_inp"].as<std::string>();
+    std::string amr_inp = "dummy";
     bool use_amr_wind = false;
     if (node["amr_wind_inp"]) {
         amr_inp = node["amr_wind_inp"].as<std::string>();
@@ -151,7 +151,6 @@ int main(int argc, char** argv)
     {
         const auto nalu_vars = node["nalu_vars"].as<std::vector<std::string>>();
         const int num_timesteps = node["num_timesteps"].as<int>();
-        const int additional_picard_its = node["additional_picard_iterations"].as<int>();
         for (int i = 0; i < num_nwsolvers; i++) {
             if (nalu_comms.at(i) != MPI_COMM_NULL)
                 sim.register_solver<exawind::NaluWind>(
@@ -170,7 +169,7 @@ int main(int argc, char** argv)
         sim.echo("Initializing overset simulation");
         sim.initialize();
         sim.echo("Initialization successful");
-        sim.run_timesteps(additional_picard_its, num_timesteps);
+        sim.run_timesteps(num_timesteps);
     }
 
     if (amr_comm != MPI_COMM_NULL) exawind::AMRWind::finalize();
