@@ -1,0 +1,13 @@
+# Example input file
+
+exawind:
+  nalu_wind_inp:
+    - rotcyl-back.yaml
+    - rotcyl-cyl.yaml
+  num_timesteps: 100
+  additional_picard_iterations: 2
+
+  # Variables for overset exchange
+  nalu_vars:
+    - velocity
+    - pressure

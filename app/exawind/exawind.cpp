@@ -70,18 +70,15 @@ int main(int argc, char** argv)
         }
     }
 
-    if (num_awind_ranks + num_nwind_ranks < psize) {
-        if (prank == 0)
-            throw std::runtime_error(
-                "Abort: using fewer ranks than available ranks: MPI "
-                "size = " +
-                std::to_string(psize) + "; Num ranks used = " +
-                std::to_string(num_awind_ranks + num_nwind_ranks));
-    }
-
     const YAML::Node doc(YAML::LoadFile(inpfile));
     const YAML::Node node = doc["exawind"];
-    const std::string amr_inp = node["amr_wind_inp"].as<std::string>();
+    std::string amr_inp = "dummy";// = node["amr_wind_inp"].as<std::string>();
+    bool use_amr_wind = false;
+    if (node["amr_wind_inp"]) {
+        amr_inp = node["amr_wind_inp"].as<std::string>();
+        use_amr_wind = true;
+    }
+
 #ifdef EXAWIND_HAS_STD_FILESYSTEM
     std::filesystem::path fpath_amr_inp(amr_inp);
     const std::string amr_log =
@@ -89,7 +86,11 @@ int main(int argc, char** argv)
 #else
     const std::string amr_log = "amr-wind.log";
 #endif
-    std::ofstream out(amr_log);
+    std::ofstream out;
+
+    if (use_amr_wind) {
+        out.open(amr_log);
+    }
 
     const auto nalu_inps = node["nalu_wind_inp"].as<std::vector<std::string>>();
     const int num_nwsolvers = nalu_inps.size();
@@ -107,8 +108,21 @@ int main(int argc, char** argv)
             num_nw_solver_ranks.end(), ranks_per_nw_solver + 1);
     }
 
-    MPI_Comm amr_comm =
-        exawind::create_subcomm(MPI_COMM_WORLD, num_awind_ranks, 0);
+    if (!use_amr_wind) {
+        num_awind_ranks = 0;
+    }
+    
+    if (num_awind_ranks + num_nwind_ranks < psize) {
+        if (prank == 0)
+            throw std::runtime_error(
+                "Abort: using fewer ranks than available ranks: MPI "
+                "size = " +
+                std::to_string(psize) + "; Num ranks used = " +
+                std::to_string(num_awind_ranks + num_nwind_ranks));
+    }
+
+    MPI_Comm amr_comm = use_amr_wind ? exawind::create_subcomm(MPI_COMM_WORLD, num_awind_ranks, 0) : MPI_COMM_NULL;
+
     std::vector<MPI_Comm> nalu_comms;
     int start = psize - num_nwind_ranks;
     for (const auto& nr : num_nw_solver_ranks) {
@@ -118,11 +132,12 @@ int main(int argc, char** argv)
     }
 
     exawind::OversetSimulation sim(MPI_COMM_WORLD);
-    sim.echo(
-        "Initializing AMR-Wind on " + std::to_string(num_awind_ranks) +
-        " MPI ranks");
-    if (amr_comm != MPI_COMM_NULL)
+    if (amr_comm != MPI_COMM_NULL) {
+        sim.echo(
+            "Initializing AMR-Wind on " + std::to_string(num_awind_ranks) +
+            " MPI ranks");
         exawind::AMRWind::initialize(amr_comm, amr_inp, out);
+    }
     sim.echo(
         "Initializing " + std::to_string(num_nwsolvers) +
         " Nalu-Wind solvers, equally partitioned on a total of " +
@@ -135,25 +150,27 @@ int main(int argc, char** argv)
 
     {
         const auto nalu_vars = node["nalu_vars"].as<std::vector<std::string>>();
-        const auto amr_cvars =
-            node["amr_cell_vars"].as<std::vector<std::string>>();
-        const auto amr_nvars =
-            node["amr_node_vars"].as<std::vector<std::string>>();
         const int num_timesteps = node["num_timesteps"].as<int>();
-
+        const int additional_picard_its = node["additional_picard_iterations"].as<int>();
         for (int i = 0; i < num_nwsolvers; i++) {
             if (nalu_comms.at(i) != MPI_COMM_NULL)
                 sim.register_solver<exawind::NaluWind>(
                     nalu_comms.at(i), nalu_inps.at(i), nalu_vars);
         }
-        if (amr_comm != MPI_COMM_NULL)
+
+        if (amr_comm != MPI_COMM_NULL) {
+            const auto amr_cvars =
+                node["amr_cell_vars"].as<std::vector<std::string>>();
+            const auto amr_nvars =
+                node["amr_node_vars"].as<std::vector<std::string>>();
+    
             sim.register_solver<exawind::AMRWind>(amr_cvars, amr_nvars);
+        }
 
         sim.echo("Initializing overset simulation");
         sim.initialize();
         sim.echo("Initialization successful");
-
-        sim.run_timesteps(num_timesteps);
+        sim.run_timesteps(additional_picard_its, num_timesteps);
     }
 
     if (amr_comm != MPI_COMM_NULL) exawind::AMRWind::finalize();
