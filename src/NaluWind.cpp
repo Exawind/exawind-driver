@@ -105,7 +105,7 @@ void NaluWind::post_overset_conn_work()
 
 void NaluWind::register_solution()
 {
-    m_sim.timeIntegrator_->overset_->register_solution(m_fnames);
+    m_ncomps = m_sim.timeIntegrator_->overset_->register_solution(m_fnames);
 }
 
 void NaluWind::update_solution()
