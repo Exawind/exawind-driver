@@ -108,7 +108,6 @@ void OversetSimulation::exchange_solution()
         const int ncomps = m_solvers[0]->get_ncomps();
         m_tg.dataUpdate(ncomps, row_major);
     }
- 
     m_timers.tock("TGConn");
 
     for (auto& ss : m_solvers) ss->call_update_solution();
