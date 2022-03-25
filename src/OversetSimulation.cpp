@@ -114,7 +114,7 @@ void OversetSimulation::exchange_solution()
     for (auto& ss : m_solvers) ss->call_update_solution();
 }
 
-void OversetSimulation::run_timesteps(const int nsteps)
+void OversetSimulation::run_timesteps(int nsteps)
 {
 
     if (!m_initialized) {
