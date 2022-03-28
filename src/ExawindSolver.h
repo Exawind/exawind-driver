@@ -90,6 +90,7 @@ public:
     virtual int time_index() = 0;
     virtual std::string identifier() { return "ExawindSolver"; }
     virtual MPI_Comm comm() = 0;
+    virtual int get_ncomps() { return 0; };
     //! Timer names
     const std::vector<std::string> m_names{
         "Pre", "PreConn", "PostConn", "Register", "Update", "Solve", "Post"};

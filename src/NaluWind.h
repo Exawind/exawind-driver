@@ -21,6 +21,7 @@ private:
     YAML::Node m_doc;
     sierra::nalu::Simulation m_sim;
     std::vector<std::string> m_fnames;
+    int m_ncomps;
 
 public:
     static void initialize();
@@ -36,6 +37,7 @@ public:
     int time_index() override;
     std::string identifier() override { return "Nalu-Wind"; }
     MPI_Comm comm() override { return m_comm; }
+    int get_ncomps() { return m_ncomps; }
 
 protected:
     void init_prolog(bool multi_solver_mode = true) override;

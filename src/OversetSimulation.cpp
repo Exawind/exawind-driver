@@ -103,7 +103,10 @@ void OversetSimulation::exchange_solution()
     if (m_has_amr) {
         m_tg.dataUpdate_AMR();
     } else {
-        throw std::runtime_error("Invalid overset exchange");
+        const int row_major = 0;
+        // assuming this pathway is nalu-wind only and all instances have same number of field components
+        const int ncomps = m_solvers[0]->get_ncomps();
+        m_tg.dataUpdate(ncomps, row_major);
     }
     m_timers.tock("TGConn");
 
