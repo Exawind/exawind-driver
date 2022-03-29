@@ -41,7 +41,7 @@ public:
     };
     void call_additional_picard_iterations(const int n)
     {
-        const std::string name = "SolveNonlinearIterations";
+        const std::string name = "AdditionalPicardIterations";
         m_timers.tick(name);
         additional_picard_iterations(n);
         m_timers.tock(name);
@@ -100,7 +100,7 @@ public:
     virtual int get_ncomps() { return 0; };
     //! Timer names
     const std::vector<std::string> m_names{
-      "Pre", "PreConn", "PostConn", "Register", "Update", "Solve", "Post", "SolveNonlinearIterations"};
+      "Pre", "PreConn", "PostConn", "Register", "Update", "Solve", "Post", "AdditionalPicardIterations"};
     //! Timers
     Timers m_timers;
 
