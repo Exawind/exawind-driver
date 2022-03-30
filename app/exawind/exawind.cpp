@@ -88,10 +88,6 @@ int main(int argc, char** argv)
 #endif
     std::ofstream out;
 
-    if (use_amr_wind) {
-        out.open(amr_log);
-    }
-
     const auto nalu_inps = node["nalu_wind_inp"].as<std::vector<std::string>>();
     const int num_nwsolvers = nalu_inps.size();
     if (num_nwind_ranks < num_nwsolvers) {
@@ -132,10 +128,11 @@ int main(int argc, char** argv)
     }
 
     exawind::OversetSimulation sim(MPI_COMM_WORLD);
-    if (use_amr_wind) {
+    if (amr_comm != MPI_COMM_NULL) {
         sim.echo(
             "Initializing AMR-Wind on " + std::to_string(num_awind_ranks) +
             " MPI ranks");
+        out.open(amr_log);
         exawind::AMRWind::initialize(amr_comm, amr_inp, out);
     }
     sim.echo(
@@ -157,7 +154,7 @@ int main(int argc, char** argv)
                     nalu_comms.at(i), nalu_inps.at(i), nalu_vars);
         }
 
-        if (use_amr_wind) {
+        if (amr_comm != MPI_COMM_NULL) {
             const auto amr_cvars =
                 node["amr_cell_vars"].as<std::vector<std::string>>();
             const auto amr_nvars =
@@ -172,7 +169,7 @@ int main(int argc, char** argv)
         sim.run_timesteps(num_timesteps);
     }
 
-    if (use_amr_wind) {
+    if (amr_comm != MPI_COMM_NULL) {
         out.close();
         exawind::AMRWind::finalize();
     }
