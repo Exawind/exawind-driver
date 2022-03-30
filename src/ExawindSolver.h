@@ -28,7 +28,7 @@ public:
     void call_pre_advance_stage2()
     {
         const std::string name = "Pre";
-        m_timers.tick(name, true);
+        m_timers.tick(name);
         pre_advance_stage2();
         m_timers.tock(name);
     };

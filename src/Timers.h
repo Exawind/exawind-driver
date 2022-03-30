@@ -21,7 +21,7 @@ class Timer
     TimeT _increment;
 
 public:
-    void tick(const bool incremental = false)
+    void tick(const bool incremental = true)
     {
         _start = ClockT::now();
         if ((incremental) && (_end != TimePt{})) {
