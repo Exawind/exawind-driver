@@ -88,10 +88,6 @@ int main(int argc, char** argv)
 #endif
     std::ofstream out;
 
-    if (use_amr_wind) {
-        out.open(amr_log);
-    }
-
     const auto nalu_inps = node["nalu_wind_inp"].as<std::vector<std::string>>();
     const int num_nwsolvers = nalu_inps.size();
     if (num_nwind_ranks < num_nwsolvers) {
@@ -136,6 +132,7 @@ int main(int argc, char** argv)
         sim.echo(
             "Initializing AMR-Wind on " + std::to_string(num_awind_ranks) +
             " MPI ranks");
+        out.open(amr_log);
         exawind::AMRWind::initialize(amr_comm, amr_inp, out);
     }
     sim.echo(
