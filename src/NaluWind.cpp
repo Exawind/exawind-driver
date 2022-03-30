@@ -15,6 +15,7 @@ void NaluWind::initialize() {
     Kokkos::initialize();
     // Hypre initialization
     nalu_hypre::hypre_initialize();
+    nalu_hypre::hypre_set_params();
 }
 
 void NaluWind::finalize()
