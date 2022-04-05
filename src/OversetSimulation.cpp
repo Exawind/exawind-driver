@@ -113,7 +113,7 @@ void OversetSimulation::exchange_solution()
     for (auto& ss : m_solvers) ss->call_update_solution();
 }
 
-void OversetSimulation::run_timesteps(int nsteps)
+void OversetSimulation::run_timesteps(const int add_pic_its, const int nsteps)
 {
 
     if (!m_initialized) {
@@ -140,6 +140,12 @@ void OversetSimulation::run_timesteps(int nsteps)
         exchange_solution();
 
         for (auto& ss : m_solvers) ss->call_advance_timestep();
+
+        if (add_pic_its > 0) {
+            exchange_solution();
+            for (auto& ss : m_solvers)
+                ss->call_additional_picard_iterations(add_pic_its);
+        }
 
         for (auto& ss : m_solvers) ss->call_post_advance();
 

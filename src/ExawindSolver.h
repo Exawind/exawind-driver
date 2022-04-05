@@ -28,7 +28,7 @@ public:
     void call_pre_advance_stage2()
     {
         const std::string name = "Pre";
-        m_timers.tick(name, true);
+        m_timers.tick(name);
         pre_advance_stage2();
         m_timers.tock(name);
     };
@@ -37,6 +37,13 @@ public:
         const std::string name = "Solve";
         m_timers.tick(name);
         advance_timestep();
+        m_timers.tock(name);
+    };
+    void call_additional_picard_iterations(const int n)
+    {
+        const std::string name = "AdditionalPicardIterations";
+        m_timers.tick(name);
+        additional_picard_iterations(n);
         m_timers.tock(name);
     };
     void call_post_advance()
@@ -93,7 +100,7 @@ public:
     virtual int get_ncomps() { return 0; };
     //! Timer names
     const std::vector<std::string> m_names{
-        "Pre", "PreConn", "PostConn", "Register", "Update", "Solve", "Post"};
+      "Pre", "PreConn", "PostConn", "Register", "Update", "Solve", "Post", "AdditionalPicardIterations"};
     //! Timers
     Timers m_timers;
 
@@ -105,6 +112,7 @@ protected:
     virtual void pre_advance_stage1() = 0;
     virtual void pre_advance_stage2() = 0;
     virtual void advance_timestep() = 0;
+    virtual void additional_picard_iterations(const int) = 0;
     virtual void post_advance() = 0;
     virtual void pre_overset_conn_work() = 0;
     virtual void post_overset_conn_work() = 0;
