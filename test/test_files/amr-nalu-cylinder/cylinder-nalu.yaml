@@ -27,7 +27,7 @@ linear_solvers:
 
 realms:
   - name: cylinder
-    mesh: ../../meshes/cylinder3d.g
+    mesh: meshes/cylinder3d.g
     use_edges: yes
     automatic_decomposition_type: rcb
 
