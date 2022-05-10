@@ -57,3 +57,5 @@ endfunction(add_test_r)
 # Regression tests
 #=============================================================================
 add_test_r(sphere)
+add_test_r(nalu-nalu-cylinder)
+add_test_r(amr-nalu-cylinder)
