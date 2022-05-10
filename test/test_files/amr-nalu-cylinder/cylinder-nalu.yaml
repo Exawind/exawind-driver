@@ -27,7 +27,7 @@ linear_solvers:
 
 realms:
   - name: cylinder
-    mesh: cylinder3d.g
+    mesh: ../../meshes/cylinder3d.g
     use_edges: yes
     automatic_decomposition_type: rcb
 
@@ -137,7 +137,7 @@ realms:
         target_name:
         - wall
     output:
-      output_data_base_name: out/amr_cyl.e
+      output_data_base_name: out/cylinder.e
       output_frequency: 10
       output_node_set: no
       output_variables:
