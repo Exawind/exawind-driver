@@ -107,7 +107,7 @@ int main(int argc, char** argv)
     if (!use_amr_wind) {
         num_awind_ranks = 0;
     }
-    
+
     if (num_awind_ranks + num_nwind_ranks < psize) {
         if (prank == 0)
             throw std::runtime_error(
@@ -117,7 +117,10 @@ int main(int argc, char** argv)
                 std::to_string(num_awind_ranks + num_nwind_ranks));
     }
 
-    MPI_Comm amr_comm = use_amr_wind ? exawind::create_subcomm(MPI_COMM_WORLD, num_awind_ranks, 0) : MPI_COMM_NULL;
+    MPI_Comm amr_comm =
+        use_amr_wind
+            ? exawind::create_subcomm(MPI_COMM_WORLD, num_awind_ranks, 0)
+            : MPI_COMM_NULL;
 
     std::vector<MPI_Comm> nalu_comms;
     int start = psize - num_nwind_ranks;
@@ -148,8 +151,10 @@ int main(int argc, char** argv)
     {
         const auto nalu_vars = node["nalu_vars"].as<std::vector<std::string>>();
         const int num_timesteps = node["num_timesteps"].as<int>();
-        const int additional_picard_its = node["additional_picard_iterations"] ?
-                node["additional_picard_iterations"].as<int>() : 0;
+        const int additional_picard_its =
+            node["additional_picard_iterations"]
+                ? node["additional_picard_iterations"].as<int>()
+                : 0;
         for (int i = 0; i < num_nwsolvers; i++) {
             if (nalu_comms.at(i) != MPI_COMM_NULL)
                 sim.register_solver<exawind::NaluWind>(
@@ -161,7 +166,7 @@ int main(int argc, char** argv)
                 node["amr_cell_vars"].as<std::vector<std::string>>();
             const auto amr_nvars =
                 node["amr_node_vars"].as<std::vector<std::string>>();
-    
+
             sim.register_solver<exawind::AMRWind>(amr_cvars, amr_nvars);
         }
 

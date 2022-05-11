@@ -11,21 +11,22 @@
 
 namespace exawind {
 
-void NaluWind::initialize() {
-    Kokkos::initialize();
-    // Hypre initialization
-    nalu_hypre::hypre_initialize();
+void NaluWind::initialize()
+{
+    Kokkos::initialize()
+        // Hypre initialization
+        nalu_hypre::hypre_initialize();
     nalu_hypre::hypre_set_params();
 }
 
 void NaluWind::finalize()
 {
-  // Hypre cleanup
-  nalu_hypre::hypre_finalize();
+    // Hypre cleanup
+    nalu_hypre::hypre_finalize();
 
-  if (Kokkos::is_initialized()) {
-      Kokkos::finalize();
-  }
+    if (Kokkos::is_initialized()) {
+        Kokkos::finalize();
+    }
 }
 
 NaluWind::NaluWind(

@@ -100,7 +100,8 @@ public:
     virtual int get_ncomps() { return 0; };
     //! Timer names
     const std::vector<std::string> m_names{
-      "Pre", "PreConn", "PostConn", "Register", "Update", "Solve", "Post", "AdditionalPicardIterations"};
+        "Pre",    "PreConn", "PostConn", "Register",
+        "Update", "Solve",   "Post",     "AdditionalPicardIterations"};
     //! Timers
     Timers m_timers;
 
