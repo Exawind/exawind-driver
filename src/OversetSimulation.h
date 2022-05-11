@@ -72,7 +72,6 @@ public:
 
     //! track memory usage and print to file
     long mem_usage_all(const int step);
-
 };
 
 } // namespace exawind

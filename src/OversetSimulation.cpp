@@ -58,7 +58,6 @@ void OversetSimulation::initialize()
 
     determine_overset_interval();
 
-
     for (auto& ss : m_solvers) {
         ss->call_init_epilog();
         ss->call_prepare_solver_prolog();
@@ -104,7 +103,8 @@ void OversetSimulation::exchange_solution()
         m_tg.dataUpdate_AMR();
     } else {
         const int row_major = 0;
-        // assuming this pathway is nalu-wind only and all instances have same number of field components
+        // assuming this pathway is nalu-wind only and all instances have same
+        // number of field components
         const int ncomps = m_solvers[0]->get_ncomps();
         m_tg.dataUpdate(ncomps, row_major);
     }
