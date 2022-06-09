@@ -37,7 +37,7 @@ public:
     int time_index() override;
     std::string identifier() override { return "Nalu-Wind"; }
     MPI_Comm comm() override { return m_comm; }
-    int get_ncomps() { return m_ncomps; }
+    int get_ncomps() override { return m_ncomps; }
 
 protected:
     void init_prolog(bool multi_solver_mode = true) override;
@@ -46,8 +46,7 @@ protected:
     void prepare_solver_epilog() override;
     void pre_advance_stage1() override;
     void pre_advance_stage2() override;
-    void advance_timestep() override;
-    void additional_picard_iterations(const int) override;
+    void advance_timestep(bool advance_step) override;
     void post_advance() override;
     void pre_overset_conn_work() override;
     void post_overset_conn_work() override;

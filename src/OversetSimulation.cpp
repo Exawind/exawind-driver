@@ -96,7 +96,6 @@ void OversetSimulation::perform_overset_connectivity()
 
 void OversetSimulation::exchange_solution()
 {
-
     for (auto& ss : m_solvers) ss->call_register_solution();
 
     m_timers.tick("TGConn");
@@ -113,9 +112,8 @@ void OversetSimulation::exchange_solution()
     for (auto& ss : m_solvers) ss->call_update_solution();
 }
 
-void OversetSimulation::run_timesteps(const int add_pic_its, const int nsteps)
+void OversetSimulation::run_timesteps(const int nsteps, const int num_coup)
 {
-
     if (!m_initialized) {
         throw std::runtime_error("OversetSimulation has not been initialized");
     }
@@ -137,14 +135,9 @@ void OversetSimulation::run_timesteps(const int add_pic_its, const int nsteps)
 
         for (auto& ss : m_solvers) ss->call_pre_advance_stage2();
 
-        exchange_solution();
-
-        for (auto& ss : m_solvers) ss->call_advance_timestep();
-
-        if (add_pic_its > 0) {
+        for (int ol = 0; ol < num_coup; ++ol) {
             exchange_solution();
-            for (auto& ss : m_solvers)
-                ss->call_additional_picard_iterations(add_pic_its);
+            for (auto& ss : m_solvers) ss->call_advance_timestep(ol == 0);
         }
 
         for (auto& ss : m_solvers) ss->call_post_advance();

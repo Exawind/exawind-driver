@@ -86,16 +86,16 @@ void NaluWind::pre_advance_stage2()
     m_sim.timeIntegrator_->pre_realm_advance_stage2();
 }
 
-void NaluWind::advance_timestep()
+void NaluWind::advance_timestep(bool advance_step)
 {
-    for (auto* realm : m_sim.timeIntegrator_->realmVec_)
-        realm->advance_time_step();
-}
-
-void NaluWind::additional_picard_iterations(const int n)
-{
-    for (auto* realm : m_sim.timeIntegrator_->realmVec_)
-        realm->nonlinear_iterations(n);
+    if(advance_step) {
+        for (auto* realm : m_sim.timeIntegrator_->realmVec_)
+            realm->advance_time_step();
+    }
+    else {
+        for (auto* realm : m_sim.timeIntegrator_->realmVec_)
+            realm->nonlinear_iterations();
+    }
 }
 
 void NaluWind::post_advance() { m_sim.timeIntegrator_->post_realm_advance(); }
