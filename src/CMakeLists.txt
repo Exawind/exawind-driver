@@ -22,3 +22,7 @@ target_link_libraries(${EXAWIND_LIB_NAME} PUBLIC
   AMR-Wind::buildInfoamrwind_obj
   AMReX::amrex
   Nalu-Wind::nalu)
+
+if(AMReX_ASCENT)
+  target_link_libraries(${EXAWIND_LIB_NAME} PUBLIC OpenMP::OpenMP_CXX)
+endif()
