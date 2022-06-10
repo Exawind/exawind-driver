@@ -40,9 +40,6 @@ find_package(Filesystem)
 if(NALU_USES_OPENFAST)
   find_package(OpenFAST REQUIRED)
 endif()
-if(AMReX_ASCENT)
-  find_package(OpenMP REQUIRED)
-endif()
 
 # General information about machine, compiler, and build type
 message(STATUS "Exawind information:")
