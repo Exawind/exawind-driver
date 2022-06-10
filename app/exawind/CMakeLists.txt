@@ -12,3 +12,7 @@ if(CXX_FILESYSTEM_HAVE_FS)
   target_link_libraries(${EXAWIND_EXE_NAME} PRIVATE
     std::filesystem)
 endif()
+
+if(AMReX_ASCENT)
+  target_link_libraries(${EXAWIND_EXE_NAME} PRIVATE OpenMP::OpenMP_CXX)
+endif()
