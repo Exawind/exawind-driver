@@ -41,7 +41,11 @@ public:
     };
     void call_additional_picard_iterations(const int n)
     {
-        const std::string name = "AdditionalPicardIterations";
+        std::string name = "AdditionalPicardIterations";
+        if (std::find(m_names.begin(), m_names.end(), name) == m_names.end()) {
+            m_timers.addTimer(name);
+            m_names.push_back(name);
+        }
         m_timers.tick(name);
         additional_picard_iterations(n);
         m_timers.tock(name);
@@ -99,9 +103,8 @@ public:
     virtual MPI_Comm comm() = 0;
     virtual int get_ncomps() { return 0; };
     //! Timer names
-    const std::vector<std::string> m_names{
-        "Pre",    "PreConn", "PostConn", "Register",
-        "Update", "Solve",   "Post",     "AdditionalPicardIterations"};
+    std::vector<std::string> m_names{
+        "Pre", "PreConn", "PostConn", "Register", "Update", "Solve", "Post"};
     //! Timers
     Timers m_timers;
 
