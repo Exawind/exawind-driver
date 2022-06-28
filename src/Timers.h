@@ -58,6 +58,13 @@ struct Timers
         }
     };
 
+    void addTimer(std::string name)
+    {
+        m_names.push_back(name);
+        Timer clock;
+        m_timers.push_back(clock);
+    }
+
     const std::vector<double> counts()
     {
         std::vector<double> counts;
