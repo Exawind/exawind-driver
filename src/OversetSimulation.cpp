@@ -83,12 +83,12 @@ void OversetSimulation::perform_overset_connectivity()
 {
     for (auto& ss : m_solvers) ss->call_pre_overset_conn_work();
 
-    m_timers.tick("TGConn");
+    m_timers.tick("Tioga");
     if (m_has_amr) m_tg.preprocess_amr_data();
     m_tg.profile();
     m_tg.performConnectivity();
     if (m_has_amr) m_tg.performConnectivityAMR();
-    m_timers.tock("TGConn");
+    m_timers.tock("Tioga");
 
     for (auto& ss : m_solvers) ss->call_post_overset_conn_work();
 }
@@ -98,7 +98,7 @@ void OversetSimulation::exchange_solution()
 
     for (auto& ss : m_solvers) ss->call_register_solution();
 
-    m_timers.tick("TGConn");
+    m_timers.tick("Tioga");
     if (m_has_amr) {
         m_tg.dataUpdate_AMR();
     } else {
@@ -108,7 +108,7 @@ void OversetSimulation::exchange_solution()
         const int ncomps = m_solvers[0]->get_ncomps();
         m_tg.dataUpdate(ncomps, row_major);
     }
-    m_timers.tock("TGConn");
+    m_timers.tock("Tioga");
 
     for (auto& ss : m_solvers) ss->call_update_solution();
 }
@@ -127,9 +127,11 @@ void OversetSimulation::run_timesteps(const int add_pic_its, const int nsteps)
         std::to_string(tstart));
 
     for (int nt = tstart; nt < tend; ++nt) {
+        using ClockT = std::chrono::steady_clock;
+        using TimePt = std::chrono::time_point<ClockT>;
+        using TimeT = std::chrono::milliseconds;
 
-        mem_usage_all(nt);
-        for (auto& ss : m_solvers) ss->mem_usage();
+        TimePt step_start_time = ClockT::now();
 
         for (auto& ss : m_solvers) ss->call_pre_advance_stage1();
 
@@ -151,10 +153,18 @@ void OversetSimulation::run_timesteps(const int add_pic_its, const int nsteps)
 
         MPI_Barrier(m_comm);
         const auto timings = m_timers.get_timings(m_comm, m_printer.io_rank());
-        m_printer.echo(
-            "OversetSimulation WCTime at step: " + std::to_string(nt) + " " +
-            timings);
+        m_printer.echo("\nStep: " + std::to_string(nt) + "\n" + timings);
         for (auto& ss : m_solvers) ss->echo_timers(nt);
+
+        TimePt step_end_time = ClockT::now();
+        TimeT step_total_time =
+            std::chrono::duration_cast<TimeT>(step_end_time - step_start_time);
+        m_printer.echo(
+            "Total: " + std::to_string(step_total_time.count() / 1000.0) +
+            "\n");
+
+        mem_usage_all(nt);
+        for (auto& ss : m_solvers) ss->mem_usage();
     }
 
     m_last_timestep = tend;

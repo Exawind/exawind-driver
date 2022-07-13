@@ -40,7 +40,7 @@ private:
     //! Parallel printer utility
     ParallelPrinter m_printer;
     //! Timer names
-    const std::vector<std::string> m_names{"TGConn"};
+    const std::vector<std::string> m_names{"Tioga"};
     //! Timers
     Timers m_timers;
 
