@@ -15,6 +15,8 @@ OversetSimulation::OversetSimulation(MPI_Comm comm)
     m_tg.setCommunicator(MPI_COMM_WORLD, prank, psize);
 }
 
+OversetSimulation::~OversetSimulation() = default;
+
 void OversetSimulation::check_solver_types()
 {
     bool flag[2] = {false, false};

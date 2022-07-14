@@ -20,10 +20,11 @@ public:
     static void
     initialize(MPI_Comm comm, const std::string& inpfile, std::ofstream& out);
     static void finalize();
-    AMRWind(
+    explicit AMRWind(
         const std::vector<std::string>&,
         const std::vector<std::string>&,
         TIOGA::tioga&);
+    ~AMRWind();
     bool is_unstructured() override { return false; }
     bool is_amr() override { return true; }
     int overset_update_interval() override;
