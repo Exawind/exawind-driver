@@ -1,5 +1,6 @@
 #include "OversetSimulation.h"
 #include "MemoryUsage.h"
+#include "Timers.h"
 #include <algorithm>
 #include <fstream>
 
@@ -127,11 +128,9 @@ void OversetSimulation::run_timesteps(const int add_pic_its, const int nsteps)
         std::to_string(tstart));
 
     for (int nt = tstart; nt < tend; ++nt) {
-        using ClockT = std::chrono::steady_clock;
-        using TimePt = std::chrono::time_point<ClockT>;
-        using TimeT = std::chrono::milliseconds;
-
-        TimePt step_start_time = ClockT::now();
+        std::vector<std::string> timer_names{"Exawind"};
+        Timers total_time(timer_names);
+        total_time.tick("Exawind");
 
         for (auto& ss : m_solvers) ss->call_pre_advance_stage1();
 
@@ -152,16 +151,18 @@ void OversetSimulation::run_timesteps(const int add_pic_its, const int nsteps)
         for (auto& ss : m_solvers) ss->call_post_advance();
 
         MPI_Barrier(m_comm);
-        const auto timings = m_timers.get_timings(m_comm, m_printer.io_rank());
-        m_printer.echo("\nStep: " + std::to_string(nt) + "\n" + timings);
-        for (auto& ss : m_solvers) ss->echo_timers(nt);
 
-        TimePt step_end_time = ClockT::now();
-        TimeT step_total_time =
-            std::chrono::duration_cast<TimeT>(step_end_time - step_start_time);
+        total_time.tock("Exawind");
+
+        const auto tioga_timing =
+            m_timers.get_timings(m_comm, m_printer.io_rank());
+        const auto total_timing =
+            total_time.get_timings(m_comm, m_printer.io_rank());
+
         m_printer.echo(
-            "Total: " + std::to_string(step_total_time.count() / 1000.0) +
-            "\n");
+            "\nExawind step: " + std::to_string(nt) + "\n" + total_timing);
+        m_printer.echo(tioga_timing);
+        for (auto& ss : m_solvers) ss->echo_timers(nt);
 
         mem_usage_all(nt);
         for (auto& ss : m_solvers) ss->mem_usage();
