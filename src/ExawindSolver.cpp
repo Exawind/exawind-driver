@@ -18,7 +18,7 @@ long ExawindSolver::mem_usage()
     int psize;
     MPI_Comm_size(comm(), &psize);
     const std::string out =
-        identifier() + " Memory Usage" + " min: " + std::to_string(minmem) +
+        identifier() + " memory --" + " min: " + std::to_string(minmem) +
         " avg: " + std::to_string((long)((double)totmem / (double)psize)) +
         " max: " + std::to_string(maxmem) + " total: " + std::to_string(totmem);
     printer.echo(out);

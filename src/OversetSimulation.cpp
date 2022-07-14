@@ -1,5 +1,6 @@
 #include "OversetSimulation.h"
 #include "MemoryUsage.h"
+#include "Timers.h"
 #include <algorithm>
 #include <fstream>
 
@@ -83,12 +84,12 @@ void OversetSimulation::perform_overset_connectivity()
 {
     for (auto& ss : m_solvers) ss->call_pre_overset_conn_work();
 
-    m_timers.tick("TGConn");
+    m_timers.tick("Tioga");
     if (m_has_amr) m_tg.preprocess_amr_data();
     m_tg.profile();
     m_tg.performConnectivity();
     if (m_has_amr) m_tg.performConnectivityAMR();
-    m_timers.tock("TGConn");
+    m_timers.tock("Tioga");
 
     for (auto& ss : m_solvers) ss->call_post_overset_conn_work();
 }
@@ -98,7 +99,7 @@ void OversetSimulation::exchange_solution()
 
     for (auto& ss : m_solvers) ss->call_register_solution();
 
-    m_timers.tick("TGConn");
+    m_timers.tick("Tioga");
     if (m_has_amr) {
         m_tg.dataUpdate_AMR();
     } else {
@@ -108,7 +109,7 @@ void OversetSimulation::exchange_solution()
         const int ncomps = m_solvers[0]->get_ncomps();
         m_tg.dataUpdate(ncomps, row_major);
     }
-    m_timers.tock("TGConn");
+    m_timers.tock("Tioga");
 
     for (auto& ss : m_solvers) ss->call_update_solution();
 }
@@ -127,9 +128,9 @@ void OversetSimulation::run_timesteps(const int add_pic_its, const int nsteps)
         std::to_string(tstart));
 
     for (int nt = tstart; nt < tend; ++nt) {
-
-        mem_usage_all(nt);
-        for (auto& ss : m_solvers) ss->mem_usage();
+        std::vector<std::string> timer_names{"Exawind"};
+        Timers total_time(timer_names);
+        total_time.tick("Exawind");
 
         for (auto& ss : m_solvers) ss->call_pre_advance_stage1();
 
@@ -150,11 +151,21 @@ void OversetSimulation::run_timesteps(const int add_pic_its, const int nsteps)
         for (auto& ss : m_solvers) ss->call_post_advance();
 
         MPI_Barrier(m_comm);
-        const auto timings = m_timers.get_timings(m_comm, m_printer.io_rank());
+
+        total_time.tock("Exawind");
+
+        const auto tioga_timing =
+            m_timers.get_timings(m_comm, m_printer.io_rank());
+        const auto total_timing =
+            total_time.get_timings(m_comm, m_printer.io_rank());
+
         m_printer.echo(
-            "OversetSimulation WCTime at step: " + std::to_string(nt) + " " +
-            timings);
+            "\nExawind step: " + std::to_string(nt) + "\n" + total_timing);
+        m_printer.echo(tioga_timing);
         for (auto& ss : m_solvers) ss->echo_timers(nt);
+
+        mem_usage_all(nt);
+        for (auto& ss : m_solvers) ss->mem_usage();
     }
 
     m_last_timestep = tend;

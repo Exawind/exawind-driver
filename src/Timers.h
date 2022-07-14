@@ -7,6 +7,8 @@
 #include <chrono>
 #include <numeric>
 #include <cassert>
+#include <iomanip>
+#include <sstream>
 #include <string>
 
 namespace exawind {
@@ -114,18 +116,32 @@ struct Timers
         }
 
         MPI_Barrier(comm);
-        std::string out{""};
+        std::ostringstream outstream;
         const double ms2s = 1000.0;
+        const char separator = ' ';
+        const int name_width = 10;
+        const int num_width = 8;
         for (int i = 0; i < len; i++) {
-            out.append(
-                m_names.at(i) + ": " + std::to_string(mintimes.at(i) / ms2s) +
-                " " + std::to_string(avgtimes.at(i) / ms2s) + " " +
-                std::to_string(maxtimes.at(i) / ms2s) + " ");
+            outstream << "  " << std::left << std::setw(name_width)
+                      << std::setfill(separator) << m_names.at(i) + ":"
+                      << std::setw(num_width) << std::setfill(separator)
+                      << std::fixed << std::setprecision(4) << std::right
+                      << (mintimes.at(i) / ms2s) << std::setw(num_width)
+                      << std::setfill(separator) << std::fixed
+                      << std::setprecision(4) << std::right
+                      << (avgtimes.at(i) / ms2s) << std::setw(num_width)
+                      << std::setfill(separator) << std::fixed
+                      << std::setprecision(4) << std::right
+                      << (maxtimes.at(i) / ms2s) << std::endl;
         }
         const double total = std::accumulate(
             avgtimes.begin(), avgtimes.end(),
             decltype(avgtimes)::value_type(0.0));
-        out.append("Total: " + std::to_string(total / ms2s));
+        outstream << "  " << std::left << std::setw(name_width)
+                  << std::setfill(separator) << "Total:" << std::setw(num_width)
+                  << std::setfill(separator) << std::fixed
+                  << std::setprecision(4) << std::right << (total / ms2s);
+        std::string out(outstream.str());
         return out;
     };
 };
