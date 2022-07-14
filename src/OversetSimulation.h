@@ -46,6 +46,7 @@ private:
 
 public:
     OversetSimulation(MPI_Comm comm);
+    ~OversetSimulation();
 
     //! Register a solver
     template <class Solver, class... Args>
@@ -53,6 +54,14 @@ public:
     {
         m_solvers.emplace_back(
             std::make_unique<Solver>(std::forward<Args>(args)..., m_tg));
+    }
+
+    //! Delete solvers
+    void delete_solvers()
+    {
+        for (auto& ss : m_solvers) {
+            ss.reset();
+        }
     }
 
     //! Initialize all solvers

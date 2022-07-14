@@ -9,7 +9,8 @@ namespace exawind {
 class ExawindSolver
 {
 public:
-    ExawindSolver() : m_timers(m_names){};
+    explicit ExawindSolver() : m_timers(m_names){};
+    virtual ~ExawindSolver();
 
     void call_init_prolog(bool multi_solver_mode = true)
     {

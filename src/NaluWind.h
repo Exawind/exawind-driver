@@ -26,11 +26,12 @@ private:
 public:
     static void initialize();
     static void finalize();
-    NaluWind(
+    explicit NaluWind(
         stk::ParallelMachine comm,
         const std::string& inp_file,
         const std::vector<std::string>& fnames,
         TIOGA::tioga& tg);
+    ~NaluWind();
     bool is_unstructured() override { return true; }
     bool is_amr() override { return false; }
     int overset_update_interval() override;

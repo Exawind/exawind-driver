@@ -54,6 +54,8 @@ NaluWind::NaluWind(
     env.set_log_file_stream(logfile);
 }
 
+NaluWind::~NaluWind() = default;
+
 void NaluWind::init_prolog(bool multi_solver_mode)
 {
     m_sim.load(m_doc);

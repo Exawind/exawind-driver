@@ -26,4 +26,6 @@ long ExawindSolver::mem_usage()
     return mem;
 }
 
+ExawindSolver::~ExawindSolver() = default;
+
 } // namespace exawind

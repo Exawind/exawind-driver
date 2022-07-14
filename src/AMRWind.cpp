@@ -53,6 +53,8 @@ AMRWind::AMRWind(
     m_incflo.sim().activate_overset();
 }
 
+AMRWind::~AMRWind() = default;
+
 void AMRWind::init_prolog(bool)
 {
     m_incflo.init_mesh();
