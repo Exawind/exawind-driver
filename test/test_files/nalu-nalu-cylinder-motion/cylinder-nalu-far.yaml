@@ -9,7 +9,43 @@ linear_solvers:
 
   - name: solve_scalar
     type: tpetra
-    method: gmres preconditioner: mt_sgs tolerance: 1e-5 max_iterations: 200 kspace: 50 output_level: 0 - name: solve_cont type: hypre method: hypre_gmres preconditioner: boomerAMG tolerance: 1e-5 max_iterations: 200 kspace: 5 output_level: 0 realms: - name: realm_1 mesh: meshes/cylinder3d.g use_edges: yes automatic_decomposition_type: rcb equation_systems: name: theEqSys max_iterations: 1 decoupled_overset_solve: yes solver_system_specification: velocity: solve_scalar pressure: solve_cont systems: - LowMachEOM: name: myLowMach max_iterations: 1 convergence_tolerance: 1e-7
+    method: gmres
+    preconditioner: mt_sgs
+    tolerance: 1e-5
+    max_iterations: 200
+    kspace: 50
+    output_level: 0
+
+  - name: solve_cont
+    type: hypre
+    method: hypre_gmres
+    preconditioner: boomerAMG
+    tolerance: 1e-5
+    max_iterations: 200
+    kspace: 5
+    output_level: 0
+
+realms:
+  - name: realm_1
+    mesh: meshes/cylinder3d.g
+    use_edges: yes
+    automatic_decomposition_type: rcb
+
+    equation_systems:
+      name: theEqSys
+      max_iterations: 1
+      decoupled_overset_solve: yes
+
+      solver_system_specification:
+        velocity: solve_scalar
+        pressure: solve_cont
+
+      systems:
+
+        - LowMachEOM:
+            name: myLowMach
+            max_iterations: 1
+            convergence_tolerance: 1e-7
 
     initial_conditions:
 
