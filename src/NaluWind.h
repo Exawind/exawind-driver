@@ -38,7 +38,7 @@ public:
     int time_index() override;
     std::string identifier() override { return "Nalu-Wind"; }
     MPI_Comm comm() override { return m_comm; }
-    int get_ncomps() { return m_ncomps; }
+    int get_ncomps() override { return m_ncomps; }
 
 protected:
     void init_prolog(bool multi_solver_mode = true) override;

@@ -115,24 +115,24 @@ struct Timers
             elem /= psize;
         }
 
-        MPI_Barrier(comm);
         std::ostringstream outstream;
         const double ms2s = 1000.0;
         const char separator = ' ';
         const int name_width = 10;
-        const int num_width = 8;
+        const int num_width = 10;
+        const int num_precision = 4;
         for (int i = 0; i < len; i++) {
             outstream << "  " << std::left << std::setw(name_width)
                       << std::setfill(separator) << m_names.at(i) + ":"
                       << std::setw(num_width) << std::setfill(separator)
-                      << std::fixed << std::setprecision(4) << std::right
-                      << (mintimes.at(i) / ms2s) << std::setw(num_width)
-                      << std::setfill(separator) << std::fixed
-                      << std::setprecision(4) << std::right
-                      << (avgtimes.at(i) / ms2s) << std::setw(num_width)
-                      << std::setfill(separator) << std::fixed
-                      << std::setprecision(4) << std::right
-                      << (maxtimes.at(i) / ms2s) << std::endl;
+                      << std::fixed << std::setprecision(num_precision)
+                      << std::right << (mintimes.at(i) / ms2s)
+                      << std::setw(num_width) << std::setfill(separator)
+                      << std::fixed << std::setprecision(num_precision)
+                      << std::right << (avgtimes.at(i) / ms2s)
+                      << std::setw(num_width) << std::setfill(separator)
+                      << std::fixed << std::setprecision(num_precision)
+                      << std::right << (maxtimes.at(i) / ms2s) << std::endl;
         }
         const double total = std::accumulate(
             avgtimes.begin(), avgtimes.end(),
@@ -140,7 +140,8 @@ struct Timers
         outstream << "  " << std::left << std::setw(name_width)
                   << std::setfill(separator) << "Total:" << std::setw(num_width)
                   << std::setfill(separator) << std::fixed
-                  << std::setprecision(4) << std::right << (total / ms2s);
+                  << std::setprecision(num_precision) << std::right
+                  << (total / ms2s);
         std::string out(outstream.str());
         return out;
     };

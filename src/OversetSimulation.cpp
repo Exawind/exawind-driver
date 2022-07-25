@@ -156,18 +156,32 @@ void OversetSimulation::run_timesteps(const int add_pic_its, const int nsteps)
 
         total_time.tock("Exawind");
 
+        MPI_Barrier(m_comm);
+
         const auto tioga_timing =
             m_timers.get_timings(m_comm, m_printer.io_rank());
+
+        MPI_Barrier(m_comm);
+
         const auto total_timing =
             total_time.get_timings(m_comm, m_printer.io_rank());
 
         m_printer.echo(
             "\nExawind step: " + std::to_string(nt) + "\n" + total_timing);
         m_printer.echo(tioga_timing);
-        for (auto& ss : m_solvers) ss->echo_timers(nt);
+
+        for (auto& ss : m_solvers) {
+            MPI_Barrier(m_comm);
+            ss->echo_timers(nt);
+        }
+
+        MPI_Barrier(m_comm);
 
         mem_usage_all(nt);
-        for (auto& ss : m_solvers) ss->mem_usage();
+        for (auto& ss : m_solvers) {
+            MPI_Barrier(m_comm);
+            ss->mem_usage();
+        }
     }
 
     m_last_timestep = tend;
