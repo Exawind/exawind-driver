@@ -53,10 +53,8 @@ struct Timers
     Timers(const std::vector<std::string>& names) : m_names(names)
     {
         Timer clock;
-        int cnt = 0;
         for (const auto& name : names) {
             m_timers.push_back(clock);
-            cnt++;
         }
     };
 
@@ -92,21 +90,26 @@ struct Timers
         return std::distance(m_names.begin(), itr);
     }
 
-    std::string get_timings(MPI_Comm comm, int root = 0)
+    std::string get_timings(
+        std::string solver,
+        int step,
+        MPI_Comm comm,
+        int root = 0,
+        bool print_total = false)
     {
         const auto len = m_timers.size();
         const auto times = counts();
-        std::vector<double> maxtimes(len, 0.0);
         std::vector<double> mintimes(len, 0.0);
         std::vector<double> avgtimes(len, 0.0);
-        MPI_Reduce(
-            times.data(), maxtimes.data(), len, MPI_DOUBLE, MPI_MAX, root,
-            comm);
+        std::vector<double> maxtimes(len, 0.0);
         MPI_Reduce(
             times.data(), mintimes.data(), len, MPI_DOUBLE, MPI_MIN, root,
             comm);
         MPI_Reduce(
             times.data(), avgtimes.data(), len, MPI_DOUBLE, MPI_SUM, root,
+            comm);
+        MPI_Reduce(
+            times.data(), maxtimes.data(), len, MPI_DOUBLE, MPI_MAX, root,
             comm);
 
         int psize;
@@ -118,12 +121,15 @@ struct Timers
         std::ostringstream outstream;
         const double ms2s = 1000.0;
         const char separator = ' ';
-        const int name_width = 10;
+        const int name_width = 25;
         const int num_width = 10;
         const int num_precision = 4;
-        for (int i = 0; i < len; i++) {
-            outstream << "  " << std::left << std::setw(name_width)
-                      << std::setfill(separator) << m_names.at(i) + ":"
+        for (int i = 0; i < len; ++i) {
+            outstream << std::left << std::setw(name_width)
+                      << std::setfill(separator) << solver + "::" + m_names.at(i)
+                      << std::setw(num_width) << std::setfill(separator)
+                      << std::fixed << std::setprecision(num_precision)
+                      << std::right << step
                       << std::setw(num_width) << std::setfill(separator)
                       << std::fixed << std::setprecision(num_precision)
                       << std::right << (mintimes.at(i) / ms2s)
@@ -132,16 +138,28 @@ struct Timers
                       << std::right << (avgtimes.at(i) / ms2s)
                       << std::setw(num_width) << std::setfill(separator)
                       << std::fixed << std::setprecision(num_precision)
-                      << std::right << (maxtimes.at(i) / ms2s) << std::endl;
+                      << std::right << (maxtimes.at(i) / ms2s);
+            if(i < len-1) outstream << std::endl;
         }
-        const double total = std::accumulate(
-            avgtimes.begin(), avgtimes.end(),
-            decltype(avgtimes)::value_type(0.0));
-        outstream << "  " << std::left << std::setw(name_width)
-                  << std::setfill(separator) << "Total:" << std::setw(num_width)
-                  << std::setfill(separator) << std::fixed
-                  << std::setprecision(num_precision) << std::right
-                  << (total / ms2s);
+
+        if(print_total)
+        {
+            const double total = std::accumulate(
+                avgtimes.begin(), avgtimes.end(),
+                decltype(avgtimes)::value_type(0.0));
+            outstream << std::endl << std::left << std::setw(name_width)
+                      << std::setfill(separator) << solver + "::Total"
+                      << std::setw(num_width) << std::setfill(separator)
+                      << std::fixed << std::setprecision(num_precision)
+                      << std::right << step
+                      << std::setw(num_width) << std::setfill(separator)
+                      << std::fixed << std::setprecision(num_precision)
+                      << std::right << ""
+                      << std::setw(num_width) << std::setfill(separator)
+                      << std::fixed << std::setprecision(num_precision)
+                      << std::right << (total / ms2s);
+        }
+
         std::string out(outstream.str());
         return out;
     };

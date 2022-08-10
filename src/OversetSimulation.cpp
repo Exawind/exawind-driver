@@ -7,7 +7,7 @@
 namespace exawind {
 
 OversetSimulation::OversetSimulation(MPI_Comm comm)
-    : m_comm(comm), m_printer(comm), m_timers(m_names)
+    : m_comm(comm), m_printer(comm), m_timers_exa(m_names_exa), m_timers_tg(m_names_tg)
 {
     int psize, prank;
     MPI_Comm_size(m_comm, &psize);
@@ -86,12 +86,12 @@ void OversetSimulation::perform_overset_connectivity()
 {
     for (auto& ss : m_solvers) ss->call_pre_overset_conn_work();
 
-    m_timers.tick("Tioga");
+    m_timers_tg.tick("Connectivity");
     if (m_has_amr) m_tg.preprocess_amr_data();
     m_tg.profile();
     m_tg.performConnectivity();
     if (m_has_amr) m_tg.performConnectivityAMR();
-    m_timers.tock("Tioga");
+    m_timers_tg.tock("Connectivity");
 
     for (auto& ss : m_solvers) ss->call_post_overset_conn_work();
 }
@@ -101,7 +101,7 @@ void OversetSimulation::exchange_solution()
 
     for (auto& ss : m_solvers) ss->call_register_solution();
 
-    m_timers.tick("Tioga");
+    m_timers_tg.tick("SolExchange");
     if (m_has_amr) {
         m_tg.dataUpdate_AMR();
     } else {
@@ -111,7 +111,7 @@ void OversetSimulation::exchange_solution()
         const int ncomps = m_solvers[0]->get_ncomps();
         m_tg.dataUpdate(ncomps, row_major);
     }
-    m_timers.tock("Tioga");
+    m_timers_tg.tock("SolExchange");
 
     for (auto& ss : m_solvers) ss->call_update_solution();
 }
@@ -130,9 +130,9 @@ void OversetSimulation::run_timesteps(const int add_pic_its, const int nsteps)
         std::to_string(tstart));
 
     for (int nt = tstart; nt < tend; ++nt) {
-        std::vector<std::string> timer_names{"Exawind"};
-        Timers total_time(timer_names);
-        total_time.tick("Exawind");
+        m_printer.print_step_header();
+
+        m_timers_exa.tick("TimeStep");
 
         for (auto& ss : m_solvers) ss->call_pre_advance_stage1();
 
@@ -154,20 +154,18 @@ void OversetSimulation::run_timesteps(const int add_pic_its, const int nsteps)
 
         MPI_Barrier(m_comm);
 
-        total_time.tock("Exawind");
-
-        MPI_Barrier(m_comm);
-
-        const auto tioga_timing =
-            m_timers.get_timings(m_comm, m_printer.io_rank());
+        m_timers_exa.tock("TimeStep");
 
         MPI_Barrier(m_comm);
 
         const auto total_timing =
-            total_time.get_timings(m_comm, m_printer.io_rank());
+            m_timers_exa.get_timings("Exawind", nt, m_comm, m_printer.io_rank());
+        m_printer.echo(total_timing);
 
-        m_printer.echo(
-            "\nExawind step: " + std::to_string(nt) + "\n" + total_timing);
+        MPI_Barrier(m_comm);
+
+        const auto tioga_timing =
+            m_timers_tg.get_timings("Tioga", nt, m_comm, m_printer.io_rank(), true);
         m_printer.echo(tioga_timing);
 
         for (auto& ss : m_solvers) {
@@ -178,6 +176,7 @@ void OversetSimulation::run_timesteps(const int add_pic_its, const int nsteps)
         MPI_Barrier(m_comm);
 
         mem_usage_all(nt);
+        m_printer.echo("");
         for (auto& ss : m_solvers) {
             MPI_Barrier(m_comm);
             ss->mem_usage();

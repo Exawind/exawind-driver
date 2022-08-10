@@ -30,11 +30,13 @@ void NaluWind::finalize()
 }
 
 NaluWind::NaluWind(
+    int id,
     stk::ParallelMachine comm,
     const std::string& inpfile,
     const std::vector<std::string>& fnames,
     TIOGA::tioga& tg)
-    : m_comm(comm)
+    : m_id(id)
+    , m_comm(comm)
     , m_doc(YAML::LoadFile(inpfile))
     , m_fnames(fnames)
     , m_sim(m_doc)

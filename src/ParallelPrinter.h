@@ -25,6 +25,38 @@ public:
         if (m_rank == m_io_rank) std::cout << out << std::endl;
     };
 
+    void print_step_header()
+    {
+        if (m_rank == m_io_rank) {
+            std::ostringstream outstream;
+            const char separator = ' ';
+            const int name_width = 25;
+            const int num_width = 10;
+            const int num_precision = 4;
+            std::string hyphens;
+            hyphens.assign(65, '-');
+
+            outstream << std::left << std::setw(name_width)
+                      << std::setfill(separator) << "Routine"
+                      << std::setw(num_width) << std::setfill(separator)
+                      << std::fixed << std::setprecision(num_precision)
+                      << std::right << "step"
+                      << std::setw(num_width) << std::setfill(separator)
+                      << std::fixed << std::setprecision(num_precision)
+                      << std::right << "min"
+                      << std::setw(num_width) << std::setfill(separator)
+                      << std::fixed << std::setprecision(num_precision)
+                      << std::right << "avg"
+                      << std::setw(num_width) << std::setfill(separator)
+                      << std::fixed << std::setprecision(num_precision)
+                      << std::right << "max";
+
+            std::cout << std::endl << hyphens << std::endl;
+            std::cout << outstream.str() << std::endl;
+            std::cout << hyphens << std::endl;
+        }
+    };
+
     int io_rank() { return m_io_rank; };
     bool is_io_rank() { return m_rank == m_io_rank; };
 };

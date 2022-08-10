@@ -89,9 +89,9 @@ public:
     void echo_timers(const int step)
     {
         ParallelPrinter printer(comm());
-        const auto timings = m_timers.get_timings(comm(), printer.io_rank());
-        const std::string out = identifier() + " step: " + std::to_string(step);
-        printer.echo(out + "\n" + timings);
+        const auto timings = m_timers.get_timings(
+            identifier(), step, comm(), printer.io_rank(), true);
+        printer.echo(timings);
     }
 
     long mem_usage();
