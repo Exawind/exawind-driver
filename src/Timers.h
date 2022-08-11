@@ -144,9 +144,15 @@ struct Timers
 
         if(print_total)
         {
-            const double total = std::accumulate(
+            const double total_min = std::accumulate(
+                mintimes.begin(), mintimes.end(),
+                decltype(mintimes)::value_type(0.0));
+            const double total_avg = std::accumulate(
                 avgtimes.begin(), avgtimes.end(),
                 decltype(avgtimes)::value_type(0.0));
+            const double total_max = std::accumulate(
+                maxtimes.begin(), maxtimes.end(),
+                decltype(maxtimes)::value_type(0.0));
             outstream << std::endl << std::left << std::setw(name_width)
                       << std::setfill(separator) << solver + "::Total"
                       << std::setw(num_width) << std::setfill(separator)
@@ -154,10 +160,13 @@ struct Timers
                       << std::right << step
                       << std::setw(num_width) << std::setfill(separator)
                       << std::fixed << std::setprecision(num_precision)
-                      << std::right << ""
+                      << std::right << (total_min / ms2s)
                       << std::setw(num_width) << std::setfill(separator)
                       << std::fixed << std::setprecision(num_precision)
-                      << std::right << (total / ms2s);
+                      << std::right << (total_avg / ms2s)
+                      << std::setw(num_width) << std::setfill(separator)
+                      << std::fixed << std::setprecision(num_precision)
+                      << std::right << (total_max / ms2s);
         }
 
         std::string out(outstream.str());

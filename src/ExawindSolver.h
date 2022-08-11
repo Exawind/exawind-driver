@@ -94,7 +94,6 @@ public:
         printer.echo(timings);
     }
 
-    long mem_usage();
     virtual bool is_unstructured() { return false; };
     virtual bool is_amr() { return false; };
     virtual int overset_update_interval() { return 100000000; };

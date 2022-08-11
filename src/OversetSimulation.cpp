@@ -176,11 +176,6 @@ void OversetSimulation::run_timesteps(const int add_pic_its, const int nsteps)
         MPI_Barrier(m_comm);
 
         mem_usage_all(nt);
-        m_printer.echo("");
-        for (auto& ss : m_solvers) {
-            MPI_Barrier(m_comm);
-            ss->mem_usage();
-        }
     }
 
     m_last_timestep = tend;
