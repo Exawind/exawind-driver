@@ -160,7 +160,7 @@ int main(int argc, char** argv)
     for (int i = 0; i < num_nwsolvers; i++) {
         if (nalu_comms.at(i) != MPI_COMM_NULL)
             sim.register_solver<exawind::NaluWind>(
-                i+1, nalu_comms.at(i), nalu_inps.at(i), nalu_vars);
+                i + 1, nalu_comms.at(i), nalu_inps.at(i), nalu_vars);
     }
 
     if (amr_comm != MPI_COMM_NULL) {

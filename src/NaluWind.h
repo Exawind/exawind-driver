@@ -38,7 +38,10 @@ public:
     bool is_amr() override { return false; }
     int overset_update_interval() override;
     int time_index() override;
-    std::string identifier() override { return ("Nalu-Wind-" + std::to_string(m_id)); }
+    std::string identifier() override
+    {
+        return ("Nalu-Wind-" + std::to_string(m_id));
+    }
     MPI_Comm comm() override { return m_comm; }
     int get_ncomps() override { return m_ncomps; }
 

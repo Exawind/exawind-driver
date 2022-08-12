@@ -91,10 +91,7 @@ struct Timers
     }
 
     std::string get_timings_summary(
-        std::string solver,
-        int step,
-        MPI_Comm comm,
-        int root = 0)
+        std::string solver, int step, MPI_Comm comm, int root = 0)
     {
         std::string func_call = (m_timers.size() > 1) ? "Total" : m_names.at(0);
 
@@ -107,10 +104,7 @@ struct Timers
     };
 
     std::string get_timings_detail(
-        std::string solver,
-        int step,
-        MPI_Comm comm,
-        int root = 0)
+        std::string solver, int step, MPI_Comm comm, int root = 0)
     {
         std::vector<double> mintimes(m_timers.size(), 0.0);
         std::vector<double> avgtimes(m_timers.size(), 0.0);
@@ -121,19 +115,19 @@ struct Timers
         std::ostringstream linestream;
         for (int i = 0; i < m_timers.size(); ++i) {
             linestream = get_line_output(
-                solver, step, m_names.at(i), mintimes.at(i), avgtimes.at(i), maxtimes.at(i));
+                solver, step, m_names.at(i), mintimes.at(i), avgtimes.at(i),
+                maxtimes.at(i));
 
             outstream << linestream.str();
-            if(i < m_timers.size()-1) outstream << std::endl;
+            if (i < m_timers.size() - 1) outstream << std::endl;
         }
 
-        if(m_timers.size() > 1)
-        {
+        if (m_timers.size() > 1) {
             double total_min, total_avg, total_max;
             total_times(total_min, total_avg, total_max, comm, root);
 
             outstream << std::endl;
-            linestream =  get_line_output(
+            linestream = get_line_output(
                 solver, step, "Total", total_min, total_avg, total_max);
             outstream << linestream.str();
         }
@@ -153,12 +147,9 @@ struct Timers
         std::vector<double> maxtimes(m_timers.size(), 0.0);
         par_reduce_times(mintimes, avgtimes, maxtimes, comm, root);
 
-        total_min = std::accumulate(
-            mintimes.begin(), mintimes.end(), 0.0);
-        total_avg = std::accumulate(
-            mintimes.begin(), mintimes.end(), 0.0);
-        total_max = std::accumulate(
-            maxtimes.begin(), maxtimes.end(), 0.0);
+        total_min = std::accumulate(mintimes.begin(), mintimes.end(), 0.0);
+        total_avg = std::accumulate(mintimes.begin(), mintimes.end(), 0.0);
+        total_max = std::accumulate(maxtimes.begin(), maxtimes.end(), 0.0);
     }
 
     void par_reduce_times(
@@ -170,14 +161,14 @@ struct Timers
     {
         const auto times = counts();
         MPI_Reduce(
-            times.data(), mintimes.data(), m_timers.size(), MPI_DOUBLE, MPI_MIN, root,
-            comm);
+            times.data(), mintimes.data(), m_timers.size(), MPI_DOUBLE, MPI_MIN,
+            root, comm);
         MPI_Reduce(
-            times.data(), avgtimes.data(), m_timers.size(), MPI_DOUBLE, MPI_SUM, root,
-            comm);
+            times.data(), avgtimes.data(), m_timers.size(), MPI_DOUBLE, MPI_SUM,
+            root, comm);
         MPI_Reduce(
-            times.data(), maxtimes.data(), m_timers.size(), MPI_DOUBLE, MPI_MAX, root,
-            comm);
+            times.data(), maxtimes.data(), m_timers.size(), MPI_DOUBLE, MPI_MAX,
+            root, comm);
 
         int psize;
         MPI_Comm_size(comm, &psize);
@@ -205,16 +196,16 @@ struct Timers
                   << std::setfill(separator) << solver + "::" + func_call
                   << std::setw(num_width) << std::setfill(separator)
                   << std::fixed << std::setprecision(num_precision)
-                  << std::right << step
-                  << std::setw(num_width) << std::setfill(separator)
-                  << std::fixed << std::setprecision(num_precision)
-                  << std::right << (min / ms2s)
-                  << std::setw(num_width) << std::setfill(separator)
-                  << std::fixed << std::setprecision(num_precision)
-                  << std::right << (avg / ms2s)
-                  << std::setw(num_width) << std::setfill(separator)
-                  << std::fixed << std::setprecision(num_precision)
-                  << std::right << (max / ms2s);
+                  << std::right << step << std::setw(num_width)
+                  << std::setfill(separator) << std::fixed
+                  << std::setprecision(num_precision) << std::right
+                  << (min / ms2s) << std::setw(num_width)
+                  << std::setfill(separator) << std::fixed
+                  << std::setprecision(num_precision) << std::right
+                  << (avg / ms2s) << std::setw(num_width)
+                  << std::setfill(separator) << std::fixed
+                  << std::setprecision(num_precision) << std::right
+                  << (max / ms2s);
         return outstream;
     }
 };

@@ -63,22 +63,22 @@ public:
             std::string hyphens;
             hyphens.assign(65, '-');
 
-            outstream << std::endl << hyphens << std::endl
+            outstream << std::endl
+                      << hyphens << std::endl
                       << std::left << std::setw(name_width)
                       << std::setfill(separator) << "Routine"
                       << std::setw(num_width) << std::setfill(separator)
                       << std::fixed << std::setprecision(num_precision)
-                      << std::right << "step"
+                      << std::right << "step" << std::setw(num_width)
+                      << std::setfill(separator) << std::fixed
+                      << std::setprecision(num_precision) << std::right << "min"
                       << std::setw(num_width) << std::setfill(separator)
                       << std::fixed << std::setprecision(num_precision)
-                      << std::right << "min"
-                      << std::setw(num_width) << std::setfill(separator)
-                      << std::fixed << std::setprecision(num_precision)
-                      << std::right << "avg"
-                      << std::setw(num_width) << std::setfill(separator)
-                      << std::fixed << std::setprecision(num_precision)
-                      << std::right << "max"
-                      << std::endl << hyphens;
+                      << std::right << "avg" << std::setw(num_width)
+                      << std::setfill(separator) << std::fixed
+                      << std::setprecision(num_precision) << std::right << "max"
+                      << std::endl
+                      << hyphens;
 
             std::cout << outstream.str() << std::endl;
             timing_to_file(outstream.str());

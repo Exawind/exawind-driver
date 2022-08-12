@@ -7,7 +7,10 @@
 namespace exawind {
 
 OversetSimulation::OversetSimulation(MPI_Comm comm)
-    : m_comm(comm), m_printer(comm), m_timers_exa(m_names_exa), m_timers_tg(m_names_tg)
+    : m_comm(comm)
+    , m_printer(comm)
+    , m_timers_exa(m_names_exa)
+    , m_timers_tg(m_names_tg)
 {
     int psize, prank;
     MPI_Comm_size(m_comm, &psize);
@@ -177,23 +180,23 @@ bool OversetSimulation::do_connectivity(const int tstep)
 void OversetSimulation::print_timing(const int nt)
 {
     // overall timestep timing
-    auto timing_summary =
-        m_timers_exa.get_timings_summary("Exawind", nt, m_comm, m_printer.io_rank());
+    auto timing_summary = m_timers_exa.get_timings_summary(
+        "Exawind", nt, m_comm, m_printer.io_rank());
     m_printer.echo(timing_summary);
 
-    auto timing_detail =
-        m_timers_exa.get_timings_detail("Exawind", nt, m_comm, m_printer.io_rank());
+    auto timing_detail = m_timers_exa.get_timings_detail(
+        "Exawind", nt, m_comm, m_printer.io_rank());
     m_printer.timing_to_file(timing_detail);
 
     MPI_Barrier(m_comm);
 
     // tioga timing
-    timing_summary =
-        m_timers_tg.get_timings_summary("Tioga", nt, m_comm, m_printer.io_rank());
+    timing_summary = m_timers_tg.get_timings_summary(
+        "Tioga", nt, m_comm, m_printer.io_rank());
     m_printer.echo(timing_summary);
 
-    timing_detail =
-        m_timers_tg.get_timings_detail("Tioga", nt, m_comm, m_printer.io_rank());
+    timing_detail = m_timers_tg.get_timings_detail(
+        "Tioga", nt, m_comm, m_printer.io_rank());
     m_printer.timing_to_file(timing_detail);
 
     // cfd solver-specific timing
@@ -203,15 +206,15 @@ void OversetSimulation::print_timing(const int nt)
         ParallelPrinter printer(ss->comm());
 
         // summary timings
-        if(ss->is_amr()){
+        if (ss->is_amr()) {
             std::string timings_summary = ss->m_timers.get_timings_summary(
                 ss->identifier(), nt, ss->comm(), printer.io_rank());
             printer.echo(timings_summary);
-        }
-        else{// logic to add and average total time
+        } else { // logic to add and average total time
             std::vector<double> total_send(3, 0.0);
             ss->m_timers.total_times(
-                total_send[0], total_send[1], total_send[2], ss->comm(), printer.io_rank());
+                total_send[0], total_send[1], total_send[2], ss->comm(),
+                printer.io_rank());
 
             if (printer.is_io_rank()) {
                 MPI_Send(total_send.data(), 3, MPI_DOUBLE, 0, 0, m_comm);
@@ -227,13 +230,13 @@ void OversetSimulation::print_timing(const int nt)
     MPI_Barrier(m_comm);
 
     // average nalu-wind total timings and print
-    if(m_printer.is_io_rank())
-    {
+    if (m_printer.is_io_rank()) {
         double nalu_total_min, nalu_total_avg, nalu_total_max;
-        for(int i=0; i<m_nw_start_rank.size(); ++i)
-        {
+        for (int i = 0; i < m_nw_start_rank.size(); ++i) {
             std::vector<double> total_recv(3, 0.0);
-            MPI_Recv(total_recv.data(), 3, MPI_DOUBLE, m_nw_start_rank[i], 0, m_comm, MPI_STATUS_IGNORE);
+            MPI_Recv(
+                total_recv.data(), 3, MPI_DOUBLE, m_nw_start_rank[i], 0, m_comm,
+                MPI_STATUS_IGNORE);
 
             nalu_total_min += total_recv[0];
             nalu_total_avg += total_recv[1];
@@ -245,7 +248,8 @@ void OversetSimulation::print_timing(const int nt)
         nalu_total_max /= m_nw_start_rank.size();
 
         std::ostringstream total_time_out = m_timers_exa.get_line_output(
-            "Nalu-Wind", nt, "Total", nalu_total_min, nalu_total_avg, nalu_total_max);
+            "Nalu-Wind", nt, "Total", nalu_total_min, nalu_total_avg,
+            nalu_total_max);
         m_printer.echo(total_time_out.str());
     }
 }

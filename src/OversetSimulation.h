@@ -90,7 +90,10 @@ public:
     long mem_usage_all(const int step);
 
     //! set number of nalu-wind instances
-    void set_nw_start_rank(std::vector<int> start_ranks) {m_nw_start_rank = start_ranks;}
+    void set_nw_start_rank(std::vector<int> start_ranks)
+    {
+        m_nw_start_rank = start_ranks;
+    }
 };
 
 } // namespace exawind
