@@ -123,8 +123,10 @@ int main(int argc, char** argv)
             : MPI_COMM_NULL;
 
     std::vector<MPI_Comm> nalu_comms;
+    std::vector<int> nalu_start_rank;
     int start = psize - num_nwind_ranks;
     for (const auto& nr : num_nw_solver_ranks) {
+        nalu_start_rank.push_back(start);
         nalu_comms.push_back(
             exawind::create_subcomm(MPI_COMM_WORLD, nr, start));
         start += nr;
@@ -147,6 +149,7 @@ int main(int argc, char** argv)
         })) {
         exawind::NaluWind::initialize();
     }
+    sim.set_nw_start_rank(nalu_start_rank);
 
     const auto nalu_vars = node["nalu_vars"].as<std::vector<std::string>>();
     const int num_timesteps = node["num_timesteps"].as<int>();

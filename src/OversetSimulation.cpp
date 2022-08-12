@@ -176,6 +176,7 @@ bool OversetSimulation::do_connectivity(const int tstep)
 
 void OversetSimulation::print_timing(const int nt)
 {
+    // overall timestep timing
     auto timing_summary =
         m_timers_exa.get_timings_summary("Exawind", nt, m_comm, m_printer.io_rank());
     m_printer.echo(timing_summary);
@@ -186,6 +187,7 @@ void OversetSimulation::print_timing(const int nt)
 
     MPI_Barrier(m_comm);
 
+    // tioga timing
     timing_summary =
         m_timers_tg.get_timings_summary("Tioga", nt, m_comm, m_printer.io_rank());
     m_printer.echo(timing_summary);
@@ -194,9 +196,57 @@ void OversetSimulation::print_timing(const int nt)
         m_timers_tg.get_timings_detail("Tioga", nt, m_comm, m_printer.io_rank());
     m_printer.timing_to_file(timing_detail);
 
+    // cfd solver-specific timing
     for (auto& ss : m_solvers) {
         MPI_Barrier(m_comm);
-        ss->echo_timers(nt);
+
+        ParallelPrinter printer(ss->comm());
+
+        // summary timings
+        if(ss->is_amr()){
+            std::string timings_summary = ss->m_timers.get_timings_summary(
+                ss->identifier(), nt, ss->comm(), printer.io_rank());
+            printer.echo(timings_summary);
+        }
+        else{// logic to add and average total time
+            std::vector<double> total_send(3, 0.0);
+            ss->m_timers.total_times(
+                total_send[0], total_send[1], total_send[2], ss->comm(), printer.io_rank());
+
+            if (printer.is_io_rank()) {
+                MPI_Send(total_send.data(), 3, MPI_DOUBLE, 0, 0, m_comm);
+            }
+        }
+
+        // detailed timings
+        std::string timings_detail = ss->m_timers.get_timings_detail(
+            ss->identifier(), nt, ss->comm(), printer.io_rank());
+        printer.timing_to_file(timings_detail);
+    }
+
+    MPI_Barrier(m_comm);
+
+    // average nalu-wind total timings and print
+    if(m_printer.is_io_rank())
+    {
+        double nalu_total_min, nalu_total_avg, nalu_total_max;
+        for(int i=0; i<m_nw_start_rank.size(); ++i)
+        {
+            std::vector<double> total_recv(3, 0.0);
+            MPI_Recv(total_recv.data(), 3, MPI_DOUBLE, m_nw_start_rank[i], 0, m_comm, MPI_STATUS_IGNORE);
+
+            nalu_total_min += total_recv[0];
+            nalu_total_avg += total_recv[1];
+            nalu_total_max += total_recv[2];
+        }
+
+        nalu_total_min /= m_nw_start_rank.size();
+        nalu_total_avg /= m_nw_start_rank.size();
+        nalu_total_max /= m_nw_start_rank.size();
+
+        std::ostringstream total_time_out = m_timers_exa.get_line_output(
+            "Nalu-Wind", nt, "Total", nalu_total_min, nalu_total_avg, nalu_total_max);
+        m_printer.echo(total_time_out.str());
     }
 }
 

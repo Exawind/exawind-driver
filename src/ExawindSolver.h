@@ -86,17 +86,6 @@ public:
         update_solution();
         m_timers.tock(name);
     };
-    void echo_timers(const int step)
-    {
-        ParallelPrinter printer(comm());
-        auto timings = m_timers.get_timings_summary(
-            identifier(), step, comm(), printer.io_rank());
-        printer.echo(timings);
-
-        timings = m_timers.get_timings_detail(
-            identifier(), step, comm(), printer.io_rank());
-        printer.timing_to_file(timings);
-    }
 
     virtual bool is_unstructured() { return false; };
     virtual bool is_amr() { return false; };

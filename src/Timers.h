@@ -98,17 +98,8 @@ struct Timers
     {
         std::string func_call = (m_timers.size() > 1) ? "Total" : m_names.at(0);
 
-        std::vector<double> mintimes(m_timers.size(), 0.0);
-        std::vector<double> avgtimes(m_timers.size(), 0.0);
-        std::vector<double> maxtimes(m_timers.size(), 0.0);
-        par_reduce_times(mintimes, avgtimes, maxtimes, comm, root);
-
-        const double total_min = std::accumulate(
-            mintimes.begin(), mintimes.end(), 0.0);
-        const double total_avg = std::accumulate(
-            mintimes.begin(), mintimes.end(), 0.0);
-        const double total_max = std::accumulate(
-            maxtimes.begin(), maxtimes.end(), 0.0);
+        double total_min, total_avg, total_max;
+        total_times(total_min, total_avg, total_max, comm, root);
 
         std::ostringstream total_time_out = get_line_output(
             solver, step, func_call, total_min, total_avg, total_max);
@@ -138,12 +129,8 @@ struct Timers
 
         if(m_timers.size() > 1)
         {
-            const double total_min = std::accumulate(
-                mintimes.begin(), mintimes.end(), 0.0);
-            const double total_avg = std::accumulate(
-                mintimes.begin(), mintimes.end(), 0.0);
-            const double total_max = std::accumulate(
-                maxtimes.begin(), maxtimes.end(), 0.0);
+            double total_min, total_avg, total_max;
+            total_times(total_min, total_avg, total_max, comm, root);
 
             outstream << std::endl;
             linestream =  get_line_output(
@@ -153,6 +140,26 @@ struct Timers
 
         return outstream.str();
     };
+
+    void total_times(
+        double& total_min,
+        double& total_avg,
+        double& total_max,
+        MPI_Comm comm,
+        int root)
+    {
+        std::vector<double> mintimes(m_timers.size(), 0.0);
+        std::vector<double> avgtimes(m_timers.size(), 0.0);
+        std::vector<double> maxtimes(m_timers.size(), 0.0);
+        par_reduce_times(mintimes, avgtimes, maxtimes, comm, root);
+
+        total_min = std::accumulate(
+            mintimes.begin(), mintimes.end(), 0.0);
+        total_avg = std::accumulate(
+            mintimes.begin(), mintimes.end(), 0.0);
+        total_max = std::accumulate(
+            maxtimes.begin(), maxtimes.end(), 0.0);
+    }
 
     void par_reduce_times(
         std::vector<double>& mintimes,

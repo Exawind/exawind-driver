@@ -19,6 +19,8 @@ private:
     MPI_Comm m_comm;
     //! List of solvers active in this overset simulation
     std::vector<std::unique_ptr<ExawindSolver>> m_solvers;
+    //! List of start ranks for all nalu-wind instances
+    std::vector<int> m_nw_start_rank;
     //! Flag indicating whether an AMR solver is active
     bool m_has_amr{false};
     //! Flag indicating whether an unstructured solver is active
@@ -86,6 +88,9 @@ public:
 
     //! track memory usage and print to file
     long mem_usage_all(const int step);
+
+    //! set number of nalu-wind instances
+    void set_nw_start_rank(std::vector<int> start_ranks) {m_nw_start_rank = start_ranks;}
 };
 
 } // namespace exawind
