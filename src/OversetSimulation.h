@@ -81,6 +81,9 @@ public:
     //! Print something
     void echo(const std::string& out) { m_printer.echo(out); }
 
+    //! track detailed timing and print to file
+    void print_timing(const int nt);
+
     //! track memory usage and print to file
     long mem_usage_all(const int step);
 };

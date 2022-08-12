@@ -13,6 +13,7 @@ OversetSimulation::OversetSimulation(MPI_Comm comm)
     MPI_Comm_size(m_comm, &psize);
     MPI_Comm_rank(m_comm, &prank);
     m_tg.setCommunicator(MPI_COMM_WORLD, prank, psize);
+    m_printer.reset();
 }
 
 OversetSimulation::~OversetSimulation() = default;
@@ -130,7 +131,7 @@ void OversetSimulation::run_timesteps(const int add_pic_its, const int nsteps)
         std::to_string(tstart));
 
     for (int nt = tstart; nt < tend; ++nt) {
-        m_printer.print_step_header();
+        m_printer.time_step_header();
 
         m_timers_exa.tick("TimeStep");
 
@@ -158,20 +159,7 @@ void OversetSimulation::run_timesteps(const int add_pic_its, const int nsteps)
 
         MPI_Barrier(m_comm);
 
-        const auto total_timing =
-            m_timers_exa.get_timings("Exawind", nt, m_comm, m_printer.io_rank());
-        m_printer.echo(total_timing);
-
-        MPI_Barrier(m_comm);
-
-        const auto tioga_timing =
-            m_timers_tg.get_timings("Tioga", nt, m_comm, m_printer.io_rank(), true);
-        m_printer.echo(tioga_timing);
-
-        for (auto& ss : m_solvers) {
-            MPI_Barrier(m_comm);
-            ss->echo_timers(nt);
-        }
+        print_timing(nt);
 
         MPI_Barrier(m_comm);
 
@@ -184,6 +172,32 @@ void OversetSimulation::run_timesteps(const int add_pic_its, const int nsteps)
 bool OversetSimulation::do_connectivity(const int tstep)
 {
     return (tstep > 0) && (tstep % m_overset_update_interval) == 0;
+}
+
+void OversetSimulation::print_timing(const int nt)
+{
+    auto timing_summary =
+        m_timers_exa.get_timings_summary("Exawind", nt, m_comm, m_printer.io_rank());
+    m_printer.echo(timing_summary);
+
+    auto timing_detail =
+        m_timers_exa.get_timings_detail("Exawind", nt, m_comm, m_printer.io_rank());
+    m_printer.timing_to_file(timing_detail);
+
+    MPI_Barrier(m_comm);
+
+    timing_summary =
+        m_timers_tg.get_timings_summary("Tioga", nt, m_comm, m_printer.io_rank());
+    m_printer.echo(timing_summary);
+
+    timing_detail =
+        m_timers_tg.get_timings_detail("Tioga", nt, m_comm, m_printer.io_rank());
+    m_printer.timing_to_file(timing_detail);
+
+    for (auto& ss : m_solvers) {
+        MPI_Barrier(m_comm);
+        ss->echo_timers(nt);
+    }
 }
 
 long OversetSimulation::mem_usage_all(const int step)
@@ -199,9 +213,7 @@ long OversetSimulation::mem_usage_all(const int step)
         &mem, 1, MPI_LONG, memall.data(), 1, MPI_LONG, m_printer.io_rank(),
         m_comm);
 
-    // FIXME: once we can distinguish between different instances
-    // of same solver we will move to separate output files
-    // and put in ExawindSolver
+    // FIXME: move to separate output files and put in ExawindSolver
     if (m_printer.is_io_rank()) {
         const std::string filename = "memusage.dat";
         std::ofstream fp;

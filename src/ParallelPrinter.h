@@ -1,5 +1,6 @@
 #ifndef PARALLELPRINTER_H
 #define PARALLELPRINTER_H
+#include <fstream>
 #include <iostream>
 #include <ostream>
 #include "mpi.h"
@@ -25,7 +26,33 @@ public:
         if (m_rank == m_io_rank) std::cout << out << std::endl;
     };
 
-    void print_step_header()
+    void reset()
+    {
+        const std::string filename = "timings.dat";
+        remove(filename.c_str());
+
+        std::ofstream fp;
+        fp.open(filename.c_str(), std::ios_base::out);
+
+        std::string hyphens;
+        hyphens.assign(21, '-');
+        fp << hyphens << "Exawind detailed timing" << hyphens;
+
+        fp.close();
+    };
+
+    void timing_to_file(const std::string& out)
+    {
+        if (m_rank == m_io_rank) {
+            const std::string filename = "timings.dat";
+            std::ofstream fp;
+            fp.open(filename.c_str(), std::ios_base::app);
+            fp << out << std::endl;
+            fp.close();
+        }
+    };
+
+    void time_step_header()
     {
         if (m_rank == m_io_rank) {
             std::ostringstream outstream;
@@ -36,7 +63,8 @@ public:
             std::string hyphens;
             hyphens.assign(65, '-');
 
-            outstream << std::left << std::setw(name_width)
+            outstream << std::endl << hyphens << std::endl
+                      << std::left << std::setw(name_width)
                       << std::setfill(separator) << "Routine"
                       << std::setw(num_width) << std::setfill(separator)
                       << std::fixed << std::setprecision(num_precision)
@@ -49,11 +77,11 @@ public:
                       << std::right << "avg"
                       << std::setw(num_width) << std::setfill(separator)
                       << std::fixed << std::setprecision(num_precision)
-                      << std::right << "max";
+                      << std::right << "max"
+                      << std::endl << hyphens;
 
-            std::cout << std::endl << hyphens << std::endl;
             std::cout << outstream.str() << std::endl;
-            std::cout << hyphens << std::endl;
+            timing_to_file(outstream.str());
         }
     };
 

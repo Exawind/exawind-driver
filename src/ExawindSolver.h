@@ -89,9 +89,13 @@ public:
     void echo_timers(const int step)
     {
         ParallelPrinter printer(comm());
-        const auto timings = m_timers.get_timings(
-            identifier(), step, comm(), printer.io_rank(), true);
+        auto timings = m_timers.get_timings_summary(
+            identifier(), step, comm(), printer.io_rank());
         printer.echo(timings);
+
+        timings = m_timers.get_timings_detail(
+            identifier(), step, comm(), printer.io_rank());
+        printer.timing_to_file(timings);
     }
 
     virtual bool is_unstructured() { return false; };
@@ -101,6 +105,7 @@ public:
     virtual std::string identifier() { return "ExawindSolver"; }
     virtual MPI_Comm comm() = 0;
     virtual int get_ncomps() { return 0; };
+    void timing_details();
     //! Timer names
     std::vector<std::string> m_names{
         "Pre", "PreConn", "PostConn", "Register", "Update", "Solve", "Post"};
