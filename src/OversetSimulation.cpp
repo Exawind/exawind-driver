@@ -134,8 +134,7 @@ void OversetSimulation::run_timesteps(const int add_pic_its, const int nsteps)
         std::to_string(tstart));
 
     for (int nt = tstart; nt < tend; ++nt) {
-        m_printer.echo("");
-        m_printer.echo(m_printer.time_header());
+        m_printer.echo_time_header();
 
         m_timers_exa.tick("TimeStep");
 

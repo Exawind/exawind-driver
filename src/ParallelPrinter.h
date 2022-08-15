@@ -50,6 +50,22 @@ public:
         }
     };
 
+    void echo_time_header()
+    {
+        std::string header = time_header();
+
+        std::string hyphens;
+        hyphens.assign(65, '-');
+
+        std::ostringstream out;
+        out << std::endl
+            << hyphens << std::endl
+            << header << std::endl
+            << hyphens;
+
+        echo(out.str());
+    };
+
     std::string time_header()
     {
         std::ostringstream outstream;
@@ -57,11 +73,8 @@ public:
         const int name_width = 25;
         const int num_width = 10;
         const int num_precision = 4;
-        std::string hyphens;
-        hyphens.assign(65, '-');
 
-        outstream << hyphens << std::endl
-                  << std::left << std::setw(name_width)
+        outstream << std::left << std::setw(name_width)
                   << std::setfill(separator) << "Routine"
                   << std::setw(num_width) << std::setfill(separator)
                   << std::fixed << std::setprecision(num_precision)
@@ -72,9 +85,7 @@ public:
                   << std::fixed << std::setprecision(num_precision)
                   << std::right << "avg" << std::setw(num_width)
                   << std::setfill(separator) << std::fixed
-                  << std::setprecision(num_precision) << std::right << "max"
-                  << std::endl
-                  << hyphens;
+                  << std::setprecision(num_precision) << std::right << "max";
         return outstream.str();
     };
 
