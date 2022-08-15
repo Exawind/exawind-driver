@@ -134,7 +134,8 @@ void OversetSimulation::run_timesteps(const int add_pic_its, const int nsteps)
         std::to_string(tstart));
 
     for (int nt = tstart; nt < tend; ++nt) {
-        m_printer.time_step_header();
+        m_printer.echo("");
+        m_printer.echo(m_printer.time_header());
 
         m_timers_exa.tick("TimeStep");
 
@@ -231,11 +232,11 @@ void OversetSimulation::print_timing(const int nt)
 
     // average nalu-wind total timings and print
     if (m_printer.is_io_rank()) {
-        double nalu_total_min, nalu_total_avg, nalu_total_max;
-        for (int i = 0; i < m_nw_start_rank.size(); ++i) {
+        double nalu_total_min = 0.0, nalu_total_avg = 0.0, nalu_total_max = 0.0;
+        for (const auto& start_rank : m_nw_start_rank) {
             std::vector<double> total_recv(3, 0.0);
             MPI_Recv(
-                total_recv.data(), 3, MPI_DOUBLE, m_nw_start_rank[i], 0, m_comm,
+                total_recv.data(), 3, MPI_DOUBLE, start_rank, 0, m_comm,
                 MPI_STATUS_IGNORE);
 
             nalu_total_min += total_recv[0];
@@ -243,9 +244,9 @@ void OversetSimulation::print_timing(const int nt)
             nalu_total_max += total_recv[2];
         }
 
-        nalu_total_min /= m_nw_start_rank.size();
-        nalu_total_avg /= m_nw_start_rank.size();
-        nalu_total_max /= m_nw_start_rank.size();
+        nalu_total_min /= m_num_nw_solvers;
+        nalu_total_avg /= m_num_nw_solvers;
+        nalu_total_max /= m_num_nw_solvers;
 
         std::ostringstream total_time_out = m_timers_exa.get_line_output(
             "Nalu-Wind", nt, "Total", nalu_total_min, nalu_total_avg,

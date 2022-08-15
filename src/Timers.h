@@ -93,13 +93,11 @@ struct Timers
     std::string get_timings_summary(
         std::string solver, int step, MPI_Comm comm, int root = 0)
     {
-        std::string func_call = (m_timers.size() > 1) ? "Total" : m_names.at(0);
-
         double total_min, total_avg, total_max;
         total_times(total_min, total_avg, total_max, comm, root);
 
         std::ostringstream total_time_out = get_line_output(
-            solver, step, func_call, total_min, total_avg, total_max);
+            solver, step, "Total", total_min, total_avg, total_max);
         return total_time_out.str();
     };
 
@@ -114,14 +112,18 @@ struct Timers
         std::ostringstream outstream;
         std::ostringstream linestream;
         for (int i = 0; i < m_timers.size(); ++i) {
+            std::string func_call =
+                (m_timers.size() == 1) ? "Total" : m_names.at(i);
+
             linestream = get_line_output(
-                solver, step, m_names.at(i), mintimes.at(i), avgtimes.at(i),
+                solver, step, func_call, mintimes.at(i), avgtimes.at(i),
                 maxtimes.at(i));
 
             outstream << linestream.str();
             if (i < m_timers.size() - 1) outstream << std::endl;
         }
 
+        //  accumulate only if there is more than 1 routine to report
         if (m_timers.size() > 1) {
             double total_min, total_avg, total_max;
             total_times(total_min, total_avg, total_max, comm, root);

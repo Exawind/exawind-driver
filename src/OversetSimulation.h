@@ -20,6 +20,7 @@ private:
     //! List of solvers active in this overset simulation
     std::vector<std::unique_ptr<ExawindSolver>> m_solvers;
     //! List of start ranks for all nalu-wind instances
+    int m_num_nw_solvers;
     std::vector<int> m_nw_start_rank;
     //! Flag indicating whether an AMR solver is active
     bool m_has_amr{false};
@@ -90,9 +91,10 @@ public:
     long mem_usage_all(const int step);
 
     //! set number of nalu-wind instances
-    void set_nw_start_rank(std::vector<int> start_ranks)
+    void set_nw_start_rank(const std::vector<int>& start_ranks)
     {
         m_nw_start_rank = start_ranks;
+        m_num_nw_solvers = m_nw_start_rank.size();
     }
 };
 
