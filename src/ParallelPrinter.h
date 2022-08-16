@@ -78,14 +78,14 @@ public:
                   << std::setfill(separator) << "Routine"
                   << std::setw(num_width) << std::setfill(separator)
                   << std::fixed << std::setprecision(num_precision)
-                  << std::right << "step" << std::setw(num_width)
+                  << std::right << "Step" << std::setw(num_width)
                   << std::setfill(separator) << std::fixed
-                  << std::setprecision(num_precision) << std::right << "min"
+                  << std::setprecision(num_precision) << std::right << "Min"
                   << std::setw(num_width) << std::setfill(separator)
                   << std::fixed << std::setprecision(num_precision)
-                  << std::right << "avg" << std::setw(num_width)
+                  << std::right << "Avg" << std::setw(num_width)
                   << std::setfill(separator) << std::fixed
-                  << std::setprecision(num_precision) << std::right << "max";
+                  << std::setprecision(num_precision) << std::right << "Max";
         return outstream.str();
     };
 
