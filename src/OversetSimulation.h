@@ -19,6 +19,9 @@ private:
     MPI_Comm m_comm;
     //! List of solvers active in this overset simulation
     std::vector<std::unique_ptr<ExawindSolver>> m_solvers;
+    //! List of start ranks for all nalu-wind instances
+    int m_num_nw_solvers;
+    std::vector<int> m_nw_start_rank;
     //! Flag indicating whether an AMR solver is active
     bool m_has_amr{false};
     //! Flag indicating whether an unstructured solver is active
@@ -40,9 +43,11 @@ private:
     //! Parallel printer utility
     ParallelPrinter m_printer;
     //! Timer names
-    const std::vector<std::string> m_names{"Tioga"};
-    //! Timers
-    Timers m_timers;
+    const std::vector<std::string> m_names_exa{"TimeStep"};
+    const std::vector<std::string> m_names_tg{"Connectivity", "SolExchange"};
+    //! Timer
+    Timers m_timers_exa;
+    Timers m_timers_tg;
 
 public:
     OversetSimulation(MPI_Comm comm);
@@ -79,8 +84,18 @@ public:
     //! Print something
     void echo(const std::string& out) { m_printer.echo(out); }
 
+    //! track detailed timing and print to file
+    void print_timing(const int nt);
+
     //! track memory usage and print to file
     long mem_usage_all(const int step);
+
+    //! set number of nalu-wind instances
+    void set_nw_start_rank(const std::vector<int>& start_ranks)
+    {
+        m_nw_start_rank = start_ranks;
+        m_num_nw_solvers = m_nw_start_rank.size();
+    }
 };
 
 } // namespace exawind

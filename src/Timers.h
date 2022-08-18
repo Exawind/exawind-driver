@@ -53,10 +53,8 @@ struct Timers
     Timers(const std::vector<std::string>& names) : m_names(names)
     {
         Timer clock;
-        int cnt = 0;
         for (const auto& name : names) {
             m_timers.push_back(clock);
-            cnt++;
         }
     };
 
@@ -92,59 +90,126 @@ struct Timers
         return std::distance(m_names.begin(), itr);
     }
 
-    std::string get_timings(MPI_Comm comm, int root = 0)
+    std::string get_timings_summary(
+        std::string solver, int step, MPI_Comm comm, int root = 0)
     {
-        const auto len = m_timers.size();
+        double total_min, total_avg, total_max;
+        total_times(total_min, total_avg, total_max, comm, root);
+
+        std::ostringstream total_time_out = get_line_output(
+            solver, step, "Total", total_min, total_avg, total_max);
+        return total_time_out.str();
+    };
+
+    std::string get_timings_detail(
+        std::string solver, int step, MPI_Comm comm, int root = 0)
+    {
+        std::vector<double> mintimes(m_timers.size(), 0.0);
+        std::vector<double> avgtimes(m_timers.size(), 0.0);
+        std::vector<double> maxtimes(m_timers.size(), 0.0);
+        par_reduce_times(mintimes, avgtimes, maxtimes, comm, root);
+
+        std::ostringstream outstream;
+        std::ostringstream linestream;
+        for (int i = 0; i < m_timers.size(); ++i) {
+            std::string func_call =
+                (m_timers.size() == 1) ? "Total" : m_names.at(i);
+
+            linestream = get_line_output(
+                solver, step, func_call, mintimes.at(i), avgtimes.at(i),
+                maxtimes.at(i));
+
+            outstream << linestream.str();
+            if (i < m_timers.size() - 1) outstream << std::endl;
+        }
+
+        //  accumulate only if there is more than 1 routine to report
+        if (m_timers.size() > 1) {
+            double total_min, total_avg, total_max;
+            total_times(total_min, total_avg, total_max, comm, root);
+
+            outstream << std::endl;
+            linestream = get_line_output(
+                solver, step, "Total", total_min, total_avg, total_max);
+            outstream << linestream.str();
+        }
+
+        return outstream.str();
+    };
+
+    void total_times(
+        double& total_min,
+        double& total_avg,
+        double& total_max,
+        MPI_Comm comm,
+        int root)
+    {
+        std::vector<double> mintimes(m_timers.size(), 0.0);
+        std::vector<double> avgtimes(m_timers.size(), 0.0);
+        std::vector<double> maxtimes(m_timers.size(), 0.0);
+        par_reduce_times(mintimes, avgtimes, maxtimes, comm, root);
+
+        total_min = std::accumulate(mintimes.begin(), mintimes.end(), 0.0);
+        total_avg = std::accumulate(mintimes.begin(), mintimes.end(), 0.0);
+        total_max = std::accumulate(maxtimes.begin(), maxtimes.end(), 0.0);
+    }
+
+    void par_reduce_times(
+        std::vector<double>& mintimes,
+        std::vector<double>& avgtimes,
+        std::vector<double>& maxtimes,
+        MPI_Comm comm,
+        int root)
+    {
         const auto times = counts();
-        std::vector<double> maxtimes(len, 0.0);
-        std::vector<double> mintimes(len, 0.0);
-        std::vector<double> avgtimes(len, 0.0);
         MPI_Reduce(
-            times.data(), maxtimes.data(), len, MPI_DOUBLE, MPI_MAX, root,
-            comm);
+            times.data(), mintimes.data(), m_timers.size(), MPI_DOUBLE, MPI_MIN,
+            root, comm);
         MPI_Reduce(
-            times.data(), mintimes.data(), len, MPI_DOUBLE, MPI_MIN, root,
-            comm);
+            times.data(), avgtimes.data(), m_timers.size(), MPI_DOUBLE, MPI_SUM,
+            root, comm);
         MPI_Reduce(
-            times.data(), avgtimes.data(), len, MPI_DOUBLE, MPI_SUM, root,
-            comm);
+            times.data(), maxtimes.data(), m_timers.size(), MPI_DOUBLE, MPI_MAX,
+            root, comm);
 
         int psize;
         MPI_Comm_size(comm, &psize);
         for (auto& elem : avgtimes) {
             elem /= psize;
         }
+    }
 
+    std::ostringstream get_line_output(
+        std::string solver,
+        int step,
+        std::string func_call,
+        double min,
+        double avg,
+        double max)
+    {
         std::ostringstream outstream;
         const double ms2s = 1000.0;
         const char separator = ' ';
-        const int name_width = 10;
+        const int name_width = 25;
         const int num_width = 10;
         const int num_precision = 4;
-        for (int i = 0; i < len; i++) {
-            outstream << "  " << std::left << std::setw(name_width)
-                      << std::setfill(separator) << m_names.at(i) + ":"
-                      << std::setw(num_width) << std::setfill(separator)
-                      << std::fixed << std::setprecision(num_precision)
-                      << std::right << (mintimes.at(i) / ms2s)
-                      << std::setw(num_width) << std::setfill(separator)
-                      << std::fixed << std::setprecision(num_precision)
-                      << std::right << (avgtimes.at(i) / ms2s)
-                      << std::setw(num_width) << std::setfill(separator)
-                      << std::fixed << std::setprecision(num_precision)
-                      << std::right << (maxtimes.at(i) / ms2s) << std::endl;
-        }
-        const double total = std::accumulate(
-            avgtimes.begin(), avgtimes.end(),
-            decltype(avgtimes)::value_type(0.0));
-        outstream << "  " << std::left << std::setw(name_width)
-                  << std::setfill(separator) << "Total:" << std::setw(num_width)
+
+        outstream << std::left << std::setw(name_width)
+                  << std::setfill(separator) << solver + "::" + func_call
+                  << std::setw(num_width) << std::setfill(separator)
+                  << std::fixed << std::setprecision(num_precision)
+                  << std::right << step << std::setw(num_width)
                   << std::setfill(separator) << std::fixed
                   << std::setprecision(num_precision) << std::right
-                  << (total / ms2s);
-        std::string out(outstream.str());
-        return out;
-    };
+                  << (min / ms2s) << std::setw(num_width)
+                  << std::setfill(separator) << std::fixed
+                  << std::setprecision(num_precision) << std::right
+                  << (avg / ms2s) << std::setw(num_width)
+                  << std::setfill(separator) << std::fixed
+                  << std::setprecision(num_precision) << std::right
+                  << (max / ms2s);
+        return outstream;
+    }
 };
 } // namespace exawind
 #endif /* TIMERS_H */

@@ -86,15 +86,7 @@ public:
         update_solution();
         m_timers.tock(name);
     };
-    void echo_timers(const int step)
-    {
-        ParallelPrinter printer(comm());
-        const auto timings = m_timers.get_timings(comm(), printer.io_rank());
-        const std::string out = identifier() + " step: " + std::to_string(step);
-        printer.echo(out + "\n" + timings);
-    }
 
-    long mem_usage();
     virtual bool is_unstructured() { return false; };
     virtual bool is_amr() { return false; };
     virtual int overset_update_interval() { return 100000000; };
@@ -102,6 +94,7 @@ public:
     virtual std::string identifier() { return "ExawindSolver"; }
     virtual MPI_Comm comm() = 0;
     virtual int get_ncomps() { return 0; };
+    void timing_details();
     //! Timer names
     std::vector<std::string> m_names{
         "Pre", "PreConn", "PostConn", "Register", "Update", "Solve", "Post"};

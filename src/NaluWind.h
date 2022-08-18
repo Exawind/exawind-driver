@@ -22,11 +22,13 @@ private:
     sierra::nalu::Simulation m_sim;
     std::vector<std::string> m_fnames;
     int m_ncomps;
+    int m_id;
 
 public:
     static void initialize();
     static void finalize();
     explicit NaluWind(
+        int id,
         stk::ParallelMachine comm,
         const std::string& inp_file,
         const std::vector<std::string>& fnames,
@@ -36,7 +38,10 @@ public:
     bool is_amr() override { return false; }
     int overset_update_interval() override;
     int time_index() override;
-    std::string identifier() override { return "Nalu-Wind"; }
+    std::string identifier() override
+    {
+        return ("Nalu-Wind-" + std::to_string(m_id));
+    }
     MPI_Comm comm() override { return m_comm; }
     int get_ncomps() override { return m_ncomps; }
 
