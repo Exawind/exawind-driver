@@ -214,9 +214,10 @@ void OversetSimulation::print_timing(const int nt)
                 total_send[0], total_send[1], total_send[2], ss->comm(),
                 printer.io_rank());
 
-            MPI_Request request;
-            MPI_Isend(total_send.data(), 3, MPI_DOUBLE, 0, 0, m_comm, &request);
             if (printer.is_io_rank()) {
+                MPI_Request request;
+                MPI_Isend(
+                    total_send.data(), 3, MPI_DOUBLE, 0, 0, m_comm, &request);
                 double nalu_total_min = 0.0, nalu_total_avg = 0.0,
                        nalu_total_max = 0.0;
                 for (const auto& start_rank : m_nw_start_rank) {
