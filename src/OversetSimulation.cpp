@@ -214,15 +214,15 @@ void OversetSimulation::print_timing(const int nt)
                 total_send[0], total_send[1], total_send[2], ss->comm(),
                 printer.io_rank());
 
-            MPI_Send(total_send.data(), 3, MPI_DOUBLE, 0, 0, m_comm);
+            //MPI_Send(total_send.data(), 3, MPI_DOUBLE, 0, 0, m_comm);
             if (printer.is_io_rank()) {
                 double nalu_total_min = 0.0, nalu_total_avg = 0.0,
                        nalu_total_max = 0.0;
                 for (const auto& start_rank : m_nw_start_rank) {
                     std::vector<double> total_recv(3, 0.0);
-                    MPI_Recv(
-                        total_recv.data(), 3, MPI_DOUBLE, start_rank, 0, m_comm,
-                        MPI_STATUS_IGNORE);
+                    //MPI_Recv(
+                    //    total_recv.data(), 3, MPI_DOUBLE, start_rank, 0, m_comm,
+                    //    MPI_STATUS_IGNORE);
 
                     nalu_total_min += total_recv[0];
                     nalu_total_avg += total_recv[1];
