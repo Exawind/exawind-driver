@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14.0 FATAL_ERROR)
 
-project(exawind CXX)
+project(exawind CXX C)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include(exawind-utils)
