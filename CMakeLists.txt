@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14.0 FATAL_ERROR)
 
-project(exawind CXX C Fortran)
+project(exawind CXX C)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include(exawind-utils)
@@ -38,6 +38,7 @@ find_package(AMR-Wind REQUIRED)
 find_package(YAML-CPP 0.6.2 REQUIRED)
 find_package(Filesystem)
 if(NALU_USES_OPENFAST)
+  enable_language(Fortran)
   find_package(OpenFAST REQUIRED)
 endif()
 
