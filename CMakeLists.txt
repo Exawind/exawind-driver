@@ -13,6 +13,7 @@ option(EXAWIND_TEST_WITH_FCOMPARE "Check AMR-Wind test plots against gold files"
 option(EXAWIND_SAVE_GOLDS "Provide a directory in which to save golds during testing" OFF)
 option(EXAWIND_ENABLE_CUDA "Enable CUDA" OFF)
 option(EXAWIND_ENABLE_ROCM "Enable HIP" OFF)
+option(EXAWIND_ENABLE_UMPIRE "Enable Umpire GPU memory pools" OFF)
 
 if(EXAWIND_ENABLE_CUDA)
   enable_language(CUDA)
@@ -24,6 +25,12 @@ if(EXAWIND_ENABLE_ROCM)
   find_package(rocrand REQUIRED CONFIG)
   find_package(rocprim REQUIRED CONFIG)
   find_package(hiprand REQUIRED CONFIG)
+endif()
+
+if (EXAWIND_ENABLE_UMPIRE)
+  set(CMAKE_PREFIX_PATH ${UMPIRE_DIR} ${CMAKE_PREFIX_PATH})
+  find_package(Umpire REQUIRED)
+  include_directories(SYSTEM ${UMPIRE_INCLUDE_DIRS})
 endif()
 
 set(CMAKE_PREFIX_PATH ${Trilinos_DIR} ${TIOGA_DIR}
