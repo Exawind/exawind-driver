@@ -137,4 +137,11 @@ int NaluWind::overset_update_interval()
 
 int NaluWind::time_index() { return m_sim.timeIntegrator_->timeStepCount_; }
 
+void NaluWind::dump_simulation_time()
+{
+    for (auto& realm : m_sim.timeIntegrator_->realmVec_) {
+        realm->dump_simulation_time();
+    }
+}
+
 } // namespace exawind

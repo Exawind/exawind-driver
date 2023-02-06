@@ -87,6 +87,8 @@ public:
         m_timers.tock(name);
     };
 
+    void call_dump_simulation_time() { dump_simulation_time(); };
+
     virtual bool is_unstructured() { return false; };
     virtual bool is_amr() { return false; };
     virtual int overset_update_interval() { return 100000000; };
@@ -115,6 +117,7 @@ protected:
     virtual void post_overset_conn_work() = 0;
     virtual void register_solution() = 0;
     virtual void update_solution() = 0;
+    virtual void dump_simulation_time() = 0;
 };
 
 } // namespace exawind

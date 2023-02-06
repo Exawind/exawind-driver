@@ -168,7 +168,7 @@ void OversetSimulation::run_timesteps(const int add_pic_its, const int nsteps)
 
         mem_usage_all(nt);
     }
-
+    for (auto& ss : m_solvers) ss->call_dump_simulation_time();
     m_last_timestep = tend;
 }
 
