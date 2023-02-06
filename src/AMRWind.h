@@ -46,6 +46,7 @@ protected:
     void post_overset_conn_work() override;
     void register_solution() override;
     void update_solution() override;
+    void dump_simulation_time() override{};
     MPI_Comm m_comm;
 };
 
