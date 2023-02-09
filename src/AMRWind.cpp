@@ -70,14 +70,20 @@ void AMRWind::prepare_solver_epilog()
     m_incflo.prepare_for_time_integration();
 }
 
-void AMRWind::pre_advance_stage1()
+void AMRWind::pre_advance_stage1(size_t inonlin)
 {
-    m_incflo.sim().time().new_timestep();
-    m_incflo.regrid_and_update();
-    m_incflo.pre_advance_stage1();
+    if (inonlin < 1) {
+        m_incflo.sim().time().new_timestep();
+        m_incflo.regrid_and_update();
+        m_incflo.pre_advance_stage1();
+    }
 }
 
-void AMRWind::pre_advance_stage2() { m_incflo.pre_advance_stage2(); }
+void AMRWind::pre_advance_stage2(size_t inonlin)
+{
+    if (inonlin < 1)
+        m_incflo.pre_advance_stage2();
+}
 
 void AMRWind::advance_timestep() { m_incflo.advance(); }
 

@@ -138,15 +138,18 @@ void OversetSimulation::run_timesteps(const int add_pic_its, const int nsteps)
 
         m_timers_exa.tick("TimeStep");
 
-        for (auto& ss : m_solvers) ss->call_pre_advance_stage1();
+        for (size_t inonlin=0; inonlin < 2; inonlin++) {
+            
+            for (auto& ss : m_solvers) ss->call_pre_advance_stage1(inonlin);
 
-        if (do_connectivity(nt)) perform_overset_connectivity();
+            if (do_connectivity(nt)) perform_overset_connectivity();
+            
+            for (auto& ss : m_solvers) ss->call_pre_advance_stage2(inonlin);
 
-        for (auto& ss : m_solvers) ss->call_pre_advance_stage2();
+            exchange_solution();
 
-        exchange_solution();
-
-        for (auto& ss : m_solvers) ss->call_advance_timestep();
+            for (auto& ss : m_solvers) ss->call_advance_timestep();
+        }
 
         if (add_pic_its > 0) {
             exchange_solution();

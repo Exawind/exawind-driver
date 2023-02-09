@@ -19,18 +19,18 @@ public:
     void call_init_epilog() { init_epilog(); };
     void call_prepare_solver_prolog() { prepare_solver_prolog(); };
     void call_prepare_solver_epilog() { prepare_solver_epilog(); };
-    void call_pre_advance_stage1()
+    void call_pre_advance_stage1(size_t inonlin)
     {
         const std::string name = "Pre";
         m_timers.tick(name);
-        pre_advance_stage1();
+        pre_advance_stage1(inonlin);
         m_timers.tock(name);
     };
-    void call_pre_advance_stage2()
+    void call_pre_advance_stage2(size_t inonlin )
     {
         const std::string name = "Pre";
         m_timers.tick(name);
-        pre_advance_stage2();
+        pre_advance_stage2(inonlin);
         m_timers.tock(name);
     };
     void call_advance_timestep()
@@ -108,8 +108,8 @@ protected:
     virtual void init_epilog() = 0;
     virtual void prepare_solver_prolog() = 0;
     virtual void prepare_solver_epilog() = 0;
-    virtual void pre_advance_stage1() = 0;
-    virtual void pre_advance_stage2() = 0;
+    virtual void pre_advance_stage1(size_t inonlin) = 0;
+    virtual void pre_advance_stage2(size_t inonlin) = 0;
     virtual void advance_timestep() = 0;
     virtual void additional_picard_iterations(const int) = 0;
     virtual void post_advance() = 0;
