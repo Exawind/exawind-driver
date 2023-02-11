@@ -179,8 +179,8 @@ int main(int argc, char** argv)
     sim.delete_solvers();
 
     if (amr_comm != MPI_COMM_NULL) {
-        out.close();
         exawind::AMRWind::finalize();
+        out.close();
     }
     if (std::any_of(nalu_comms.begin(), nalu_comms.end(), [](const auto& comm) {
             return comm != MPI_COMM_NULL;
