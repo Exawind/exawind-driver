@@ -105,7 +105,7 @@ int main(int argc, char** argv)
                 "specification per solver");
         }
         int tot_num_nw_ranks = 0;
-        for(std::vector<int>::iterator nwr = num_nw_solver_ranks.begin();
+        for (std::vector<int>::iterator nwr = num_nw_solver_ranks.begin();
             nwr != num_nw_solver_ranks.end(); ++nwr) {
             tot_num_nw_ranks += *nwr;
         }
@@ -117,13 +117,13 @@ int main(int argc, char** argv)
         }
     } else {
         const int ranks_per_nw_solver = num_nwind_ranks / num_nwsolvers;
-        num_nw_solver_ranks = std::vector<int>(num_nwsolvers,
-                                               ranks_per_nw_solver);
+        num_nw_solver_ranks =
+            std::vector<int>(num_nwsolvers, ranks_per_nw_solver);
         const int remainder = num_nwind_ranks % num_nwsolvers;
         if (remainder != 0) {
             std::fill(
-                      num_nw_solver_ranks.begin() + num_nwsolvers - remainder,
-                      num_nw_solver_ranks.end(), ranks_per_nw_solver + 1);
+                num_nw_solver_ranks.begin() + num_nwsolvers - remainder,
+                num_nw_solver_ranks.end(), ranks_per_nw_solver + 1);
         }
     }
     const int ranks_per_nw_solver = num_nwind_ranks / num_nwsolvers;
