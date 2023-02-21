@@ -126,14 +126,6 @@ int main(int argc, char** argv)
                 num_nw_solver_ranks.end(), ranks_per_nw_solver + 1);
         }
     }
-    const int ranks_per_nw_solver = num_nwind_ranks / num_nwsolvers;
-    std::vector<int> num_nw_solver_ranks(num_nwsolvers, ranks_per_nw_solver);
-    const int remainder = num_nwind_ranks % num_nwsolvers;
-    if (remainder != 0) {
-        std::fill(
-            num_nw_solver_ranks.begin() + num_nwsolvers - remainder,
-            num_nw_solver_ranks.end(), ranks_per_nw_solver + 1);
-    }
 
     if (!use_amr_wind) {
         num_awind_ranks = 0;
