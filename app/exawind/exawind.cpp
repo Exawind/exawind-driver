@@ -96,7 +96,7 @@ int main(int argc, char** argv)
             "solvers. Please have at least one rank per solver.");
     }
     std::vector<int> num_nw_solver_ranks;
-    if(node["nalu_wind_procs"]) {
+    if (node["nalu_wind_procs"]) {
         num_nw_solver_ranks = node["nalu_wind_procs"].as<std::vector<int>>();
         if (num_nw_solver_ranks.size() != num_nwsolvers) {
             throw std::runtime_error(
@@ -106,7 +106,7 @@ int main(int argc, char** argv)
         }
         int tot_num_nw_ranks = 0;
         for (std::vector<int>::iterator nwr = num_nw_solver_ranks.begin();
-            nwr != num_nw_solver_ranks.end(); ++nwr) {
+             nwr != num_nw_solver_ranks.end(); ++nwr) {
             tot_num_nw_ranks += *nwr;
         }
         if (tot_num_nw_ranks != num_nwind_ranks) {
