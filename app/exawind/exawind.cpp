@@ -104,11 +104,9 @@ int main(int argc, char** argv)
                 " number of Nalu-Wind solvers. Please have one rank count "
                 "specification per solver");
         }
-        int tot_num_nw_ranks = 0;
-        for (std::vector<int>::iterator nwr = num_nw_solver_ranks.begin();
-             nwr != num_nw_solver_ranks.end(); ++nwr) {
-            tot_num_nw_ranks += *nwr;
-        }
+        const int tot_num_nw_ranks =
+            std::accumulate(num_nw_solver_ranks.begin(),
+                            num_nw_solver_ranks.end(), 0);
         if (tot_num_nw_ranks != num_nwind_ranks) {
             throw std::runtime_error(
                 "Total number of Nalu-Wind ranks does not "
