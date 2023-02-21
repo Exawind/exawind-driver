@@ -95,6 +95,37 @@ int main(int argc, char** argv)
             "Number of Nalu-Wind ranks is less than the number of Nalu-Wind "
             "solvers. Please have at least one rank per solver.");
     }
+    std::vector<int> num_nw_solver_ranks;
+    if(node["nalu_wind_procs"]) {
+        num_nw_solver_ranks = node["nalu_wind_procs"].as<std::vector<int>>();
+        if (num_nw_solver_ranks.size() != num_nwsolvers) {
+            throw std::runtime_error(
+                "Number of Nalu-Wind rank specifications is less than the "
+                " number of Nalu-Wind solvers. Please have one rank count "
+                "specification per solver");
+        }
+        int tot_num_nw_ranks = 0;
+        for(std::vector<int>::iterator nwr = num_nw_solver_ranks.begin();
+            nwr != num_nw_solver_ranks.end(); ++nwr) {
+            tot_num_nw_ranks += *nwr;
+        }
+        if (tot_num_nw_ranks != num_nwind_ranks) {
+            throw std::runtime_error(
+                "Total number of Nalu-Wind ranks does not "
+                "match that given in the command line. Please ensure "
+                "they match");
+        }
+    } else {
+        const int ranks_per_nw_solver = num_nwind_ranks / num_nwsolvers;
+        num_nw_solver_ranks = std::vector<int>(num_nwsolvers,
+                                               ranks_per_nw_solver);
+        const int remainder = num_nwind_ranks % num_nwsolvers;
+        if (remainder != 0) {
+            std::fill(
+                      num_nw_solver_ranks.begin() + num_nwsolvers - remainder,
+                      num_nw_solver_ranks.end(), ranks_per_nw_solver + 1);
+        }
+    }
     const int ranks_per_nw_solver = num_nwind_ranks / num_nwsolvers;
     std::vector<int> num_nw_solver_ranks(num_nwsolvers, ranks_per_nw_solver);
     const int remainder = num_nwind_ranks % num_nwsolvers;
