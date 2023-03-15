@@ -91,7 +91,7 @@ void NaluWind::pre_advance_stage2(size_t inonlin)
     m_sim.timeIntegrator_->pre_realm_advance_stage2(inonlin);
 }
 
-void NaluWind::advance_timestep()
+void NaluWind::advance_timestep(size_t inonlin)
 {
     for (auto* realm : m_sim.timeIntegrator_->realmVec_) {
         realm->advance_time_step();

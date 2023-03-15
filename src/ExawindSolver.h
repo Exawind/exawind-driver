@@ -33,11 +33,11 @@ public:
         pre_advance_stage2(inonlin);
         m_timers.tock(name);
     };
-    void call_advance_timestep()
+    void call_advance_timestep(size_t inonlin)
     {
         const std::string name = "Solve";
         m_timers.tick(name);
-        advance_timestep();
+        advance_timestep(inonlin);
         m_timers.tock(name);
     };
     void call_additional_picard_iterations(const int n)
@@ -110,7 +110,7 @@ protected:
     virtual void prepare_solver_epilog() = 0;
     virtual void pre_advance_stage1(size_t inonlin) = 0;
     virtual void pre_advance_stage2(size_t inonlin) = 0;
-    virtual void advance_timestep() = 0;
+    virtual void advance_timestep(size_t inonlin) = 0;
     virtual void additional_picard_iterations(const int) = 0;
     virtual void post_advance() = 0;
     virtual void pre_overset_conn_work() = 0;

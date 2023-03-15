@@ -39,7 +39,7 @@ protected:
     void prepare_solver_epilog() override;
     void pre_advance_stage1(size_t inonlin) override;
     void pre_advance_stage2(size_t inonlin) override;
-    void advance_timestep() override;
+    void advance_timestep(size_t inonlin) override;
     void additional_picard_iterations(const int) override{};
     void post_advance() override;
     void pre_overset_conn_work() override;
