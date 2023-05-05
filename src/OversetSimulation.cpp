@@ -149,9 +149,12 @@ void OversetSimulation::run_timesteps(const int add_pic_its, const int nsteps)
         for (auto& ss : m_solvers) ss->call_advance_timestep();
 
         if (add_pic_its > 0) {
-            exchange_solution();
-            for (auto& ss : m_solvers)
-                ss->call_additional_picard_iterations(add_pic_its);
+            for (int n = 0; n < add_pic_its; ++n) {
+                for (auto& ss : m_solvers) {
+                    exchange_solution();
+                    ss->call_additional_picard_iteration(n);
+                }
+            }
         }
 
         for (auto& ss : m_solvers) ss->call_post_advance();

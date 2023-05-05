@@ -97,10 +97,10 @@ void NaluWind::advance_timestep()
         realm->advance_time_step();
 }
 
-void NaluWind::additional_picard_iterations(const int n)
+void NaluWind::additional_picard_iteration()
 {
     for (auto* realm : m_sim.timeIntegrator_->realmVec_)
-        realm->nonlinear_iterations(n);
+        realm->nonlinear_iterations(1);
 }
 
 void NaluWind::post_advance() { m_sim.timeIntegrator_->post_realm_advance(); }

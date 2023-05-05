@@ -3,6 +3,7 @@
 
 #include "Timers.h"
 #include "ParallelPrinter.h"
+#include <sstream> 
 
 namespace exawind {
 
@@ -40,15 +41,18 @@ public:
         advance_timestep();
         m_timers.tock(name);
     };
-    void call_additional_picard_iterations(const int n)
+    void call_additional_picard_iteration(const int n)
     {
-        std::string name = "AdditionalPicardIterations";
+        std::stringstream it;
+        it << "AdditionalPicardIteration: " << n;
+        std::string name;
+        it >> name;
         if (std::find(m_names.begin(), m_names.end(), name) == m_names.end()) {
             m_timers.addTimer(name);
             m_names.push_back(name);
         }
         m_timers.tick(name);
-        additional_picard_iterations(n);
+        additional_picard_iteration();
         m_timers.tock(name);
     };
     void call_post_advance()
@@ -111,7 +115,7 @@ protected:
     virtual void pre_advance_stage1() = 0;
     virtual void pre_advance_stage2() = 0;
     virtual void advance_timestep() = 0;
-    virtual void additional_picard_iterations(const int) = 0;
+    virtual void additional_picard_iteration() = 0;
     virtual void post_advance() = 0;
     virtual void pre_overset_conn_work() = 0;
     virtual void post_overset_conn_work() = 0;

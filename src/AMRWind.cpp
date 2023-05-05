@@ -81,6 +81,11 @@ void AMRWind::pre_advance_stage2() { m_incflo.pre_advance_stage2(); }
 
 void AMRWind::advance_timestep() { m_incflo.advance(); }
 
+void AMRWind::additional_picard_iteration()
+{
+    m_incflo.redo_proj();
+}
+
 void AMRWind::post_advance() { m_incflo.post_advance_work(); }
 
 void AMRWind::pre_overset_conn_work() { m_tgiface.pre_overset_conn_work(); }
