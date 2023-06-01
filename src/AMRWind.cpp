@@ -79,7 +79,7 @@ void AMRWind::pre_advance_stage1()
 
 void AMRWind::pre_advance_stage2() { m_incflo.pre_advance_stage2(); }
 
-void AMRWind::advance_timestep() { m_incflo.advance(); }
+void AMRWind::advance_timestep() { m_incflo.do_advance(); }
 
 void AMRWind::post_advance() { m_incflo.post_advance_work(); }
 
