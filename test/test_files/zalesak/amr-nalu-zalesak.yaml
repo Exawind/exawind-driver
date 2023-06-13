@@ -1,0 +1,13 @@
+
+exawind:
+  nalu_wind_inp:
+    - nalu-z.yaml
+  amr_wind_inp: amr-z.inp
+  num_timesteps: 600
+  additional_picard_iterations: 2
+
+  nalu_vars:
+    - volume_of_fluid
+  amr_cell_vars:
+    - vof
+  amr_node_vars: []
