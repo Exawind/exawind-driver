@@ -1,9 +1,9 @@
 
 exawind:
   nalu_wind_inp:
-    - nalu-z.yaml
-  amr_wind_inp: amr-z.inp
-  num_timesteps: 600
+    - zalesak-nalu.yaml
+  amr_wind_inp: zalesak-amr.inp
+  num_timesteps: 60
   additional_picard_iterations: 2
 
   nalu_vars:
