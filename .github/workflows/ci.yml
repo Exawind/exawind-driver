@@ -35,7 +35,6 @@ jobs:
         with:
           submodules: true
       - name: Tests
-        working-directory: /spack-manager/environments/exawind
         run: |
           /bin/bash -c " \
             source ${SPACK_MANAGER}/start.sh && \
