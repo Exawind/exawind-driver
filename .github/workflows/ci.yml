@@ -39,9 +39,11 @@ jobs:
         run: |
           /bin/bash -c " \
             source ${SPACK_MANAGER}/start.sh && \
+            quick-create -n ci -s exawind@master && \
+            spack cd -e && \
             ln -s ${GITHUB_WORKSPACE} exawind && \
-            source ${SPACK_MANAGER}/start.sh && \
-            quick-develop -s exawind@master && \
+            spack develop exawind@master && \
+            spack manager external --latest --blacklist gmake exawind
             spack install && \
             spack cd -b exawind && \
             spack build-env exawind ctest -j $(nproc) --output-on-failure \
