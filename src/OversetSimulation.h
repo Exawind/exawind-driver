@@ -76,7 +76,7 @@ public:
     void perform_overset_connectivity();
 
     //! Exchange solution between solvers
-    void exchange_solution();
+    void exchange_solution(const bool increment_time = false);
 
     //! Run prescribed number of timesteps
     void run_timesteps(const int add_pic_its,

@@ -100,12 +100,12 @@ void OversetSimulation::perform_overset_connectivity()
     for (auto& ss : m_solvers) ss->call_post_overset_conn_work();
 }
 
-void OversetSimulation::exchange_solution()
+void OversetSimulation::exchange_solution(bool increment_time)
 {
 
     for (auto& ss : m_solvers) ss->call_register_solution();
 
-    m_timers_tg.tick("SolExchange");
+    m_timers_tg.tick("SolExchange", increment_time);
     if (m_has_amr) {
         m_tg.dataUpdate_AMR();
     } else {
@@ -155,7 +155,7 @@ void OversetSimulation::run_timesteps(const int add_pic_its,
         }
 
         if (add_pic_its > 0) {
-            exchange_solution();
+            exchange_solution(true);
             for (auto& ss : m_solvers)
                 ss->call_additional_picard_iterations(add_pic_its);
         }
