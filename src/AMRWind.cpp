@@ -81,14 +81,12 @@ void AMRWind::pre_advance_stage1(size_t inonlin)
 
 void AMRWind::pre_advance_stage2(size_t inonlin)
 {
-    if (inonlin < 1)
-        m_incflo.pre_advance_stage2();
+    if (inonlin < 1) m_incflo.pre_advance_stage2();
 }
 
 void AMRWind::advance_timestep(size_t inonlin)
 {
-    if (inonlin < 1)
-        m_incflo.do_advance();
+    if (inonlin < 1) m_incflo.do_advance();
 }
 
 void AMRWind::post_advance() { m_incflo.post_advance_work(); }

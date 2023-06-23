@@ -79,9 +79,10 @@ public:
     void exchange_solution(const bool increment_time = false);
 
     //! Run prescribed number of timesteps
-    void run_timesteps(const int add_pic_its,
-                       const int nonlinear_its = 1,
-                       const int nsteps = 1);
+    void run_timesteps(
+        const int add_pic_its,
+        const int nonlinear_its = 1,
+        const int nsteps = 1);
 
     //! Print something
     void echo(const std::string& out) { m_printer.echo(out); }

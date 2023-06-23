@@ -177,11 +177,10 @@ int main(int argc, char** argv)
         node["additional_picard_iterations"]
             ? node["additional_picard_iterations"].as<int>()
             : 0;
-    const int nonlinear_its =
-        node["nonlinear_iterations"]
-        ? node["nonlinear_iterations"].as<int>()
-        : 1;
-    
+    const int nonlinear_its = node["nonlinear_iterations"]
+                                  ? node["nonlinear_iterations"].as<int>()
+                                  : 1;
+
     for (int i = 0; i < num_nwsolvers; i++) {
         if (nalu_comms.at(i) != MPI_COMM_NULL)
             sim.register_solver<exawind::NaluWind>(

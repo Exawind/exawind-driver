@@ -26,7 +26,7 @@ public:
         pre_advance_stage1(inonlin);
         m_timers.tock(name);
     };
-    void call_pre_advance_stage2(size_t inonlin )
+    void call_pre_advance_stage2(size_t inonlin)
     {
         const std::string name = "Pre";
         m_timers.tick(name);
