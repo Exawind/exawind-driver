@@ -147,7 +147,7 @@ void OversetSimulation::run_timesteps(
 
             for (auto& ss : m_solvers) ss->call_pre_advance_stage2(inonlin);
 
-            increment_timer = inonlin > 0 ? true : false;
+            bool increment_timer = inonlin > 0 ? true : false;
             exchange_solution(increment_timer);
 
             for (auto& ss : m_solvers) ss->call_advance_timestep(inonlin);
