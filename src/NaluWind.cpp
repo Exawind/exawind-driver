@@ -81,20 +81,22 @@ void NaluWind::prepare_solver_epilog()
         realm->output_converged_results();
 }
 
-void NaluWind::pre_advance_stage1()
+void NaluWind::pre_advance_stage1(size_t inonlin)
 {
-    m_sim.timeIntegrator_->pre_realm_advance_stage1();
+    m_sim.timeIntegrator_->pre_realm_advance_stage1(inonlin);
 }
 
-void NaluWind::pre_advance_stage2()
+void NaluWind::pre_advance_stage2(size_t inonlin)
 {
-    m_sim.timeIntegrator_->pre_realm_advance_stage2();
+    m_sim.timeIntegrator_->pre_realm_advance_stage2(inonlin);
 }
 
-void NaluWind::advance_timestep()
+void NaluWind::advance_timestep(size_t inonlin)
 {
-    for (auto* realm : m_sim.timeIntegrator_->realmVec_)
+    for (auto* realm : m_sim.timeIntegrator_->realmVec_) {
         realm->advance_time_step();
+        realm->process_multi_physics_transfer();
+    }
 }
 
 void NaluWind::additional_picard_iterations(const int n)

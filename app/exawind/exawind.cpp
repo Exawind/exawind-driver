@@ -177,6 +177,10 @@ int main(int argc, char** argv)
         node["additional_picard_iterations"]
             ? node["additional_picard_iterations"].as<int>()
             : 0;
+    const int nonlinear_its = node["nonlinear_iterations"]
+                                  ? node["nonlinear_iterations"].as<int>()
+                                  : 1;
+
     for (int i = 0; i < num_nwsolvers; i++) {
         if (nalu_comms.at(i) != MPI_COMM_NULL)
             sim.register_solver<exawind::NaluWind>(
@@ -195,7 +199,7 @@ int main(int argc, char** argv)
     sim.echo("Initializing overset simulation");
     sim.initialize();
     sim.echo("Initialization successful");
-    sim.run_timesteps(additional_picard_its, num_timesteps);
+    sim.run_timesteps(additional_picard_its, nonlinear_its, num_timesteps);
     sim.delete_solvers();
 
     if (amr_comm != MPI_COMM_NULL) {
