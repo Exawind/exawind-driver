@@ -27,10 +27,25 @@ private:
 public:
     static void initialize();
     static void finalize();
+    static std::string
+    logfile_from_input_file_name(std::string inpfile, int index = -1)
+    {
+        int extloc = inpfile.rfind(".");
+        std::string logfile = inpfile;
+        std::string tail = ".log";
+        if (index >= 0) {
+            tail = "_" + std::to_string(index) + tail;
+        }
+        if (extloc != std::string::npos) {
+            logfile = inpfile.substr(0, extloc) + tail;
+        }
+        return logfile;
+    }
     explicit NaluWind(
         int id,
         stk::ParallelMachine comm,
-        const std::string& inp_file,
+        const YAML::Node& inp_yaml,
+        const std::string& logfile,
         const std::vector<std::string>& fnames,
         TIOGA::tioga& tg);
     ~NaluWind();

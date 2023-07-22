@@ -3,6 +3,7 @@
 #include "OversetSimulation.h"
 #include "MPIUtilities.h"
 #include "mpi.h"
+#include "yaml-editor.hpp"
 #ifdef EXAWIND_HAS_STD_FILESYSTEM
 #include <filesystem>
 #endif
@@ -88,8 +89,10 @@ int main(int argc, char** argv)
 #endif
     std::ofstream out;
 
-    const auto nalu_inps = node["nalu_wind_inp"].as<std::vector<std::string>>();
-    const int num_nwsolvers = nalu_inps.size();
+    const auto nalu_node = node["nalu_wind_inp"];
+    // make sure it is a list for now
+    assert(nalu_node.IsSequence);
+    const int num_nwsolvers = nalu_node.size();
     if (num_nwind_ranks < num_nwsolvers) {
         throw std::runtime_error(
             "Number of Nalu-Wind ranks is less than the number of Nalu-Wind "
@@ -181,10 +184,34 @@ int main(int argc, char** argv)
                                   ? node["nonlinear_iterations"].as<int>()
                                   : 1;
 
+    const auto yaml_replace_all = node["nalu_replace_all"];
     for (int i = 0; i < num_nwsolvers; i++) {
-        if (nalu_comms.at(i) != MPI_COMM_NULL)
+        if (nalu_comms.at(i) != MPI_COMM_NULL) {
+            YAML::Node yaml_replace_instance;
+            std::string nalu_inpfile, logfile;
+            if (nalu_node[i].IsMap()) {
+                yaml_replace_instance = nalu_node["replace"];
+                nalu_inpfile = nalu_node["input_file"].as<std::string>();
+                logfile = exawind::NaluWind::logfile_from_input_file_name(
+                    nalu_inpfile, i);
+            } else {
+                nalu_inpfile = nalu_node[i].as<std::string>();
+                logfile = exawind::NaluWind::logfile_from_input_file_name(
+                    nalu_inpfile);
+            }
+
+            auto nalu_yaml = YAML::Load(nalu_inpfile);
+            // replace in order so instance can overwrite all
+            if (yaml_replace_all) {
+                YEDIT::find_and_replace(nalu_yaml, yaml_replace_all);
+            }
+            if (yaml_replace_instance) {
+                YEDIT::find_and_replace(nalu_yaml, yaml_replace_instance);
+            }
+
             sim.register_solver<exawind::NaluWind>(
-                i + 1, nalu_comms.at(i), nalu_inps.at(i), nalu_vars);
+                i + 1, nalu_comms.at(i), nalu_yaml, logfile, nalu_vars);
+        }
     }
 
     if (amr_comm != MPI_COMM_NULL) {
