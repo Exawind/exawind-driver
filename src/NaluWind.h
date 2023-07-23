@@ -27,8 +27,8 @@ private:
 public:
     static void initialize();
     static void finalize();
-    static std::string
-    change_file_name_suffix(std::string inpfile, std::string suffix, int index = -1)
+    static std::string change_file_name_suffix(
+        std::string inpfile, std::string suffix, int index = -1)
     {
         int extloc = inpfile.rfind(".");
         std::string logfile = inpfile;

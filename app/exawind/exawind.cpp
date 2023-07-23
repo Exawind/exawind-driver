@@ -192,7 +192,8 @@ int main(int argc, char** argv)
             YAML::Node this_instance = nalu_node[i];
             if (this_instance.IsMap()) {
                 yaml_replace_instance = this_instance["replace"];
-                nalu_inpfile = this_instance["base_input_file"].as<std::string>();
+                nalu_inpfile =
+                    this_instance["base_input_file"].as<std::string>();
                 // deal with the logfile name
                 if (this_instance["logfile"]) {
                     logfile = this_instance["logfile"].as<std::string>();
