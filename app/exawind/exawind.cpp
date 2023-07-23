@@ -192,8 +192,13 @@ int main(int argc, char** argv)
             if (nalu_node[i].IsMap()) {
                 yaml_replace_instance = nalu_node["replace"];
                 nalu_inpfile = nalu_node["input_file"].as<std::string>();
-                logfile = exawind::NaluWind::logfile_from_input_file_name(
-                    nalu_inpfile, i);
+                // deal with the logfile name
+                if (nalu_node["logfile"]) {
+                    logfile = nalu_node["logfile"].as<std::string>();
+                } else {
+                    logfile = exawind::NaluWind::logfile_from_input_file_name(
+                        nalu_inpfile, i);
+                }
             } else {
                 nalu_inpfile = nalu_node[i].as<std::string>();
                 logfile = exawind::NaluWind::logfile_from_input_file_name(
