@@ -28,16 +28,15 @@ public:
     static void initialize();
     static void finalize();
     static std::string
-    logfile_from_input_file_name(std::string inpfile, int index = -1)
+    change_file_name_suffix(std::string inpfile, std::string suffix, int index = -1)
     {
         int extloc = inpfile.rfind(".");
         std::string logfile = inpfile;
-        std::string tail = ".log";
         if (index >= 0) {
-            tail = "_" + std::to_string(index) + tail;
+            suffix = "_" + std::to_string(index) + suffix;
         }
         if (extloc != std::string::npos) {
-            logfile = inpfile.substr(0, extloc) + tail;
+            logfile = inpfile.substr(0, extloc) + suffix;
         }
         return logfile;
     }

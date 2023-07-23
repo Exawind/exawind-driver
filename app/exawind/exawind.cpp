@@ -89,9 +89,9 @@ int main(int argc, char** argv)
 #endif
     std::ofstream out;
 
-    const auto nalu_node = node["nalu_wind_inp"];
+    YAML::Node nalu_node = node["nalu_wind_inp"];
     // make sure it is a list for now
-    assert(nalu_node.IsSequence);
+    assert(nalu_node.IsSequence());
     const int num_nwsolvers = nalu_node.size();
     if (num_nwind_ranks < num_nwsolvers) {
         throw std::runtime_error(
@@ -184,34 +184,44 @@ int main(int argc, char** argv)
                                   ? node["nonlinear_iterations"].as<int>()
                                   : 1;
 
-    const auto yaml_replace_all = node["nalu_replace_all"];
+    const YAML::Node yaml_replace_all = node["nalu_replace_all"];
     for (int i = 0; i < num_nwsolvers; i++) {
         if (nalu_comms.at(i) != MPI_COMM_NULL) {
             YAML::Node yaml_replace_instance;
             std::string nalu_inpfile, logfile;
-            if (nalu_node[i].IsMap()) {
-                yaml_replace_instance = nalu_node["replace"];
-                nalu_inpfile = nalu_node["input_file"].as<std::string>();
+            YAML::Node this_instance = nalu_node[i];
+            if (this_instance.IsMap()) {
+                yaml_replace_instance = this_instance["replace"];
+                nalu_inpfile = this_instance["base_input_file"].as<std::string>();
                 // deal with the logfile name
-                if (nalu_node["logfile"]) {
-                    logfile = nalu_node["logfile"].as<std::string>();
+                if (this_instance["logfile"]) {
+                    logfile = this_instance["logfile"].as<std::string>();
                 } else {
-                    logfile = exawind::NaluWind::logfile_from_input_file_name(
-                        nalu_inpfile, i);
+                    logfile = exawind::NaluWind::change_file_name_suffix(
+                        nalu_inpfile, ".log", i);
                 }
             } else {
-                nalu_inpfile = nalu_node[i].as<std::string>();
-                logfile = exawind::NaluWind::logfile_from_input_file_name(
-                    nalu_inpfile);
+                nalu_inpfile = this_instance.as<std::string>();
+                logfile = exawind::NaluWind::change_file_name_suffix(
+                    nalu_inpfile, ".log");
             }
 
-            auto nalu_yaml = YAML::Load(nalu_inpfile);
+            YAML::Node nalu_yaml = YAML::LoadFile(nalu_inpfile);
             // replace in order so instance can overwrite all
             if (yaml_replace_all) {
                 YEDIT::find_and_replace(nalu_yaml, yaml_replace_all);
             }
             if (yaml_replace_instance) {
                 YEDIT::find_and_replace(nalu_yaml, yaml_replace_instance);
+            }
+
+            if (this_instance["write_final_yaml_to_disk"]) {
+                auto new_ifile_name =
+                    exawind::NaluWind::change_file_name_suffix(
+                        logfile, ".yaml");
+                std::ofstream fout(new_ifile_name);
+                fout << nalu_yaml;
+                fout.close();
             }
 
             sim.register_solver<exawind::NaluWind>(
