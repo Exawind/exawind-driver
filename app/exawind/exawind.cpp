@@ -192,11 +192,6 @@ int main(int argc, char** argv)
 
             std::string nalu_inpfile, logfile;
             bool write_final_yaml_to_disk = false;
-            if (this_instance["write_final_yaml_to_disk"]) {
-                write_final_yaml_to_disk =
-                    this_instance["write_final_yaml_to_disk"].as<bool>();
-            }
-
             if (this_instance.IsMap()) {
                 yaml_replace_instance = this_instance["replace"];
                 nalu_inpfile =
@@ -208,6 +203,11 @@ int main(int argc, char** argv)
                     logfile = exawind::NaluWind::change_file_name_suffix(
                         nalu_inpfile, ".log", i);
                 }
+                if (this_instance["write_final_yaml_to_disk"]) {
+                    write_final_yaml_to_disk =
+                        this_instance["write_final_yaml_to_disk"].as<bool>();
+                }
+
             } else {
                 nalu_inpfile = this_instance.as<std::string>();
                 logfile = exawind::NaluWind::change_file_name_suffix(
