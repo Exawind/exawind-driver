@@ -4,6 +4,10 @@
 
 namespace YEDIT {
 
+/* Exception if the graph is not formatted correctly
+ * This exception is designed to reproduce the failing portion of the YAML graph
+ * when called recursively so it can be echo'd to the user
+ */
 class YamlNodeMatchException : public std::exception
 {
 public:
@@ -22,10 +26,18 @@ private:
 };
 
 namespace {
-void impl_find_and_replace(YAML::Node src, YAML::Node key)
+/* A function that will traverse the src node based on the key node
+ * The two nodes must be identical until the final leaf values and then the
+ * values of the key will override the src values. If the two graphs don't match
+ * at any point prior to the leaves then it will trigger a
+ * YamlNodeMatchException.
+ */
+inline void impl_find_and_replace(YAML::Node src, YAML::Node key)
 {
     switch (key.Type()) {
     case YAML::NodeType::Map:
+        // case 1: it's a map
+        //- pass the contents of the map recursively
         for (auto n : key) {
             std::string k = static_cast<std::string>(n.first.Scalar());
             try {
@@ -36,6 +48,9 @@ void impl_find_and_replace(YAML::Node src, YAML::Node key)
         }
         break;
     case YAML::NodeType::Sequence:
+        // case 2: it's a list
+        //- pass the contents of the list recursively (order matters when
+        //looking for a match)
         for (int i = 0; i < key.size(); ++i) {
             try {
                 impl_find_and_replace(src[i], key[i]);
@@ -46,6 +61,8 @@ void impl_find_and_replace(YAML::Node src, YAML::Node key)
         }
         break;
     case YAML::NodeType::Scalar: {
+        // case 3: it's a scalar
+        //- replace value
         if (src.Type() != key.Type()) {
             // we have a invalid path in the key
             throw YamlNodeMatchException(key.as<std::string>());
@@ -59,7 +76,10 @@ void impl_find_and_replace(YAML::Node src, YAML::Node key)
 }
 } // namespace
 
-void find_and_replace(YAML::Node src, YAML::Node key)
+/* The accessible version of impl_find_and_replace that collects the final
+ * error and makes it more readable
+ */
+inline void find_and_replace(YAML::Node src, YAML::Node key)
 {
     try {
         impl_find_and_replace(src, key);
@@ -73,12 +93,5 @@ void find_and_replace(YAML::Node src, YAML::Node key)
         throw std::runtime_error(message);
     }
 }
-
-// case 1: it's a map
-//- pass the contents of the map recursively
-// case 2: it's a list
-//- pass the contents of the list recursively
-// case 3: it's a scalar
-//- replace value
 
 } // namespace YEDIT

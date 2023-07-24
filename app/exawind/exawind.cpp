@@ -3,7 +3,7 @@
 #include "OversetSimulation.h"
 #include "MPIUtilities.h"
 #include "mpi.h"
-#include "yaml-editor.hpp"
+#include "yaml-editor.h"
 #ifdef EXAWIND_HAS_STD_FILESYSTEM
 #include <filesystem>
 #endif
@@ -188,8 +188,15 @@ int main(int argc, char** argv)
     for (int i = 0; i < num_nwsolvers; i++) {
         if (nalu_comms.at(i) != MPI_COMM_NULL) {
             YAML::Node yaml_replace_instance;
-            std::string nalu_inpfile, logfile;
             YAML::Node this_instance = nalu_node[i];
+
+            std::string nalu_inpfile, logfile;
+            bool write_final_yaml_to_disk = false;
+            if (this_instance["write_final_yaml_to_disk"]) {
+                write_final_yaml_to_disk =
+                    this_instance["write_final_yaml_to_disk"].as<bool>();
+            }
+
             if (this_instance.IsMap()) {
                 yaml_replace_instance = this_instance["replace"];
                 nalu_inpfile =
@@ -216,7 +223,10 @@ int main(int argc, char** argv)
                 YEDIT::find_and_replace(nalu_yaml, yaml_replace_instance);
             }
 
-            if (this_instance["write_final_yaml_to_disk"]) {
+            // only the first rank of the comm should write the file
+            int comm_rank = -1;
+            MPI_Comm_rank(nalu_comms.at(i), &comm_rank);
+            if (write_final_yaml_to_disk && comm_rank == 0) {
                 auto new_ifile_name =
                     exawind::NaluWind::change_file_name_suffix(
                         logfile, ".yaml");
