@@ -27,10 +27,24 @@ private:
 public:
     static void initialize();
     static void finalize();
+    static std::string change_file_name_suffix(
+        std::string inpfile, std::string suffix, int index = -1)
+    {
+        int extloc = inpfile.rfind(".");
+        std::string logfile = inpfile;
+        if (index >= 0) {
+            suffix = "_" + std::to_string(index) + suffix;
+        }
+        if (extloc != std::string::npos) {
+            logfile = inpfile.substr(0, extloc) + suffix;
+        }
+        return logfile;
+    }
     explicit NaluWind(
         int id,
         stk::ParallelMachine comm,
-        const std::string& inp_file,
+        const YAML::Node& inp_yaml,
+        const std::string& logfile,
         const std::vector<std::string>& fnames,
         TIOGA::tioga& tg);
     ~NaluWind();

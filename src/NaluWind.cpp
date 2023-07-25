@@ -32,14 +32,11 @@ void NaluWind::finalize()
 NaluWind::NaluWind(
     int id,
     stk::ParallelMachine comm,
-    const std::string& inpfile,
+    const YAML::Node& inp_yaml,
+    const std::string& logfile,
     const std::vector<std::string>& fnames,
     TIOGA::tioga& tg)
-    : m_id(id)
-    , m_comm(comm)
-    , m_doc(YAML::LoadFile(inpfile))
-    , m_fnames(fnames)
-    , m_sim(m_doc)
+    : m_id(id), m_comm(comm), m_doc(inp_yaml), m_fnames(fnames), m_sim(m_doc)
 {
     auto& env = sierra::nalu::NaluEnv::self();
     env.parallelCommunicator_ = comm;
@@ -48,11 +45,6 @@ NaluWind::NaluWind(
 
     ::tioga_nalu::TiogaRef::self(&tg);
 
-    int extloc = inpfile.rfind(".");
-    std::string logfile = inpfile;
-    if (extloc != std::string::npos) {
-        logfile = inpfile.substr(0, extloc) + ".log";
-    }
     env.set_log_file_stream(logfile);
 }
 
