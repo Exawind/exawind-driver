@@ -11,6 +11,7 @@ exawind:
       - ~
       - ~
       - overset_boundary_condition: changed_overset_name
+    Time_Integrators: [ StandardTimeIntegrator: { realms: [replaced]}]
 
   nalu_wind_inp:
     ################
