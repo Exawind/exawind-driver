@@ -58,7 +58,7 @@ void NaluWind::init_prolog(bool multi_solver_mode)
     if (!env.parallel_rank()) {
         std::cout << std::string(20, '#') << " INPUT FILE START "
                   << std::string(20, '#') << std::endl;
-        sierra::nalu::NaluParsingHelper::emit(std::cout, doc);
+        sierra::nalu::NaluParsingHelper::emit(std::cout, m_doc);
         std::cout << std::string(20, '#') << " INPUT FILE END   "
                   << std::string(20, '#') << std::endl;
     }
