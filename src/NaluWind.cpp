@@ -54,6 +54,7 @@ void NaluWind::init_prolog(bool multi_solver_mode)
 {
     // Dump the input yaml to the start of the logfile
     // before the nalu banner
+    auto& env = sierra::nalu::NaluEnv::self();
     if (!env.parallel_rank()) {
         std::cout << std::string(20, '#') << " INPUT FILE START "
                   << std::string(20, '#') << std::endl;
