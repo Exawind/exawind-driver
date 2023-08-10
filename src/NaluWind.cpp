@@ -55,13 +55,12 @@ void NaluWind::init_prolog(bool multi_solver_mode)
     // Dump the input yaml to the start of the logfile
     // before the nalu banner
     auto& env = sierra::nalu::NaluEnv::self();
-    if (!env.parallel_rank()) {
-        std::cout << std::string(20, '#') << " INPUT FILE START "
-                  << std::string(20, '#') << std::endl;
-        sierra::nalu::NaluParsingHelper::emit(std::cout, m_doc);
-        std::cout << std::string(20, '#') << " INPUT FILE END   "
-                  << std::string(20, '#') << std::endl;
-    }
+    env.naluOutputP0() << std::string(20, '#') << " INPUT FILE START "
+                       << std::string(20, '#') << std::endl;
+    sierra::nalu::NaluParsingHelper::emit(*env.naluLogStream_, m_doc);
+    env.naluOutputP0() << std::string(20, '#') << " INPUT FILE END   "
+                       << std::string(20, '#') << std::endl;
+
     m_sim.load(m_doc);
     if (m_sim.timeIntegrator_->overset_ != nullptr)
         m_sim.timeIntegrator_->overset_->set_multi_solver_mode(
