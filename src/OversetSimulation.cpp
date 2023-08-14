@@ -120,7 +120,8 @@ void OversetSimulation::exchange_solution(bool increment_time)
     for (auto& ss : m_solvers) ss->call_update_solution();
 }
 
-void OversetSimulation::run_timesteps(const int add_pic_its, const int nsteps)
+void OversetSimulation::run_timesteps(
+    const int add_pic_its, const int nonlinear_its, const int nsteps)
 {
 
     if (!m_initialized) {
@@ -138,15 +139,19 @@ void OversetSimulation::run_timesteps(const int add_pic_its, const int nsteps)
 
         m_timers_exa.tick("TimeStep");
 
-        for (auto& ss : m_solvers) ss->call_pre_advance_stage1();
+        for (size_t inonlin = 0; inonlin < nonlinear_its; inonlin++) {
 
-        if (do_connectivity(nt)) perform_overset_connectivity();
+            for (auto& ss : m_solvers) ss->call_pre_advance_stage1(inonlin);
 
-        for (auto& ss : m_solvers) ss->call_pre_advance_stage2();
+            if (do_connectivity(nt)) perform_overset_connectivity();
 
-        exchange_solution();
+            for (auto& ss : m_solvers) ss->call_pre_advance_stage2(inonlin);
 
-        for (auto& ss : m_solvers) ss->call_advance_timestep();
+            bool increment_timer = inonlin > 0 ? true : false;
+            exchange_solution(increment_timer);
+
+            for (auto& ss : m_solvers) ss->call_advance_timestep(inonlin);
+        }
 
         if (add_pic_its > 0) {
             exchange_solution(true);

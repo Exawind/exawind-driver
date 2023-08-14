@@ -32,14 +32,11 @@ void NaluWind::finalize()
 NaluWind::NaluWind(
     int id,
     stk::ParallelMachine comm,
-    const std::string& inpfile,
+    const YAML::Node& inp_yaml,
+    const std::string& logfile,
     const std::vector<std::string>& fnames,
     TIOGA::tioga& tg)
-    : m_id(id)
-    , m_comm(comm)
-    , m_doc(YAML::LoadFile(inpfile))
-    , m_fnames(fnames)
-    , m_sim(m_doc)
+    : m_id(id), m_comm(comm), m_doc(inp_yaml), m_fnames(fnames), m_sim(m_doc)
 {
     auto& env = sierra::nalu::NaluEnv::self();
     env.parallelCommunicator_ = comm;
@@ -48,11 +45,6 @@ NaluWind::NaluWind(
 
     ::tioga_nalu::TiogaRef::self(&tg);
 
-    int extloc = inpfile.rfind(".");
-    std::string logfile = inpfile;
-    if (extloc != std::string::npos) {
-        logfile = inpfile.substr(0, extloc) + ".log";
-    }
     env.set_log_file_stream(logfile);
 }
 
@@ -60,6 +52,15 @@ NaluWind::~NaluWind() = default;
 
 void NaluWind::init_prolog(bool multi_solver_mode)
 {
+    // Dump the input yaml to the start of the logfile
+    // before the nalu banner
+    auto& env = sierra::nalu::NaluEnv::self();
+    env.naluOutputP0() << std::string(20, '#') << " INPUT FILE START "
+                       << std::string(20, '#') << std::endl;
+    sierra::nalu::NaluParsingHelper::emit(*env.naluLogStream_, m_doc);
+    env.naluOutputP0() << std::string(20, '#') << " INPUT FILE END   "
+                       << std::string(20, '#') << std::endl;
+
     m_sim.load(m_doc);
     if (m_sim.timeIntegrator_->overset_ != nullptr)
         m_sim.timeIntegrator_->overset_->set_multi_solver_mode(
@@ -81,20 +82,22 @@ void NaluWind::prepare_solver_epilog()
         realm->output_converged_results();
 }
 
-void NaluWind::pre_advance_stage1()
+void NaluWind::pre_advance_stage1(size_t inonlin)
 {
-    m_sim.timeIntegrator_->pre_realm_advance_stage1();
+    m_sim.timeIntegrator_->pre_realm_advance_stage1(inonlin);
 }
 
-void NaluWind::pre_advance_stage2()
+void NaluWind::pre_advance_stage2(size_t inonlin)
 {
-    m_sim.timeIntegrator_->pre_realm_advance_stage2();
+    m_sim.timeIntegrator_->pre_realm_advance_stage2(inonlin);
 }
 
-void NaluWind::advance_timestep()
+void NaluWind::advance_timestep(size_t inonlin)
 {
-    for (auto* realm : m_sim.timeIntegrator_->realmVec_)
+    for (auto* realm : m_sim.timeIntegrator_->realmVec_) {
         realm->advance_time_step();
+        realm->process_multi_physics_transfer();
+    }
 }
 
 void NaluWind::additional_picard_iterations(const int n)

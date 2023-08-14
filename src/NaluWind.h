@@ -27,10 +27,24 @@ private:
 public:
     static void initialize();
     static void finalize();
+    static std::string change_file_name_suffix(
+        std::string inpfile, std::string suffix, int index = -1)
+    {
+        int extloc = inpfile.rfind(".");
+        std::string logfile = inpfile;
+        if (index >= 0) {
+            suffix = "_" + std::to_string(index) + suffix;
+        }
+        if (extloc != std::string::npos) {
+            logfile = inpfile.substr(0, extloc) + suffix;
+        }
+        return logfile;
+    }
     explicit NaluWind(
         int id,
         stk::ParallelMachine comm,
-        const std::string& inp_file,
+        const YAML::Node& inp_yaml,
+        const std::string& logfile,
         const std::vector<std::string>& fnames,
         TIOGA::tioga& tg);
     ~NaluWind();
@@ -50,9 +64,9 @@ protected:
     void init_epilog() override;
     void prepare_solver_prolog() override;
     void prepare_solver_epilog() override;
-    void pre_advance_stage1() override;
-    void pre_advance_stage2() override;
-    void advance_timestep() override;
+    void pre_advance_stage1(size_t inonlin) override;
+    void pre_advance_stage2(size_t inonlin) override;
+    void advance_timestep(size_t inonlin) override;
     void additional_picard_iterations(const int) override;
     void post_advance() override;
     void pre_overset_conn_work() override;

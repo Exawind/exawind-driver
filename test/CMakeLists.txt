@@ -62,3 +62,5 @@ add_test_r(amr-nalu-cylinder)
 add_test_r(nalu-nalu-cylinder-motion)
 add_test_r(amr-nalu-cylinder-motion)
 add_test_r(zalesak)
+add_test_r(hybrid-multi-cylinder)
+
