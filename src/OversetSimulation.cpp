@@ -141,16 +141,20 @@ void OversetSimulation::run_timesteps(
 
         for (size_t inonlin = 0; inonlin < nonlinear_its; inonlin++) {
 
-            for (auto& ss : m_solvers) ss->call_pre_advance_stage1(inonlin);
+            bool increment_timer = inonlin > 0 ? true : false;
+
+            for (auto& ss : m_solvers)
+                ss->call_pre_advance_stage1(inonlin, increment_timer);
 
             if (do_connectivity(nt)) perform_overset_connectivity();
 
-            for (auto& ss : m_solvers) ss->call_pre_advance_stage2(inonlin);
+            for (auto& ss : m_solvers)
+                ss->call_pre_advance_stage2(inonlin, increment_timer);
 
-            bool increment_timer = inonlin > 0 ? true : false;
             exchange_solution(increment_timer);
 
-            for (auto& ss : m_solvers) ss->call_advance_timestep(inonlin);
+            for (auto& ss : m_solvers)
+                ss->call_advance_timestep(inonlin, increment_timer);
         }
 
         if (add_pic_its > 0) {
