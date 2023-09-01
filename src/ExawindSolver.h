@@ -19,24 +19,24 @@ public:
     void call_init_epilog() { init_epilog(); };
     void call_prepare_solver_prolog() { prepare_solver_prolog(); };
     void call_prepare_solver_epilog() { prepare_solver_epilog(); };
-    void call_pre_advance_stage1(size_t inonlin)
+    void call_pre_advance_stage1(size_t inonlin, const bool increment)
     {
         const std::string name = "Pre";
-        m_timers.tick(name);
+        m_timers.tick(name, increment);
         pre_advance_stage1(inonlin);
         m_timers.tock(name);
     };
-    void call_pre_advance_stage2(size_t inonlin)
+    void call_pre_advance_stage2(size_t inonlin, const bool increment)
     {
         const std::string name = "Pre";
-        m_timers.tick(name);
+        m_timers.tick(name, increment);
         pre_advance_stage2(inonlin);
         m_timers.tock(name);
     };
-    void call_advance_timestep(size_t inonlin)
+    void call_advance_timestep(size_t inonlin, const bool increment)
     {
         const std::string name = "Solve";
-        m_timers.tick(name);
+        m_timers.tick(name, increment);
         advance_timestep(inonlin);
         m_timers.tock(name);
     };
