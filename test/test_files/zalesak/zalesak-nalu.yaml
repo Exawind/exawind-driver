@@ -1,0 +1,103 @@
+Simulations:
+  - name: sim1
+    time_integrator: ti_1
+    optimizer: opt1
+
+linear_solvers:
+
+  - name: solve_scalar
+    type: tpetra
+    method: gmres
+    preconditioner: sgs
+    tolerance: 1e-12
+    max_iterations: 50
+    kspace: 50
+    output_level: 0
+
+realms:
+
+  - name: realm_1
+    mesh: "generated:32x32x32|bbox:0.25,0.,0.,0.75,0.5,0.5|sideset:xXyYzZ|show"
+    use_edges: yes
+    automatic_decomposition_type: rcb
+    check_for_missing_bcs: yes
+
+    equation_systems:
+      name: theEqSys
+      max_iterations: 1
+      decoupled_overset_solve: yes
+
+      solver_system_specification:
+        volume_of_fluid: solve_scalar
+
+      systems:
+        - VolumeOfFluid:
+            name: myVOF
+            max_iterations: 1
+            convergence_tolerance: 1e-8
+
+    initial_conditions:
+
+      - user_function: ic_1
+        target_name: block_1
+        user_function_name:
+          volume_of_fluid: zalesak_sphere
+
+    material_properties:
+      target_name: block_1
+      specifications:
+        - name: density
+          type: constant
+          value: 1.0
+
+        - name: viscosity
+          type: constant
+          value: 0.001
+
+    boundary_conditions:
+      - overset_boundary_condition: bc_overset
+        overset_connectivity_type: tioga
+        overset_user_data:
+          tioga_options:
+            set_resolutions: no
+          mesh_group:
+            - overset_name: oset_n
+              mesh_parts: [block_1]
+              ovset_parts: [surface_1,surface_2,surface_3,surface_4,surface_5,surface_6]
+
+    solution_options:
+      name: myOptions
+
+      options:
+        - hybrid_factor:
+            velocity: 0.0
+
+        - limiter:
+            volume_of_fluid: yes
+            pressure: no
+            velocity: no
+
+        - consistent_mass_matrix_png:
+            pressure: no
+            
+    output:
+      output_data_base_name: out/zalDisc.e
+      output_frequency: 10
+      output_node_set: yes
+      output_variables:
+       - volume_of_fluid
+       - dvolume_of_fluiddx
+       - intersected_element
+Time_Integrators:
+  - StandardTimeIntegrator:
+      name: ti_1
+      start_time: 0
+      termination_time: 6
+      time_step: 0.01
+      time_stepping_type: fixed
+      time_step_count: 0
+      second_order_accuracy: yes
+
+
+      realms:
+        - realm_1
