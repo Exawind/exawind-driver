@@ -22,6 +22,18 @@ static std::string usage(std::string name)
            "ranks)\n";
 }
 
+std::string
+replace_extension(const std::string& filepath, const std::string& newExt)
+{
+    size_t lastDotPos = filepath.find_last_of(".");
+
+    if (lastDotPos != std::string::npos && lastDotPos != 0) {
+        return filepath.substr(0, lastDotPos) + newExt;
+    } else {
+        return filepath + newExt;
+    }
+}
+
 int main(int argc, char** argv)
 {
     MPI_Init(&argc, &argv);
@@ -85,7 +97,7 @@ int main(int argc, char** argv)
     const std::string amr_log =
         fpath_amr_inp.replace_extension(".log").string();
 #else
-    const std::string amr_log = "amr-wind.log";
+    const std::string amr_log = replace_extension(amr_inp, ".log");
 #endif
     std::ofstream out;
 
