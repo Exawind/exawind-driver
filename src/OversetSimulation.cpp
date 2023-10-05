@@ -148,10 +148,10 @@ void OversetSimulation::run_timesteps(
 
             if (do_connectivity(nt)) perform_overset_connectivity();
 
+            exchange_solution(increment_timer);
+
             for (auto& ss : m_solvers)
                 ss->call_pre_advance_stage2(inonlin, increment_timer);
-
-            exchange_solution(increment_timer);
 
             for (auto& ss : m_solvers)
                 ss->call_advance_timestep(inonlin, increment_timer);
