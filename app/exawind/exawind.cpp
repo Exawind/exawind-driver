@@ -11,6 +11,11 @@
 #include "yaml-cpp/yaml.h"
 #include "tioga.h"
 
+// Workaround for MPI issue on OLCF Frontier machine
+#ifdef EXAWIND_ENABLE_ROCM
+#include <hip/hip_runtime.h>
+#endif
+
 static std::string usage(std::string name)
 {
     return "usage: " + name +
@@ -36,6 +41,10 @@ replace_extension(const std::string& filepath, const std::string& newExt)
 
 int main(int argc, char** argv)
 {
+// Workaround for MPI issue on OLCF Frontier machine
+#ifdef EXAWIND_ENABLE_ROCM
+    hipInit(0);
+#endif
     MPI_Init(&argc, &argv);
     int psize, prank;
     MPI_Comm_size(MPI_COMM_WORLD, &psize);
