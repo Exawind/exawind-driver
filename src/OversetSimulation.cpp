@@ -94,8 +94,13 @@ void OversetSimulation::perform_overset_connectivity()
     if (m_has_amr) m_tg.preprocess_amr_data();
     m_tg.profile();
     m_tg.performConnectivity();
-    if (m_has_amr) m_tg.performConnectivityAMR();
     m_timers_tg.tock("Connectivity");
+
+    MPI_Barrier(m_comm);
+
+    m_timers_tg.tick("ConnectivityAMR");
+    if (m_has_amr) m_tg.performConnectivityAMR();
+    m_timers_tg.tock("ConnectivityAMR");
 
     for (auto& ss : m_solvers) ss->call_post_overset_conn_work();
 }
