@@ -32,6 +32,8 @@ private:
     int m_last_timestep{0};
     //! Flag indicating whether initialization tasks have been performed
     bool m_initialized{false};
+    //! Flag indicating if complementary comms have been initialized
+    bool m_comp_comm_initialized{false};
     //! Tioga instance
     TIOGA::tioga m_tg;
     //! Determine unstructured and structured solver types
