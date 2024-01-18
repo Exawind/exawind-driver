@@ -93,7 +93,7 @@ void OversetSimulation::perform_overset_connectivity()
     m_timers_tg.tick("Connectivity");
     if (m_has_amr) m_tg.preprocess_amr_data();
     m_tg.profile();
-    if (m_comp_comm_initialized != true) {
+    if (m_holemap_alg == 1 && m_comp_comm_initialized != true) {
         m_tg.assembleComms();
         m_comp_comm_initialized = true;
     }

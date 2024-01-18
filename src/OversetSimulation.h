@@ -34,6 +34,8 @@ private:
     bool m_initialized{false};
     //! Flag indicating if complementary comms have been initialized
     bool m_comp_comm_initialized{false};
+    //! Flag for holemap algorithm
+    bool m_holemap_alg{false};
     //! Tioga instance
     TIOGA::tioga m_tg;
     //! Determine unstructured and structured solver types
@@ -100,6 +102,12 @@ public:
     {
         m_nw_start_rank = start_ranks;
         m_num_nw_solvers = m_nw_start_rank.size();
+    }
+
+    void set_holemap_alg(int alg)
+    {
+        m_holemap_alg = alg;
+        m_tg.setHoleMapAlgorithm(alg);
     }
 };
 
