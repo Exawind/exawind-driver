@@ -206,7 +206,7 @@ int main(int argc, char** argv)
                                   : 1;
     const bool holemap_alg = node["use_adaptive_holemap"]
                                  ? node["use_adaptive_holemap"].as<bool>()
-                                 : 0;
+                                 : false;
     sim.set_holemap_alg(holemap_alg);
 
     const YAML::Node yaml_replace_all = node["nalu_replace_all"];
