@@ -9,15 +9,16 @@ This repository contains a pure C++ driver API for coupling
 
 To cite ExaWind or the usage of this driver and to learn more about the methodology, use the following [journal article](https://doi.org/10.1002/we.2886):
 ```
-@article{exawind2024,
-    author = {Sharma, Ashesh and Brazell, Michael J. and Vijayakumar, Ganesh and Ananthan, Shreyas and Cheung, Lawrence and deVelder, Nathaniel and {Henry de Frahan}, Marc T. and Matula, Neil and Mullowney, Paul and Rood, Jon and Sakievich, Philip and Almgren, Ann and Crozier, Paul S. and Sprague, Michael},
-    title = {{ExaWind: Open-source CFD for hybrid-RANS/LES geometry-resolved wind turbine simulations in atmospheric flows}},
+@article{https://doi.org/10.1002/we.2886,
+    author = {Sharma, Ashesh and Brazell, Michael J. and Vijayakumar, Ganesh and Ananthan, Shreyas and Cheung, Lawrence and deVelder, Nathaniel and {Henry de Frahan}, Marc T. and Matula, Neil and Mullowney, Paul and Rood, Jon and Sakievich, Philip and Almgren, Ann and Crozier, Paul S. and Sprague, Michael},
+    title = {ExaWind: Open-source CFD for hybrid-RANS/LES geometry-resolved wind turbine simulations in atmospheric flows},
     journal = {Wind Energy},
-    volume = {},
-    number = {},
-    pages = {},
-    doi = {10.1002/we.2886},
-    url = {https://doi.org/10.1002/we.2886},
-    eprint = {https://onlinelibrary.wiley.com/doi/pdf/10.1002/we.2886}
+    volume = {27},
+    number = {3},
+    pages = {225-257},
+    doi = {https://doi.org/10.1002/we.2886},
+    url = {https://onlinelibrary.wiley.com/doi/abs/10.1002/we.2886},
+    eprint = {https://onlinelibrary.wiley.com/doi/pdf/10.1002/we.2886},
+    year = {2024}
 }
 ```
