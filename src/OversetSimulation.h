@@ -35,7 +35,7 @@ private:
     //! Flag indicating if complementary comms have been initialized
     bool m_complementary_comm_initialized{false};
     //! Flag for holemap algorithm
-    bool m_holemap_alg{false};
+    bool m_is_adaptive_holemap_alg{false};
     //! Tioga instance
     TIOGA::tioga m_tg;
     //! Determine unstructured and structured solver types
@@ -106,8 +106,8 @@ public:
 
     void set_holemap_alg(bool alg)
     {
-        m_holemap_alg = alg;
-        if (m_holemap_alg == true) m_tg.setHoleMapAlgorithm(1);
+        m_is_adaptive_holemap_alg = alg;
+        if (m_is_adaptive_holemap_alg == true) m_tg.setHoleMapAlgorithm(1);
     }
 };
 
