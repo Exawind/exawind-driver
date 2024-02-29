@@ -204,6 +204,10 @@ int main(int argc, char** argv)
     const int nonlinear_its = node["nonlinear_iterations"]
                                   ? node["nonlinear_iterations"].as<int>()
                                   : 1;
+    const bool holemap_alg = node["use_adaptive_holemap"]
+                                 ? node["use_adaptive_holemap"].as<bool>()
+                                 : false;
+    sim.set_holemap_alg(holemap_alg);
 
     const YAML::Node yaml_replace_all = node["nalu_replace_all"];
     for (int i = 0; i < num_nwsolvers; i++) {
