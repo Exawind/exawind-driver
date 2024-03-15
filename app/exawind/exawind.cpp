@@ -209,6 +209,28 @@ int main(int argc, char** argv)
                                  : false;
     sim.set_holemap_alg(holemap_alg);
 
+    const YAML::Node& composite_mesh = node["composite_mesh"];
+    const int num_composite = composite_mesh.size();
+    sim.set_composite_num(num_composite);
+
+    for (int i = 0; i < num_composite; i++) {
+        const YAML::Node& composite_node = composite_mesh[i];
+
+        const int num_body_tags = composite_node["num_body_tags"].as<int>();
+
+        const auto body_tags =
+            composite_node["body_tags"].as<std::vector<int>>();
+
+        const auto dominance_tags =
+            composite_node["dominance_tags"].as<std::vector<int>>();
+
+        const double search_tol =
+            composite_node["search_tolerance"].as<double>();
+
+        sim.set_composite_body(
+            i, num_body_tags, body_tags, dominance_tags, search_tol);
+    }
+
     const YAML::Node yaml_replace_all = node["nalu_replace_all"];
     for (int i = 0; i < num_nwsolvers; i++) {
         if (nalu_comms.at(i) != MPI_COMM_NULL) {

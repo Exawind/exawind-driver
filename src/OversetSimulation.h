@@ -36,6 +36,8 @@ private:
     bool m_complementary_comm_initialized{false};
     //! Flag for holemap algorithm
     bool m_is_adaptive_holemap_alg{false};
+    //! Number of composite bodies
+    int m_num_composite_bodies{0};
     //! Tioga instance
     TIOGA::tioga m_tg;
     //! Determine unstructured and structured solver types
@@ -108,6 +110,30 @@ public:
     {
         m_is_adaptive_holemap_alg = alg;
         if (m_is_adaptive_holemap_alg == true) m_tg.setHoleMapAlgorithm(1);
+    }
+
+    void set_composite_num(int num_composite)
+    {
+        m_num_composite_bodies = num_composite;
+        m_tg.setNumCompositeBodies(num_composite);
+    }
+
+    void set_composite_body(
+        int body_index,
+        int num_body_tags,
+        std::vector<int> bodytags,
+        std::vector<int> dominance_tags,
+        double search_tol)
+    {
+        if (m_is_adaptive_holemap_alg == true) {
+            m_tg.registerCompositeBody(
+                (body_index+1), num_body_tags, bodytags.data(),
+                dominance_tags.data(), search_tol);
+        } else {
+            throw std::runtime_error(
+                "The composite body feature requires the use of adaptive "
+                "holemap");
+        }
     }
 };
 
