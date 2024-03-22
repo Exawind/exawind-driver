@@ -2,18 +2,19 @@
 #            SIMULATION STOP            #
 #.......................................#
 time.stop_time               =   -100.0     # Max (simulated) time to evolve
-time.max_step                =   1           # Max number of time steps
+time.max_step                =   1          # Max number of time steps
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
 #.......................................#
 time.fixed_dt         =   0.5        # Use this constant dt if > 0
 time.cfl              =   0.95         # CFL factor
+incflo.prescribe_velocity = true
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
 #.......................................#
-time.plot_interval            =  1        # Steps between plot files
+time.plot_interval            =  1       # Steps between plot files
 time.checkpoint_interval      =  -1       # Steps between checkpoint files
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
@@ -21,8 +22,7 @@ time.checkpoint_interval      =  -1       # Steps between checkpoint files
 #.......................................#
 ConstValue.density.value = 1.5
 ConstValue.p.value = 2.0
-LinearProfile.velocity.start_val = 0.0 0.0 0.0
-LinearProfile.velocity.stop_val = 1.0 0.5 0.0
+ConstValue.velocity.value = 0.1 -0.1 0.0
 
 incflo.use_godunov = 1
 incflo.diffusion_type = 2
@@ -34,7 +34,6 @@ transport.turbulent_prandtl = 0.3333
 turbulence.model = Laminar
 
 incflo.physics = FreeStream
-FreeStream.velocity_type = LinearProfile
 
 amr.n_cell              =  64 64 64    # Grid cells at coarsest AMRlevel
 amr.max_level           =  0           # Max AMR level in hierarchy
