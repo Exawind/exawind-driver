@@ -1,0 +1,17 @@
+
+exawind:
+  nalu_wind_inp:
+    - tiogatest-nalu.yaml
+  amr_wind_inp: tiogatest-amr.inp
+  num_timesteps: 1
+  additional_picard_iterations: 0
+
+  nalu_vars:
+    - velocity
+    - density
+    - pressure
+  amr_cell_vars:
+    - velocity
+    - density
+  amr_node_vars:
+    - p
