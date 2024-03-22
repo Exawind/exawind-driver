@@ -21,7 +21,6 @@ time.checkpoint_interval      =  -1       # Steps between checkpoint files
 #               PHYSICS                 #
 #.......................................#
 ConstValue.density.value = 1.5
-ConstValue.p.value = 2.0
 ConstValue.velocity.value = 0.1 -0.1 0.0
 
 incflo.use_godunov = 1
