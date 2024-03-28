@@ -34,8 +34,8 @@ if (EXAWIND_ENABLE_UMPIRE)
 endif()
 
 set(CMAKE_PREFIX_PATH ${Nalu-Wind_DIR} ${AMR-Wind_DIR}
-                      ${TIOGA_DIR} ${HYPRE_DIR} ${NetCDF_DIR}
-                      ${YAML-CPP_DIR} ${OpenFAST_DIR} ${CMAKE_PREFIX_PATH})
+                      ${OpenFAST_DIR} ${TIOGA_DIR}
+                      ${YAML-CPP_DIR} ${CMAKE_PREFIX_PATH})
 
 find_package(Nalu-Wind REQUIRED)
 find_package(AMR-Wind REQUIRED)
