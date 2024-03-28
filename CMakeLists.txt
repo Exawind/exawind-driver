@@ -38,6 +38,7 @@ set(CMAKE_PREFIX_PATH ${Nalu-Wind_DIR} ${AMR-Wind_DIR}
                       ${YAML-CPP_DIR} ${CMAKE_PREFIX_PATH})
 
 find_package(Nalu-Wind REQUIRED)
+find_package(Trilinos REQUIRED)
 find_package(AMR-Wind REQUIRED)
 if(NALU_USES_OPENFAST)
   enable_language(Fortran)
