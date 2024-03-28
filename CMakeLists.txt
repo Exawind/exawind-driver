@@ -33,7 +33,7 @@ if (EXAWIND_ENABLE_UMPIRE)
   include_directories(SYSTEM ${UMPIRE_INCLUDE_DIRS})
 endif()
 
-set(CMAKE_PREFIX_PATH ${Nalu-Wind_DIR} ${AMR-Wind_DIR}
+set(CMAKE_PREFIX_PATH ${Nalu-Wind_DIR} ${Trilinos_DIR} ${AMR-Wind_DIR}
                       ${OpenFAST_DIR} ${TIOGA_DIR}
                       ${YAML-CPP_DIR} ${CMAKE_PREFIX_PATH})
 
