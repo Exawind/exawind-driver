@@ -23,6 +23,9 @@ target_link_libraries(${EXAWIND_LIB_NAME} PUBLIC
   AMReX::amrex
   Nalu-Wind::nalu)
 
+target_link_libraries(${EXAWIND_LIB_NAME} PUBLIC $<$<BOOL:${MPI_CXX_FOUND}>:MPI::MPI_CXX>)
+target_link_libraries(${EXAWIND_LIB_NAME} PUBLIC $<$<BOOL:${MPI_Fortran_FOUND}>:MPI::MPI_Fortran>)
+
 # Solve -fallow-argument-mismatch from fortran possibly making its way into arguments passed to clang
 #if(CMAKE_CXX_COMPILER_ID MATCHES "^(Clang|AppleClang)$")
 #  set(TARGET_FLAGS "")
