@@ -33,21 +33,21 @@ if (EXAWIND_ENABLE_UMPIRE)
   include_directories(SYSTEM ${UMPIRE_INCLUDE_DIRS})
 endif()
 
-set(CMAKE_PREFIX_PATH ${Trilinos_DIR} ${TIOGA_DIR}
-                      ${Nalu-Wind_DIR} ${AMR-Wind_DIR}
-                      ${HYPRE_DIR} ${NetCDF_DIR}
-                      ${YAML-CPP_DIR} ${OpenFAST_DIR} ${CMAKE_PREFIX_PATH})
-find_package(MPI REQUIRED)
-find_package(Trilinos REQUIRED)
-find_package(TIOGA REQUIRED)
+set(CMAKE_PREFIX_PATH ${Nalu-Wind_DIR} ${Trilinos_DIR} ${AMR-Wind_DIR}
+                      ${OpenFAST_DIR} ${TIOGA_DIR}
+                      ${YAML-CPP_DIR} ${CMAKE_PREFIX_PATH})
+
 find_package(Nalu-Wind REQUIRED)
+find_package(Trilinos REQUIRED)
 find_package(AMR-Wind REQUIRED)
-find_package(YAML-CPP 0.6.2 REQUIRED)
-find_package(Filesystem)
 if(NALU_USES_OPENFAST)
   enable_language(Fortran)
   find_package(OpenFAST REQUIRED)
 endif()
+find_package(TIOGA REQUIRED)
+find_package(YAML-CPP 0.6.2 REQUIRED)
+find_package(MPI REQUIRED)
+find_package(Filesystem)
 
 # General information about machine, compiler, and build type
 message(STATUS "Exawind information:")
