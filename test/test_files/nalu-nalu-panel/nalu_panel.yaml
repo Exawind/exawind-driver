@@ -8,12 +8,12 @@ Simulations:
 linear_solvers:
 
   - name: solve_scalar
-    type: tpetra
-    method: gmres
-    preconditioner: mt_sgs
+    type: hypre
+    method: hypre_gmres
+    preconditioner: boomerAMG
     tolerance: 1e-5
     max_iterations: 200
-    kspace: 50
+    kspace: 5
     output_level: 0
 
   - name: solve_cont
@@ -145,42 +145,6 @@ realms:
             pressure: 0.3
             turbulent_ke: 0.7
             specific_dissipation_rate: 0.7
-    # post_processing:
-    #   - type: surface
-    #     physics: surface_force_and_moment
-    #     output_file_name: PX_forces.dat
-    #     frequency: 2
-    #     parameters: [0, 0]
-    #     target_name:
-    #     - panel_plus_x
-    #   - type: surface
-    #     physics: surface_force_and_moment
-    #     output_file_name: MX_forces.dat
-    #     frequency: 2
-    #     parameters: [0, 0]
-    #     target_name:
-    #     - panel_minus_x
-    #   - type: surface
-    #     physics: surface_force_and_moment
-    #     output_file_name: MY_forces.dat
-    #     frequency: 2
-    #     parameters: [0, 0]
-    #     target_name:
-    #     - panel_minus_y
-    #   - type: surface
-    #     physics: surface_force_and_moment
-    #     output_file_name: PZ_forces.dat
-    #     frequency: 2
-    #     parameters: [0, 0]
-    #     target_name:
-    #     - panel_plus_z
-    #   - type: surface
-    #     physics: surface_force_and_moment
-    #     output_file_name: MZ_forces.dat
-    #     frequency: 2
-    #     parameters: [0, 0]
-    #     target_name:
-    #     - panel_minus_z
 
     output:
       output_data_base_name: out/panel.e
@@ -200,10 +164,6 @@ realms:
        - turbulent_viscosity
        - q_criterion
        - vorticity
-#    restart:
-#      restart_frequency: 500
-#      restart_start: 0
-
 
 Time_Integrators:
   - StandardTimeIntegrator:
