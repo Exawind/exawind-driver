@@ -109,10 +109,10 @@ public:
     void set_holemap_alg(bool alg)
     {
         m_is_adaptive_holemap_alg = alg;
-        if (m_is_adaptive_holemap_alg == true) m_tg.setHoleMapAlgorithm(1);
+        if (m_is_adaptive_holemap_alg) m_tg.setHoleMapAlgorithm(1);
     }
 
-    void set_composite_num(int num_composite)
+    void set_composite_num(const int num_composite)
     {
         m_num_composite_bodies = num_composite;
         m_tg.setNumCompositeBodies(num_composite);
@@ -120,12 +120,12 @@ public:
 
     void set_composite_body(
         int body_index,
-        int num_body_tags,
+        const int num_body_tags,
         std::vector<int> bodytags,
         std::vector<int> dominance_tags,
-        double search_tol)
+        const double search_tol)
     {
-        if (m_is_adaptive_holemap_alg == true) {
+        if (m_is_adaptive_holemap_alg) {
             m_tg.registerCompositeBody(
                 (body_index+1), num_body_tags, bodytags.data(),
                 dominance_tags.data(), search_tol);

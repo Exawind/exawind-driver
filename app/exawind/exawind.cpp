@@ -211,7 +211,7 @@ int main(int argc, char** argv)
 
     if (node["composite_body"]) {
         const YAML::Node& composite_mesh = node["composite_body"];
-        const int num_composite = composite_mesh.size();
+        const int num_composite = static_cast<int>(composite_mesh.size());
         sim.set_composite_num(num_composite);
 
         for (int i = 0; i < num_composite; i++) {
