@@ -127,7 +127,7 @@ public:
     {
         if (m_is_adaptive_holemap_alg) {
             m_tg.registerCompositeBody(
-                (body_index+1), num_body_tags, bodytags.data(),
+                (body_index + 1), num_body_tags, bodytags.data(),
                 dominance_tags.data(), search_tol);
         } else {
             throw std::runtime_error(

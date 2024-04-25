@@ -97,7 +97,7 @@ void OversetSimulation::perform_overset_connectivity()
         (m_complementary_comm_initialized == false)) {
         m_tg.assembleComplementComms();
         m_complementary_comm_initialized = true;
-	if(m_num_composite_bodies>0) m_tg.assembleCompositeMap();
+        if (m_num_composite_bodies > 0) m_tg.assembleCompositeMap();
     }
     m_tg.performConnectivity();
     if (m_has_amr) m_tg.performConnectivityAMR();
