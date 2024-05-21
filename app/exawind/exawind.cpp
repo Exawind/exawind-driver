@@ -4,10 +4,6 @@
 #include "MPIUtilities.h"
 #include "mpi.h"
 #include "yaml-editor.h"
-#ifdef EXAWIND_HAS_STD_FILESYSTEM
-#include <filesystem>
-#endif
-
 #include "yaml-cpp/yaml.h"
 #include "tioga.h"
 
@@ -101,13 +97,7 @@ int main(int argc, char** argv)
         use_amr_wind = true;
     }
 
-#ifdef EXAWIND_HAS_STD_FILESYSTEM
-    std::filesystem::path fpath_amr_inp(amr_inp);
-    const std::string amr_log =
-        fpath_amr_inp.replace_extension(".log").string();
-#else
     const std::string amr_log = replace_extension(amr_inp, ".log");
-#endif
     std::ofstream out;
 
     YAML::Node nalu_node = node["nalu_wind_inp"];
