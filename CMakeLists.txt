@@ -47,7 +47,6 @@ endif()
 find_package(TIOGA REQUIRED)
 find_package(YAML-CPP 0.6.2 REQUIRED)
 find_package(MPI REQUIRED)
-find_package(Filesystem)
 
 # General information about machine, compiler, and build type
 message(STATUS "Exawind information:")
