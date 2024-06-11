@@ -1,0 +1,61 @@
+time.stop_time               =   2     # Max (simulated) time to evolve
+time.max_step                =   2000          # Max number of time steps
+
+time.fixed_dt         =   0.001        # Use this constant dt if > 0
+time.cfl              =   0.95         # CFL factor
+
+time.plot_interval            =  10       # Steps between plot files
+time.checkpoint_interval      =  -100       # Steps between checkpoint files
+
+io.int_outputs = iblank_cell
+
+incflo.use_godunov = 1
+incflo.godunov_type = "weno_z"
+transport.model = TwoPhaseTransport
+transport.viscosity_fluid1=1.e-5
+transport.viscosity_fluid2=1.e-5
+
+transport.laminar_prandtl = 0.7
+transport.turbulent_prandtl = 0.3333
+turbulence.model = Laminar 
+
+incflo.physics = MultiPhase DamBreak 
+MultiPhase.density_fluid1=1000.
+MultiPhase.density_fluid2=1.
+DamBreak.location = -0.8 0.0 -0.3125
+DamBreak.width    = 0.5
+DamBreak.height   = 0.8
+ICNS.source_terms = GravityForcing 
+
+amr.n_cell              = 64 16 32    # Grid cells at coarsest AMRlevel
+amr.max_level           = 0           # Max AMR level in hierarchy 
+
+geometry.prob_lo        =   -1.4  -0.375 -0.3125  # Lo corner coordinates
+geometry.prob_hi        =   1.1 0.375 1.1875  # Hi corner coordinates
+geometry.is_periodic    =   0   0   0   # Periodicity x y z (0/1)
+
+Overset.disable_coupled_mac_proj = true
+Overset.disable_coupled_nodal_proj = true
+
+xlo.type =   "slip_wall"
+xlo.vof_type = "zero_gradient"
+xhi.type =   "slip_wall"
+xhi.vof_type = "zero_gradient"
+
+ylo.type =   "slip_wall"
+ylo.vof_type = "zero_gradient"
+yhi.type =   "slip_wall"
+yhi.vof_type = "zero_gradient"
+
+zlo.type =   "slip_wall"
+zlo.vof_type = "zero_gradient"
+zhi.type =   "slip_wall"
+zhi.vof_type = "mass_inflow"
+zhi.vof = 0.0
+
+incflo.verbose=0
+
+nodal_proj.num_pre_smooth = 20
+nodal_proj.num_post_smooth = 20
+mac_proj.num_pre_smooth = 20
+mac_proj.num_post_smooth = 20

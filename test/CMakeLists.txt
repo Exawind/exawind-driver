@@ -63,4 +63,6 @@ add_test_r(nalu-nalu-cylinder-motion)
 add_test_r(amr-nalu-cylinder-motion)
 add_test_r(zalesak)
 add_test_r(hybrid-multi-cylinder)
+add_test_r(stokes-waves-cylinder)
+add_test_r(dam-break-block)
 
