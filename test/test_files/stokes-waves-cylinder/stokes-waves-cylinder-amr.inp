@@ -1,0 +1,77 @@
+time.stop_time               =   200     # Max (simulated) time to evolve
+time.max_step                =   -10    # Max number of time steps
+
+time.initial_dt       =   -0.05        # Use this constant dt if > 0
+time.fixed_dt         =   0.01
+time.cfl              =   0.5         # CFL factor
+time.plot_interval            =  20       # Steps between plot files
+time.checkpoint_interval      =  500
+incflo.do_initial_proj = 0
+incflo.initial_iterations = 0
+
+io.outputs = density vof velocity p gp levelset reference_pressure ow_velocity ow_levelset
+io.int_outputs = iblank_cell iblank_node
+
+incflo.use_godunov = 1
+incflo.godunov_type="weno_z"
+transport.model = TwoPhaseTransport
+transport.laminar_prandtl = 0.7
+transport.turbulent_prandtl = 0.3333
+turbulence.model = Laminar
+
+transport.viscosity_fluid1=1e-3
+transport.viscosity_fluid2=1e-5
+
+incflo.physics = MultiPhase OceanWaves 
+OceanWaves.label = Wave1
+OceanWaves.Wave1.type = StokesWaves
+OceanWaves.Wave1.order=5
+OceanWaves.Wave1.wave_height=0.3327      # nominal: 0.37
+OceanWaves.Wave1.wave_period=1.536       # nominal: 1.533
+OceanWaves.Wave1.water_depth=10.0
+OceanWaves.Wave1.relax_zone_gen_length=4.801496963
+OceanWaves.Wave1.numerical_beach_length=9.602993926
+OceanWaves.Wave1.numerical_beach_lfactor=2.0
+OceanWaves.Wave1.zero_sea_level=0.0
+MultiPhase.density_fluid1=1000.
+MultiPhase.density_fluid2=1.
+MultiPhase.initialize_pressure=true
+ICNS.source_terms = GravityForcing
+
+ICNS.use_perturb_pressure = true
+ICNS.reconstruct_true_pressure = true
+VOF.replace_masked = true
+Overset.disable_coupled_mac_proj = true
+Overset.disable_coupled_nodal_proj = true
+
+amr.n_cell              = 128 48 56
+amr.max_level = 1
+
+geometry.prob_lo        =   -9.602993926  -5.25  -10.0   # Lo corner coordinates
+geometry.prob_hi        =    19.205987852  5.25   2.4007484815   # Hi corner coordinates
+geometry.is_periodic    =    0   0    0   # Periodicity x y z (0/1)
+
+tagging.labels = refine0
+tagging.refine0.type = GeometryRefinement
+tagging.refine0.shapes = c0 b0
+tagging.refine0.level  = 0
+
+tagging.refine0.c0.type = cylinder
+tagging.refine0.c0.start = 0.0 0.0 -2.0
+tagging.refine0.c0.end = 0.0 0.0 1.5
+tagging.refine0.c0.outer_radius = 0.5
+
+tagging.refine0.b0.type = box                 
+tagging.refine0.b0.origin = -10.0 -5.5 -0.5
+tagging.refine0.b0.xaxis = 30.0 0.0 0.0
+tagging.refine0.b0.yaxis = 0.0 11.0 0.0
+tagging.refine0.b0.zaxis = 0.0 0.0 1.0
+
+xlo.type =   "wave_generation"
+xhi.type =   "pressure_outflow"
+ylo.type =   "slip_wall"
+yhi.type =   "slip_wall"
+zlo.type =   "slip_wall"
+zhi.type =   "slip_wall"
+
+incflo.verbose          =   0          # incflo_level
