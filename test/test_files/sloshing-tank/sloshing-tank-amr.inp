@@ -1,0 +1,51 @@
+time.stop_time               =   20     # Max (simulated) time to evolve
+time.max_step                =   -10    # Max number of time steps
+
+time.initial_dt       =   -0.05        # Use this constant dt if > 0
+time.fixed_dt         =   0.005
+time.cfl              =   0.95         # CFL factor
+time.plot_interval            =  10       # Steps between plot files
+incflo.do_initial_proj = 0
+incflo.initial_iterations = 0
+
+Overset.disable_coupled_mac_proj   = true
+Overset.disable_coupled_nodal_proj = true
+
+io.outputs = density vof velocity p gp levelset
+io.int_outputs = iblank_cell
+
+incflo.use_godunov = 1
+incflo.godunov_type="weno_z"
+transport.model = TwoPhaseTransport
+transport.viscosity_fluid1=1e-5
+transport.viscosity_fluid2=1e-5
+transport.laminar_prandtl = 0.7
+transport.turbulent_prandtl = 0.3333
+turbulence.model = Laminar
+
+incflo.physics = MultiPhase SloshingTank
+MultiPhase.density_fluid1=1000.
+MultiPhase.density_fluid2=1.
+MultiPhase.water_level=0.0
+SloshingTank.amplitude=0.7
+SloshingTank.peak_enhance=1.5
+SloshingTank.water_level=0.0
+ICNS.source_terms = GravityForcing
+VOF.replace_masked = true
+
+# Target resolution at interface is dx = dy = 0.3125, dz = 0.125
+amr.n_cell              = 64 64 48   # Grid cells at coarsest AMRlevel
+amr.max_level = 0
+
+geometry.prob_lo        =   -2.  -2.   -1.5   # Lo corner coordinates
+geometry.prob_hi        =   2.  2.   1.5  # Hi corner coordinates
+geometry.is_periodic    =    0   0    0   # Periodicity x y z (0/1)
+
+xlo.type =   "slip_wall"
+xhi.type =   "slip_wall"
+ylo.type =   "slip_wall"
+yhi.type =   "slip_wall"
+zlo.type =   "slip_wall"
+zhi.type =   "slip_wall"
+
+incflo.verbose          =   0          # incflo_level
