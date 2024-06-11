@@ -103,8 +103,6 @@ realms:
       overset_connectivity_type: tioga
       overset_user_data:
         mesh_tag_offset: 1
-        tioga_options:
-          set_resolutions: no
         mesh_group:
           - overset_name: panel
             mesh_parts: [ panel-HEX ]
