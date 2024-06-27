@@ -108,7 +108,6 @@ realms:
       overset_user_data:
         tioga_options:
           symmetry_direction: 3
-          set_resolutions: yes
         mesh_group:
           - overset_name: wake
             mesh_parts: [ block_1 ]

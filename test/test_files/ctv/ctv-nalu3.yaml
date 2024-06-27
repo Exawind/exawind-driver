@@ -94,7 +94,6 @@ realms:
       overset_connectivity_type: tioga
       overset_user_data:
         tioga_options:
-          set_resolutions: yes
           cell_resolution_multiplier: 0.1
           node_resolution_multiplier: 0.1
         mesh_group:

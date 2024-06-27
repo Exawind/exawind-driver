@@ -94,7 +94,6 @@ realms:
         mesh_tag_offset: 1
         tioga_options:
           symmetry_direction: 3
-          set_resolutions: yes
         mesh_group:
           - overset_name: interior
             mesh_parts: [ block_2]
