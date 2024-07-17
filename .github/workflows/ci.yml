@@ -38,6 +38,7 @@ jobs:
         run: |
           /bin/bash -c " \
             source ${EXAWIND_MANAGER}/start.sh && \
+            spack-start && \
             ln -s ${GITHUB_WORKSPACE} exawind && \
             quick-create-dev -s exawind@master && \
             spack cd -e && \
