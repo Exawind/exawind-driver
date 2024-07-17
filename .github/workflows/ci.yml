@@ -41,7 +41,6 @@ jobs:
             spack-start && \
             ln -s ${GITHUB_WORKSPACE} exawind && \
             quick-create-dev -s exawind@master && \
-            spack cd -e && \
             spack -e e4s-build config add view:true && \
             spack -e e4s-build add cmake && \
             spack -e e4s-build concretize && \
