@@ -43,10 +43,10 @@ jobs:
             quick-create-dev -s exawind@master && \
             spack cd -e && \
             spack -e e4s-build config add view:true && \
+            spack -e e4s-build add cmake && \
             spack -e e4s-build concretize && \
             ls -alh /exawind-manager/environments/e4s-build/.spack-env/view/bin && \
             spack manager external ${EXAWIND_MANAGER}/environments/e4s-build --exclude exawind && \
-            spack -e e4s-build concretize && \
             spack install && \
             spack cd -b exawind && \
             spack build-env exawind ctest -j $(nproc) --output-on-failure \
