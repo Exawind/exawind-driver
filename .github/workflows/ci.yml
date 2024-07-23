@@ -39,6 +39,8 @@ jobs:
           /bin/bash -c " \
             source ${EXAWIND_MANAGER}/start.sh && \
             spack-start && \
+            mkdir -p ${EXAWIND_MANAGER}/environments/exawind && \
+            cd ${EXAWIND_MANAGER}/environments/exawind && \
             ln -s ${GITHUB_WORKSPACE} exawind && \
             quick-create-dev -s exawind@master && \
             spack -e e4s-build config add view:true && \
