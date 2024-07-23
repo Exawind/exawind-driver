@@ -6,12 +6,12 @@ Simulations:
 linear_solvers:
 
   - name: solve_scalar
-    type: tpetra
-    method: gmres
-    preconditioner: sgs
+    type: hypre
+    method: hypre_gmres
+    preconditioner: boomerAMG
     tolerance: 1e-5
-    max_iterations: 50
-    kspace: 50
+    max_iterations: 200
+    kspace: 5
     output_level: 0
 
   - name: solve_cont
@@ -94,7 +94,6 @@ realms:
       overset_connectivity_type: tioga
       overset_user_data:
         tioga_options:
-          set_resolutions: yes
           cell_resolution_multiplier: 0.1
           node_resolution_multiplier: 0.1
         mesh_group:

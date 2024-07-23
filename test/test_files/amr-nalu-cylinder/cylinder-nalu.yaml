@@ -8,12 +8,12 @@ Simulations:
 linear_solvers:
 
   - name: solve_scalar
-    type: tpetra
-    method: gmres
-    preconditioner: mt_sgs
+    type: hypre
+    method: hypre_gmres
+    preconditioner: boomerAMG
     tolerance: 1e-5
     max_iterations: 200
-    kspace: 50
+    kspace: 5
     output_level: 0
 
   - name: solve_cont
@@ -94,7 +94,6 @@ realms:
         mesh_tag_offset: 1
         tioga_options:
           symmetry_direction: 3
-          set_resolutions: yes
         mesh_group:
           - overset_name: interior
             mesh_parts: [ block_2]
