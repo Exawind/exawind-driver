@@ -41,7 +41,6 @@ OceanWaves.Wave1.water_depth=1.015625
 OceanWaves.Wave1.zero_sea_level = 0.015625
 OceanWaves.Wave1.relax_zone_gen_length=1.5
 OceanWaves.Wave1.numerical_beach_length=1.5
-MultiPhase.initialize_pressure = true
 MultiPhase.density_fluid1=1000.
 MultiPhase.density_fluid2=1.
 ICNS.source_terms = GravityForcing
