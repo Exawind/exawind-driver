@@ -12,7 +12,7 @@ linear_solvers:
     tolerance: 1e-5
     max_iterations: 200
     kspace: 5
-    bamg_relax_type: 12
+    bamg_relax_type: 18
 
   - name: solve_cont
     type: hypre
@@ -21,7 +21,7 @@ linear_solvers:
     tolerance: 1e-5
     max_iterations: 200
     kspace: 5
-    bamg_relax_type: 12
+    bamg_relax_type: 18
 
 realms:
 
