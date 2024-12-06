@@ -1,0 +1,15 @@
+
+exawind:
+  nalu_wind_inp:
+    - abl-nalu-box.yaml
+  amr_wind_inp: abl-amr-bndry-output.inp
+  num_timesteps: 10
+  additional_picard_iterations: 2
+
+  nalu_vars:
+    - velocity
+    - pressure
+  amr_cell_vars:
+    - velocity
+  amr_node_vars:
+    - p
