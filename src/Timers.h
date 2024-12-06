@@ -53,7 +53,7 @@ struct Timers
     Timers(const std::vector<std::string>& names) : m_names(names)
     {
         Timer clock;
-        for (const auto& name : names) {
+        for ([[maybe_unused]] const auto& name : names) {
             m_timers.push_back(clock);
         }
     };
@@ -111,7 +111,7 @@ struct Timers
 
         std::ostringstream outstream;
         std::ostringstream linestream;
-        for (int i = 0; i < m_timers.size(); ++i) {
+        for (int i = 0; i < static_cast<int>(m_timers.size()); ++i) {
             std::string func_call =
                 (m_timers.size() == 1) ? "Total" : m_names.at(i);
 
@@ -120,7 +120,8 @@ struct Timers
                 maxtimes.at(i));
 
             outstream << linestream.str();
-            if (i < m_timers.size() - 1) outstream << std::endl;
+            if (i < static_cast<int>(m_timers.size()) - 1)
+                outstream << std::endl;
         }
 
         //  accumulate only if there is more than 1 routine to report

@@ -36,7 +36,7 @@ NaluWind::NaluWind(
     const std::string& logfile,
     const std::vector<std::string>& fnames,
     TIOGA::tioga& tg)
-    : m_id(id), m_comm(comm), m_doc(inp_yaml), m_fnames(fnames), m_sim(m_doc)
+    : m_doc(inp_yaml), m_sim(m_doc), m_fnames(fnames), m_id(id), m_comm(comm)
 {
     auto& env = sierra::nalu::NaluEnv::self();
     env.parallelCommunicator_ = comm;
@@ -92,7 +92,7 @@ void NaluWind::pre_advance_stage2(size_t inonlin)
     m_sim.timeIntegrator_->pre_realm_advance_stage2(inonlin);
 }
 
-void NaluWind::advance_timestep(size_t inonlin)
+void NaluWind::advance_timestep(size_t /*inonlin*/)
 {
     for (auto* realm : m_sim.timeIntegrator_->realmVec_) {
         realm->advance_time_step();

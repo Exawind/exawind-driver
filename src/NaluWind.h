@@ -35,7 +35,7 @@ public:
         if (index >= 0) {
             suffix = "_" + std::to_string(index) + suffix;
         }
-        if (extloc != std::string::npos) {
+        if (extloc != static_cast<int>(std::string::npos)) {
             logfile = inpfile.substr(0, extloc) + suffix;
         }
         return logfile;

@@ -39,7 +39,6 @@ void AMRTiogaIface::register_mesh()
 {
     BL_PROFILE("exawind::AMRTiogaIface::register_mesh");
     auto& mesh = m_sim.mesh();
-    const int nlevels = mesh.finestLevel() + 1;
     const int num_ghost = m_sim.pde_manager().num_ghost_state();
 
     auto* amr_tg_iface =
