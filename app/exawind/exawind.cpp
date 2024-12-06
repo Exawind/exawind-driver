@@ -112,7 +112,7 @@ int main(int argc, char** argv)
     std::vector<int> num_nw_solver_ranks;
     if (node["nalu_wind_procs"]) {
         num_nw_solver_ranks = node["nalu_wind_procs"].as<std::vector<int>>();
-        if (num_nw_solver_ranks.size() != num_nwsolvers) {
+        if (static_cast<int>(num_nw_solver_ranks.size()) != num_nwsolvers) {
             throw std::runtime_error(
                 "Number of Nalu-Wind rank specifications is less than the "
                 " number of Nalu-Wind solvers. Please have one rank count "

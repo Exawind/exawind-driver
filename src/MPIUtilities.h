@@ -20,7 +20,7 @@ create_subcomm(MPI_Comm comm, const int num_ranks, const int start_rank = 0)
     MPI_Group world_group, sub_group;
     MPI_Comm_group(comm, &world_group);
 
-    int sub_range[1][3] = {start_rank, start_rank + num_ranks - 1, 1};
+    int sub_range[1][3] = {{start_rank, start_rank + num_ranks - 1, 1}};
     MPI_Group_range_incl(world_group, 1, sub_range, &sub_group);
 
     MPI_Comm sub_comm;

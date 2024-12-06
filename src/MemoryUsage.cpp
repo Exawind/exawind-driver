@@ -9,7 +9,7 @@ long memory_usage()
     getrusage(RUSAGE_SELF, &usage);
 
     // convert to MB
-    return (long)((double)usage.ru_maxrss) / 1024.0;
+    return static_cast<long>(static_cast<double>(usage.ru_maxrss) / 1024.0);
 }
 #else
 long memory_usage() { return -1; }

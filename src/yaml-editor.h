@@ -51,7 +51,7 @@ inline void impl_find_and_replace(YAML::Node src, YAML::Node key)
         // case 2: it's a list
         //- pass the contents of the list recursively (order matters when
         // looking for a match)
-        for (int i = 0; i < key.size(); ++i) {
+        for (int i = 0; i < static_cast<int>(key.size()); ++i) {
             try {
                 impl_find_and_replace(src[i], key[i]);
             } catch (YamlNodeMatchException& e) {

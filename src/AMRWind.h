@@ -40,13 +40,13 @@ protected:
     void pre_advance_stage1(size_t inonlin) override;
     void pre_advance_stage2(size_t inonlin) override;
     void advance_timestep(size_t inonlin) override;
-    void additional_picard_iterations(const int) override{};
+    void additional_picard_iterations(const int) override {};
     void post_advance() override;
     void pre_overset_conn_work() override;
     void post_overset_conn_work() override;
     void register_solution() override;
     void update_solution() override;
-    void dump_simulation_time() override{};
+    void dump_simulation_time() override {};
     MPI_Comm m_comm;
 };
 
