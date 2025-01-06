@@ -1,0 +1,125 @@
+Simulations:
+  - name: sim1
+    time_integrator: ti_1
+    optimizer: opt1
+
+linear_solvers:
+
+  - name: solve_scalar
+    type: hypre
+    method: hypre_gmres
+    preconditioner: boomerAMG
+    tolerance: 1e-5
+    max_iterations: 200
+    kspace: 5
+    bamg_relax_type: 18
+    bamg_max_levels: 1
+
+  - name: solve_cont
+    type: hypre
+    method: hypre_gmres
+    preconditioner: boomerAMG
+    tolerance: 1e-5
+    max_iterations: 200
+    kspace: 5
+    bamg_relax_type: 18
+    bamg_max_levels: 1
+
+realms:
+
+  - name: realm_1
+    mesh: "generated:8x8x8|bbox:100.,100.,100.,270.,270.,270.|sideset:xXyYzZ|show"
+    use_edges: yes
+    automatic_decomposition_type: rcb
+    check_for_missing_bcs: yes
+
+    equation_systems:
+      name: theEqSys
+      max_iterations: 1
+      decoupled_overset_solve: yes
+
+      solver_system_specification:
+        volume_of_fluid: solve_scalar
+        velocity: solve_scalar
+        pressure: solve_cont
+
+      systems:
+        - LowMachEOM:
+            name: myLowMach
+            max_iterations: 1
+            convergence_tolerance: 1e-8
+
+    initial_conditions:
+
+      - constant: ic_1
+        target_name: block_1
+        value:
+          velocity: [10.0, 0.0, 0.0]
+          pressure: 0.0
+
+    material_properties:
+      target_name: block_1
+      specifications:
+        - name: density
+          type: constant
+          value: 1.0
+
+        - name: viscosity
+          type: constant
+          value: 1.0e-5
+
+    boundary_conditions:
+
+      - overset_boundary_condition: bc_overset
+        overset_connectivity_type: tioga
+        overset_user_data:
+          tioga_options:
+            set_resolutions: no
+          mesh_group:
+            - overset_name: oset_n
+              mesh_parts: [block_1]
+              ovset_parts: [surface_1,surface_2,surface_3,surface_4,surface_5,surface_6]
+
+    solution_options:
+      name: myOptions
+
+      options:
+        - hybrid_factor:
+            velocity: 1.0
+
+        - upw_factor:
+            velocity: 1.0
+    
+        - consistent_mass_matrix_png:
+            pressure: no
+
+        - user_constants:
+            reference_density: 0.00
+            gravity: [0.0, 0.0, -9.81]
+
+    restart:
+      restart_data_base_name: ablBox.rst
+      restart_frequency: 5
+      restart_start: 0
+
+    output:
+      output_data_base_name: out/ablBox.e
+      output_frequency: 5
+      output_node_set: yes
+      output_variables:
+       - density
+       - velocity
+       - pressure
+       - iblank
+Time_Integrators:
+  - StandardTimeIntegrator:
+      name: ti_1
+      termination_time: 200.0
+      time_step: 0.5
+      time_stepping_type: fixed
+      time_step_count: 0
+      second_order_accuracy: yes
+
+
+      realms:
+        - realm_1
