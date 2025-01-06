@@ -145,7 +145,8 @@ void OversetSimulation::run_timesteps(
 
         m_timers_exa.tick("TimeStep");
 
-        for (size_t inonlin = 0; inonlin < nonlinear_its; inonlin++) {
+        for (size_t inonlin = 0; inonlin < static_cast<size_t>(nonlinear_its);
+             inonlin++) {
 
             bool increment_timer = inonlin > 0 ? true : false;
 
@@ -260,8 +261,8 @@ long OversetSimulation::mem_usage_all(const int step)
         }
 
         fp << std::to_string(step);
-        for (const auto& mem : memall) {
-            fp << ' ' << mem;
+        for (const auto& m : memall) {
+            fp << ' ' << m;
         }
         fp << std::endl;
         fp.close();
