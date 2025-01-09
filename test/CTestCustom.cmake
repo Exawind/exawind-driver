@@ -1,5 +1,5 @@
 set(CTEST_CUSTOM_WARNING_EXCEPTION ".*: warning: could not create compact unwind*"
                                    ".*has no symbols*"
-                                   ".*resetting jobserver mode*")
-set(CTEST_CUSTOM_MAXIMUM_FAILED_TEST_OUTPUT_SIZE "262144")
-set(CTEST_CUSTOM_MAXIMUM_PASSED_TEST_OUTPUT_SIZE "51200")
+                                   ".*submake: resetting jobserver mode*")
+set(CTEST_CUSTOM_MAXIMUM_FAILED_TEST_OUTPUT_SIZE "131072")
+set(CTEST_CUSTOM_MAXIMUM_PASSED_TEST_OUTPUT_SIZE "131072")
