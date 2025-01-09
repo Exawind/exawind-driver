@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-option(EXAWIND_ENABLE_TESTS "Enable testing suite" OFF)
+option(EXAWIND_ENABLE_TESTS "Enable testing suite" ON)
 option(EXAWIND_TEST_WITH_FCOMPARE "Check AMR-Wind test plots against gold files" OFF)
 option(EXAWIND_SAVE_GOLDS "Provide a directory in which to save golds during testing" OFF)
 option(EXAWIND_ENABLE_CUDA "Enable CUDA" OFF)
