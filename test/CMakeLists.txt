@@ -14,10 +14,32 @@ endif()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CTestCustom.cmake ${CMAKE_BINARY_DIR}/CTestCustom.cmake)
 
+if(EXAWIND_TEST_WITH_FCOMPARE)
+  set(FCOMPARE_EXE "${FCOMPARE_EXE}" CACHE STRING "Path to fcompare executable for regression tests")
+  if("${EXAWIND_REFERENCE_GOLDS_DIRECTORY}" STREQUAL "")
+    message(FATAL_ERROR "To reference gold files, EXAWIND_REFERENCE_GOLDS_DIRECTORY must be set and exist")
+  else()
+    set(GOLD_FILES_DIRECTORY ${EXAWIND_REFERENCE_GOLDS_DIRECTORY}/${CMAKE_SYSTEM_NAME}/${CMAKE_CXX_COMPILER_ID}/${CMAKE_CXX_COMPILER_VERSION})
+    message(STATUS "Test golds directory for fcompare: ${GOLD_FILES_DIRECTORY}")
+  endif()
+endif()
+
+if(EXAWIND_SAVE_GOLDS)
+  if("${EXAWIND_SAVED_GOLDS_DIRECTORY}" STREQUAL "")
+    message(FATAL_ERROR "To save gold files, EXAWIND_SAVED_GOLDS_DIRECTORY must be set and the directory exist")
+  else()
+    if(EXISTS ${EXAWIND_SAVED_GOLDS_DIRECTORY})
+      set(SAVED_GOLDS_DIRECTORY ${EXAWIND_SAVED_GOLDS_DIRECTORY}/${CMAKE_SYSTEM_NAME}/${CMAKE_CXX_COMPILER_ID}/${CMAKE_CXX_COMPILER_VERSION})
+      message(STATUS "Gold files will be saved to: ${SAVED_GOLDS_DIRECTORY}")
+    else()
+      message(FATAL_ERROR "Specified directory for saving gold files does not exist: ${EXAWIND_SAVED_GOLDS_DIRECTORY}")
+    endif()
+  endif()
+endif()
+
 #=============================================================================
 # Functions for adding tests / Categories of tests
 #=============================================================================
-
 macro(setup_test)
     set(CURRENT_TEST_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test_files/${TEST_NAME})
     set(CURRENT_TEST_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/test_files/${TEST_NAME})
@@ -33,7 +55,7 @@ macro(setup_test)
       set(SAVE_GOLDS_COMMAND "&& cp -R ${PLOT_TEST} ${SAVED_GOLDS_DIRECTORY}/${TEST_NAME}/")
     endif()
     if(EXAWIND_TEST_WITH_FCOMPARE)
-      set(FCOMPARE_COMMAND "&& ${MPI_COMMANDS} ${FCOMPARE_EXE} ${FCOMPARE_TOLERANCE} ${PLOT_GOLD} ${PLOT_TEST}")
+      set(FCOMPARE_COMMAND "&& CUDA_LAUNCH_BLOCKING=1 ${FCOMPARE_EXE} ${FCOMPARE_TOLERANCE} ${PLOT_GOLD} ${PLOT_TEST}")
     endif()
     execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink
                     ${CMAKE_CURRENT_SOURCE_DIR}/meshes
