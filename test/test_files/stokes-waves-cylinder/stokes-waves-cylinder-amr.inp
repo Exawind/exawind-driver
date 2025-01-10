@@ -15,8 +15,6 @@ incflo.use_godunov = 1
 incflo.godunov_type="weno_z"
 incflo.diffusion_type = 0
 transport.model = TwoPhaseTransport
-transport.laminar_prandtl = 0.7
-transport.turbulent_prandtl = 0.3333
 turbulence.model = Laminar
 
 transport.viscosity_fluid1=1e-3
@@ -39,9 +37,13 @@ ICNS.source_terms = GravityForcing
 
 ICNS.use_perturb_pressure = true
 ICNS.reconstruct_true_pressure = true
-VOF.replace_masked = true
-Overset.disable_coupled_mac_proj = true
-Overset.disable_coupled_nodal_proj = true
+
+mac_proj.num_pre_smooth = 8
+mac_proj.num_post_smooth = 8
+mac_proj.bottom_solver = hypre
+nodal_proj.max_coarsening_level = 1
+nodal_proj.num_pre_smooth = 8
+nodal_proj.num_post_smooth = 8
 
 amr.n_cell              = 128 48 56
 amr.max_level = 1
