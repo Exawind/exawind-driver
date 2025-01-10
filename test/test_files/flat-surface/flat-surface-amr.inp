@@ -29,11 +29,8 @@ SloshingTank.water_level  =-0.1015625
 
 ICNS.source_terms = GravityForcing
 ICNS.use_perturb_pressure = false
-VOF.replace_masked = true
-
-Overset.disable_coupled_mac_proj   = true
-Overset.disable_coupled_nodal_proj = true
 Overset.verbose = 1
+nodal_proj.max_coarsening_level = 2
 
 amr.n_cell              = 64 64 64   # Grid cells at coarsest AMRlevel
 amr.max_level = 0
