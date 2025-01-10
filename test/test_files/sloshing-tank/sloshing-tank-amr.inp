@@ -8,9 +8,6 @@ time.plot_interval            =  10       # Steps between plot files
 incflo.do_initial_proj = 0
 incflo.initial_iterations = 0
 
-Overset.disable_coupled_mac_proj   = true
-Overset.disable_coupled_nodal_proj = true
-
 io.outputs = density vof velocity p gp levelset
 io.int_outputs = iblank_cell
 
@@ -19,9 +16,10 @@ incflo.godunov_type="weno_z"
 transport.model = TwoPhaseTransport
 transport.viscosity_fluid1=1e-5
 transport.viscosity_fluid2=1e-5
-transport.laminar_prandtl = 0.7
-transport.turbulent_prandtl = 0.3333
 turbulence.model = Laminar
+
+mac_proj.max_coarsening_level = 2
+nodal_proj.max_coarsening_level = 2
 
 incflo.physics = MultiPhase SloshingTank
 MultiPhase.density_fluid1=1000.
@@ -31,7 +29,6 @@ SloshingTank.amplitude=0.7
 SloshingTank.peak_enhance=1.5
 SloshingTank.water_level=0.0
 ICNS.source_terms = GravityForcing
-VOF.replace_masked = true
 
 # Target resolution at interface is dx = dy = 0.3125, dz = 0.125
 amr.n_cell              = 64 64 48   # Grid cells at coarsest AMRlevel
