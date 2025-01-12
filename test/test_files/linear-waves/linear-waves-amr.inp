@@ -28,8 +28,6 @@ incflo.mflux_type="minmod"
 transport.model = TwoPhaseTransport
 transport.viscosity_fluid1=1e-3
 transport.viscosity_fluid2=1e-5
-transport.laminar_prandtl = 0.7
-transport.turbulent_prandtl = 0.3333
 turbulence.model = Laminar 
 
 incflo.physics = MultiPhase OceanWaves 
@@ -48,8 +46,9 @@ ICNS.source_terms = GravityForcing
 incflo.initial_iterations = 0
 incflo.do_initial_proj = false
 
-Overset.disable_coupled_mac_proj   = true
-Overset.disable_coupled_nodal_proj = true
+incflo.diffusion_type = 0
+nodal_proj.max_coarsening_level = 2
+mac_proj.max_coarsening_level = 6
 
 MultiPhase.verbose=0
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#

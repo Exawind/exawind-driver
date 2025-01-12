@@ -15,8 +15,6 @@ incflo.use_godunov = 1
 incflo.godunov_type="weno_z"
 incflo.diffusion_type = 0
 transport.model = TwoPhaseTransport
-transport.laminar_prandtl = 0.7
-transport.turbulent_prandtl = 0.3333
 turbulence.model = Laminar
 
 transport.viscosity_fluid1=1e-3
@@ -29,8 +27,8 @@ OceanWaves.Wave1.order=5
 OceanWaves.Wave1.wave_height=0.3327      # nominal: 0.37
 OceanWaves.Wave1.wave_period=1.536       # nominal: 1.533
 OceanWaves.Wave1.water_depth=10.0
-OceanWaves.Wave1.relax_zone_gen_length=4.801496963
-OceanWaves.Wave1.numerical_beach_length=9.602993926
+OceanWaves.Wave1.relax_zone_gen_length=3.0
+OceanWaves.Wave1.numerical_beach_length=3.0
 OceanWaves.Wave1.numerical_beach_length_factor=2.0
 OceanWaves.Wave1.zero_sea_level=0.0
 MultiPhase.density_fluid1=1000.
@@ -39,15 +37,19 @@ ICNS.source_terms = GravityForcing
 
 ICNS.use_perturb_pressure = true
 ICNS.reconstruct_true_pressure = true
-VOF.replace_masked = true
-Overset.disable_coupled_mac_proj = true
-Overset.disable_coupled_nodal_proj = true
 
-amr.n_cell              = 128 48 56
+mac_proj.num_pre_smooth = 8
+mac_proj.num_post_smooth = 8
+mac_proj.bottom_solver = hypre
+nodal_proj.max_coarsening_level = 1
+nodal_proj.num_pre_smooth = 8
+nodal_proj.num_post_smooth = 8
+
+amr.n_cell              = 64 32 48
 amr.max_level = 1
 
-geometry.prob_lo        =   -9.602993926  -5.25  -10.0   # Lo corner coordinates
-geometry.prob_hi        =    19.205987852  5.25   2.4007484815   # Hi corner coordinates
+geometry.prob_lo        =   -6  -5  -10.0   # Lo corner coordinates
+geometry.prob_hi        =    14  5   5   # Hi corner coordinates
 geometry.is_periodic    =    0   0    0   # Periodicity x y z (0/1)
 
 tagging.labels = refine0
