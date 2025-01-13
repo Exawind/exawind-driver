@@ -3,7 +3,7 @@ exawind:
   nalu_wind_inp:
     - flat-surface-nalu.yaml
   amr_wind_inp: flat-surface-amr.inp
-  num_timesteps: 5
+  num_timesteps: 10
   additional_picard_iterations: 2
 
   nalu_vars:

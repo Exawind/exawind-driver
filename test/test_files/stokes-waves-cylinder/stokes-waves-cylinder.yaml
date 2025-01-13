@@ -3,7 +3,7 @@ exawind:
   nalu_wind_inp:
     - stokes-waves-cylinder-nalu.yaml
   amr_wind_inp: stokes-waves-cylinder-amr.inp
-  num_timesteps: 5
+  num_timesteps: 10
   additional_picard_iterations: 1
 
   nalu_vars:
