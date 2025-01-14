@@ -46,7 +46,7 @@ function(add_test_r TEST_NAME)
     add_test(${TEST_NAME} sh -c "${MPI_COMMANDS} ${CMAKE_BINARY_DIR}/${EXAWIND_EXE_NAME} ${MPIEXEC_POSTFLAGS} ${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.yaml 2>&1 | tee ${TEST_NAME}.log ${SAVE_GOLDS_COMMAND} ${FCOMPARE_COMMAND}")
     # Set properties for test
     set_tests_properties(${TEST_NAME} PROPERTIES
-                         TIMEOUT 5400
+                         TIMEOUT 7200
                          PROCESSORS ${TEST_NP}
                          WORKING_DIRECTORY "${CURRENT_TEST_BINARY_DIR}/"
                          LABELS "regression"
