@@ -47,6 +47,10 @@ incflo.initial_iterations = 0
 incflo.do_initial_proj = false
 
 incflo.diffusion_type = 0
+nodal_proj.mg_rtol = 1.0e-12
+nodal_proj.mg_atol = 1.0e-12
+mac_proj.mg_rtol = 1.0e-12
+mac_proj.mg_atol = 1.0e-12
 nodal_proj.max_coarsening_level = 2
 mac_proj.max_coarsening_level = 6
 
