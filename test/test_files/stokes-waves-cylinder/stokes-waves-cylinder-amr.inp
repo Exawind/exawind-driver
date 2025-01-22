@@ -38,6 +38,10 @@ ICNS.source_terms = GravityForcing
 ICNS.use_perturb_pressure = true
 ICNS.reconstruct_true_pressure = true
 
+nodal_proj.mg_rtol = 1.0e-12
+nodal_proj.mg_atol = 1.0e-12
+mac_proj.mg_rtol = 1.0e-12
+mac_proj.mg_atol = 1.0e-12
 mac_proj.num_pre_smooth = 8
 mac_proj.num_post_smooth = 8
 mac_proj.bottom_solver = hypre
