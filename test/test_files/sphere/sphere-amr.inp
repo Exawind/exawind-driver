@@ -36,7 +36,7 @@ incflo.physics = FreeStream
 incflo.velocity = 0.0 0.0 0.0
 incflo.density = 1.0
 
-amr.n_cell              = 64 64 64 # Grid cells at coarsest AMRlevel
+amr.n_cell              = 32 32 32 # Grid cells at coarsest AMRlevel
 amr.max_level           = 0           # Max AMR level in hierarchy 
 geometry.prob_lo        =   -4.0 -4.0 -4.0 # Lo corner coordinates
 geometry.prob_hi        =   4.0 4.0 4.0 # Hi corner coordinates
