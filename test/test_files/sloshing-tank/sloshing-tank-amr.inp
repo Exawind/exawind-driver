@@ -2,7 +2,7 @@ time.stop_time               =   20     # Max (simulated) time to evolve
 time.max_step                =   -10    # Max number of time steps
 
 time.initial_dt       =   -0.05        # Use this constant dt if > 0
-time.fixed_dt         =   0.005
+time.fixed_dt         =   0.01
 time.cfl              =   0.95         # CFL factor
 time.plot_interval            =  10       # Steps between plot files
 incflo.do_initial_proj = 0
@@ -31,7 +31,7 @@ SloshingTank.water_level=0.0
 ICNS.source_terms = GravityForcing
 
 # Target resolution at interface is dx = dy = 0.3125, dz = 0.125
-amr.n_cell              = 64 64 48   # Grid cells at coarsest AMRlevel
+amr.n_cell              = 32 32 24   # Grid cells at coarsest AMRlevel
 amr.max_level = 0
 
 geometry.prob_lo        =   -2.  -2.   -1.5   # Lo corner coordinates

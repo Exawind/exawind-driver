@@ -2,7 +2,7 @@ time.stop_time               =   200     # Max (simulated) time to evolve
 time.max_step                =   -10    # Max number of time steps
 
 time.initial_dt       =   -0.05        # Use this constant dt if > 0
-time.fixed_dt         =   0.01
+time.fixed_dt         =   0.02
 time.cfl              =   0.95         # CFL factor
 time.plot_interval            =  10       # Steps between plot files
 incflo.do_initial_proj = 0
@@ -45,17 +45,18 @@ nodal_proj.max_coarsening_level = 1
 nodal_proj.num_pre_smooth = 8
 nodal_proj.num_post_smooth = 8
 
-amr.n_cell              = 64 32 48
-amr.max_level = 1
+amr.n_cell              = 16 8 16
+amr.max_level = 2
 
-geometry.prob_lo        =   -6  -5  -10.0   # Lo corner coordinates
-geometry.prob_hi        =    14  5   5   # Hi corner coordinates
+geometry.prob_lo        =   -6  -3  -10.0   # Lo corner coordinates
+geometry.prob_hi        =    6   3    2   # Hi corner coordinates
 geometry.is_periodic    =    0   0    0   # Periodicity x y z (0/1)
 
 tagging.labels = refine0
 tagging.refine0.type = GeometryRefinement
 tagging.refine0.shapes = c0 b0
-tagging.refine0.level  = 0
+tagging.refine0.min_level  = 0
+tagging.refine0.max_level  = 1
 
 tagging.refine0.c0.type = cylinder
 tagging.refine0.c0.start = 0.0 0.0 -2.0
@@ -63,9 +64,9 @@ tagging.refine0.c0.end = 0.0 0.0 1.5
 tagging.refine0.c0.outer_radius = 0.5
 
 tagging.refine0.b0.type = box                 
-tagging.refine0.b0.origin = -10.0 -5.5 -0.5
+tagging.refine0.b0.origin = -10.0 -3.0 -0.5
 tagging.refine0.b0.xaxis = 30.0 0.0 0.0
-tagging.refine0.b0.yaxis = 0.0 11.0 0.0
+tagging.refine0.b0.yaxis = 0.0 6.0 0.0
 tagging.refine0.b0.zaxis = 0.0 0.0 1.0
 
 xlo.type =   "wave_generation"
