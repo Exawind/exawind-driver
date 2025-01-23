@@ -2,7 +2,7 @@ time.stop_time               =   2     # Max (simulated) time to evolve
 time.max_step                =   -10    # Max number of time steps
 
 time.initial_dt       =   -0.05   
-time.fixed_dt         =   0.0005
+time.fixed_dt         =   0.001
 time.cfl              =   0.95
 time.plot_interval    =   10  
 incflo.do_initial_proj    = 0
@@ -30,7 +30,7 @@ ICNS.use_perturb_pressure = false
 Overset.verbose = 1
 nodal_proj.max_coarsening_level = 2
 
-amr.n_cell              = 64 64 64   # Grid cells at coarsest AMRlevel
+amr.n_cell              = 32 32 32   # Grid cells at coarsest AMRlevel
 amr.max_level = 0
 
 geometry.prob_lo        =   -0.5  -0.5  -0.5   # Lo corner coordinates

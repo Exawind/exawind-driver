@@ -1,8 +1,9 @@
 time.stop_time               =   2     # Max (simulated) time to evolve
 time.max_step                =   2000          # Max number of time steps
 
-time.fixed_dt         =   0.001        # Use this constant dt if > 0
-time.cfl              =   0.95         # CFL factor
+time.fixed_dt         =   0.005        # Use this constant dt if > 0
+time.cfl              =   1.0         # CFL factor
+time.use_force_cfl    =   false
 
 time.plot_interval            =  10       # Steps between plot files
 time.checkpoint_interval      =  -1       # Steps between checkpoint files
@@ -26,16 +27,16 @@ mac_proj.max_coarsening_level = 2
 incflo.physics = MultiPhase DamBreak 
 MultiPhase.density_fluid1=1000.
 MultiPhase.density_fluid2=1.
-DamBreak.location = -0.8 0.0 -0.3125
-DamBreak.width    = 0.5
-DamBreak.height   = 0.8
+DamBreak.location = -0.35 0.0 -0.3125
+DamBreak.width    = 0.15
+DamBreak.height   = 0.7
 ICNS.source_terms = GravityForcing 
 
-amr.n_cell              = 64 16 32    # Grid cells at coarsest AMRlevel
+amr.n_cell              = 32 16 32    # Grid cells at coarsest AMRlevel
 amr.max_level           = 0           # Max AMR level in hierarchy 
 
-geometry.prob_lo        =   -1.4  -0.375 -0.3125  # Lo corner coordinates
-geometry.prob_hi        =   1.1 0.375 1.1875  # Hi corner coordinates
+geometry.prob_lo        =   -0.4  -0.375 -0.3125  # Lo corner coordinates
+geometry.prob_hi        =   0.35 0.375 0.4375  # Hi corner coordinates
 geometry.is_periodic    =   0   0   0   # Periodicity x y z (0/1)
 
 xlo.type =   "slip_wall"
