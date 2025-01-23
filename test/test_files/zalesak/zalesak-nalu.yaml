@@ -18,7 +18,7 @@ linear_solvers:
 realms:
 
   - name: realm_1
-    mesh: "generated:32x32x32|bbox:0.25,0.,0.,0.75,0.5,0.5|sideset:xXyYzZ|show"
+    mesh: "generated:32x32x32|bbox:0.0,0.15,0.0,0.5,0.65,0.5|sideset:xXyYzZ|show"
     use_edges: yes
     automatic_decomposition_type: rcb
     check_for_missing_bcs: yes
