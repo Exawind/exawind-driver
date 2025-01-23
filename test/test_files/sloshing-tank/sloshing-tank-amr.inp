@@ -18,6 +18,10 @@ transport.viscosity_fluid1=1e-5
 transport.viscosity_fluid2=1e-5
 turbulence.model = Laminar
 
+nodal_proj.mg_rtol = 1.0e-12
+nodal_proj.mg_atol = 1.0e-12
+mac_proj.mg_rtol = 1.0e-12
+mac_proj.mg_atol = 1.0e-12
 mac_proj.max_coarsening_level = 2
 nodal_proj.max_coarsening_level = 2
 
