@@ -42,6 +42,10 @@ void AMRTiogaIface::register_mesh()
 
     auto* amr_tg_iface =
         dynamic_cast<amr_wind::TiogaInterface*>(m_sim.overset_manager());
+    if (amr_tg_iface == nullptr) {
+      amrex::Abort("Dynamic cast to TiogaInterface failed");
+      return;
+    }
     auto& ad = amr_tg_iface->amr_overset_info();
     auto& mi = *m_info;
 
@@ -75,6 +79,10 @@ void AMRTiogaIface::register_solution(
 {
     auto* amr_tg_iface =
         dynamic_cast<amr_wind::TiogaInterface*>(m_sim.overset_manager());
+    if (amr_tg_iface == nullptr) {
+      amrex::Abort("Dynamic cast to TiogaInterface failed");
+      return;
+    }
     amr_tg_iface->register_solution(cell_vars, node_vars);
     auto& qcell = amr_tg_iface->qvars_cell();
     auto& qnode = amr_tg_iface->qvars_node();
