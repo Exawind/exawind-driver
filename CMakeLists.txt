@@ -25,6 +25,7 @@ if(EXAWIND_ENABLE_ROCM)
   find_package(hip REQUIRED)
   find_package(rocrand REQUIRED CONFIG)
   find_package(rocprim REQUIRED CONFIG)
+  find_package(rocsparse REQUIRED CONFIG)
   find_package(hiprand REQUIRED CONFIG)
 endif()
 
