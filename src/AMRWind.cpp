@@ -75,7 +75,7 @@ void AMRWind::pre_advance_stage0(size_t inonlin)
     if (inonlin < 1) {
         m_incflo.sim().time().new_timestep();
         m_incflo.regrid_and_update();
-        m_incflo.ComputeDt();
+        m_incflo.compute_dt();
     }
 }
 
