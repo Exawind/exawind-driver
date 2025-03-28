@@ -82,6 +82,11 @@ void NaluWind::prepare_solver_epilog()
         realm->output_converged_results();
 }
 
+void NaluWind::pre_advance_stage0(size_t inonlin)
+{
+    m_sim.timeIntegrator_->prepare_time_step(inonlin);
+}
+
 void NaluWind::pre_advance_stage1(size_t inonlin)
 {
     m_sim.timeIntegrator_->pre_realm_advance_stage1(inonlin);
@@ -90,6 +95,16 @@ void NaluWind::pre_advance_stage1(size_t inonlin)
 void NaluWind::pre_advance_stage2(size_t inonlin)
 {
     m_sim.timeIntegrator_->pre_realm_advance_stage2(inonlin);
+}
+
+double NaluWind::get_timestep_size()
+{
+    return m_sim.timeIntegrator_->get_time_step();
+}
+
+void NaluWind::set_timestep_size(const double dt)
+{
+    m_sim.timeIntegrator_->set_time_step(dt);
 }
 
 void NaluWind::advance_timestep(size_t /*inonlin*/)

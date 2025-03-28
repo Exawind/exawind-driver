@@ -150,6 +150,18 @@ void OversetSimulation::run_timesteps(
 
             bool increment_timer = inonlin > 0 ? true : false;
 
+            double dt{1e8};
+            for (auto& ss : m_solvers) {
+                ss->call_pre_advance_stage0(inonlin, increment_timer);
+                if (inonlin < 1) {
+                    dt = std::min(dt, ss->call_get_timestep_size());
+                }
+            }
+
+            if (inonlin < 1) {
+                for (auto& ss : m_solvers) ss->call_set_timestep_size(dt);
+            }
+
             for (auto& ss : m_solvers)
                 ss->call_pre_advance_stage1(inonlin, increment_timer);
 
