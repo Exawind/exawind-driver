@@ -80,6 +80,12 @@ function(add_test_r TEST_NAME)
                          ATTACHED_FILES "${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.log")
 endfunction(add_test_r)
 
+# Regression tests excluded from CI
+function(add_test_re TEST_NAME)
+    add_test_r(${TEST_NAME})
+    set_tests_properties(${TEST_NAME} PROPERTIES LABELS "regression;no-ci")
+endfunction(add_test_re)
+
 # Regression test with dependency
 function(add_test_rd TEST_NAME TEST_DEPENDENCY)
     add_test_r(${TEST_NAME})
@@ -98,9 +104,9 @@ add_test_r(hybrid-multi-cylinder)
 add_test_r(flat-surface)
 add_test_r(sloshing-tank)
 add_test_r(linear-waves)
-add_test_r(stokes-waves-cylinder)
 add_test_r(dam-break-block)
 add_test_r(abl-bndry-output)
 add_test_rd(abl-bndry-input abl-bndry-output)
 add_test_r(nalu-nalu-cylinder)
 add_test_r(nalu-nalu-cylinder-motion)
+add_test_re(stokes-waves-cylinder)

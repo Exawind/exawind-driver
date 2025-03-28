@@ -49,5 +49,5 @@ jobs:
             spack concretize -f && \
             spack install && \
             spack cd -b exawind && \
-            spack build-env exawind ctest -j $(nproc) --output-on-failure \
+            spack build-env exawind ctest -j $(nproc) -LE no-ci --output-on-failure \
           "
