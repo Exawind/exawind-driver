@@ -6,7 +6,8 @@ on:
   pull_request:
     branches: [main]
 
-concurrency: group: ${{github.ref}}-${{github.head_ref}}-ci
+concurrency:
+  group: ${{github.ref}}-${{github.head_ref}}-ci
   cancel-in-progress: true
 
 jobs:
