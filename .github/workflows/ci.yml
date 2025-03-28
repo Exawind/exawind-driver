@@ -37,7 +37,7 @@ jobs:
       - name: Tests
         run: |
           /bin/bash -c " \
-            cd ${EXAWIND_MANAGER} && git pull && \
+            cd ${EXAWIND_MANAGER} && git checkout main && git pull origin main && \
             source ${EXAWIND_MANAGER}/start.sh && spack-start && \
             quick-create-dev -n my-env -s exawind@master && \
             cd ${EXAWIND_MANAGER}/environments/my-env && \
