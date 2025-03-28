@@ -40,19 +40,16 @@ geometry.prob_hi        =   0.35 0.375 0.4375  # Hi corner coordinates
 geometry.is_periodic    =   0   0   0   # Periodicity x y z (0/1)
 
 xlo.type =   "slip_wall"
-xlo.vof_type = "zero_gradient"
 xhi.type =   "slip_wall"
-xhi.vof_type = "zero_gradient"
 
 ylo.type =   "slip_wall"
-ylo.vof_type = "zero_gradient"
 yhi.type =   "slip_wall"
-yhi.vof_type = "zero_gradient"
 
 zlo.type =   "slip_wall"
-zlo.vof_type = "zero_gradient"
 zhi.type =   "slip_wall"
 zhi.vof_type = "mass_inflow"
 zhi.vof = 0.0
+zhi.density_type = "mass_inflow"
+zhi.density = 1.
 
 incflo.verbose=0
