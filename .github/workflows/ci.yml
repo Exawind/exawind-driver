@@ -6,8 +6,7 @@ on:
   pull_request:
     branches: [main]
 
-concurrency:
-  group: ${{github.ref}}-${{github.head_ref}}-ci
+concurrency: group: ${{github.ref}}-${{github.head_ref}}-ci
   cancel-in-progress: true
 
 jobs:
@@ -37,8 +36,9 @@ jobs:
       - name: Tests
         run: |
           /bin/bash -c " \
+            cd ${EXAWIND_MANAGER} && git pull && \
             source ${EXAWIND_MANAGER}/start.sh && spack-start && \
-            quick-create-dev -n my-env -s exawind+tests@master && \
+            quick-create-dev -n my-env -s exawind@master && \
             cd ${EXAWIND_MANAGER}/environments/my-env && \
             rm -rf exawind && \
             ln -s ${GITHUB_WORKSPACE} exawind && \
