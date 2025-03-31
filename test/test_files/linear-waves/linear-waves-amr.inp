@@ -72,11 +72,15 @@ xlo.type =     "slip_wall"
 xhi.type =     "slip_wall"
 xlo.vof_type = "zero_gradient"
 xhi.vof_type = "zero_gradient"
+xlo.density_type = "zero_gradient"
+xhi.density_type = "zero_gradient"
 
 zlo.type =     "slip_wall"
 zhi.type =     "slip_wall"
 zlo.vof_type = "zero_gradient"
 zhi.vof_type = "zero_gradient"
+zlo.density_type = "zero_gradient"
+zhi.density_type = "zero_gradient"
 
 incflo.verbose=0
 
