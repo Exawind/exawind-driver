@@ -107,6 +107,11 @@ void NaluWind::set_timestep_size(const double dt)
     m_sim.timeIntegrator_->set_time_step(dt);
 }
 
+bool NaluWind::is_fixed_timestep_size()
+{
+    return m_sim.timeIntegrator_->get_is_fixed_time_step();
+}
+
 void NaluWind::advance_timestep(size_t /*inonlin*/)
 {
     for (auto* realm : m_sim.timeIntegrator_->realmVec_) {

@@ -82,6 +82,13 @@ void OversetSimulation::initialize()
     }
     m_last_timestep = m_solvers.at(0)->time_index();
 
+    // Determine if any of the solvers have adaptive timestepping
+    for (auto& ss : m_solvers) {
+        m_fixed_dt = m_fixed_dt && ss->is_fixed_timestep_size();
+    }
+    MPI_Allreduce(MPI_IN_PLACE, &m_fixed_dt, 1, MPI_C_BOOL, MPI_LAND, m_comm);
+
+    // Should be able to remove this because of the Allreduce, right?
     MPI_Barrier(m_comm);
     m_initialized = true;
 }
@@ -153,12 +160,12 @@ void OversetSimulation::run_timesteps(
             double dt{1e8};
             for (auto& ss : m_solvers) {
                 ss->call_pre_advance_stage0(inonlin, increment_timer);
-                if (inonlin < 1) {
+                if (inonlin < 1 && !m_fixed_dt) {
                     dt = std::min(dt, ss->call_get_timestep_size());
                 }
             }
 
-            if (inonlin < 1) {
+            if (inonlin < 1 && !m_fixed_dt) {
                 MPI_Allreduce(
                     MPI_IN_PLACE, &dt, 1, MPI_DOUBLE, MPI_MIN, m_comm);
                 for (auto& ss : m_solvers) ss->call_set_timestep_size(dt);

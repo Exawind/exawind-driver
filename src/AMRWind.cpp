@@ -98,6 +98,11 @@ void AMRWind::set_timestep_size(const double dt)
     m_incflo.sim().time().delta_t() = dt;
 }
 
+bool AMRWind::is_fixed_timestep_size()
+{
+    return (!m_incflo.sim().time().adaptive_timestep());
+}
+
 void AMRWind::advance_timestep(size_t inonlin) { m_incflo.do_advance(inonlin); }
 
 void AMRWind::post_advance() { m_incflo.post_advance_work(); }

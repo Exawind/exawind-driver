@@ -113,6 +113,7 @@ public:
 
     virtual bool is_unstructured() { return false; };
     virtual bool is_amr() { return false; };
+    virtual bool is_fixed_timestep_size() = 0;
     virtual int overset_update_interval() { return 100000000; };
     virtual int time_index() = 0;
     virtual std::string identifier() { return "ExawindSolver"; }

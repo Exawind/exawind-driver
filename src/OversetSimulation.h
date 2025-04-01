@@ -30,6 +30,9 @@ private:
     int m_overset_update_interval{100000000};
     //! Last timestep run during this simulation
     int m_last_timestep{0};
+    //! Flag indicating whether all solvers use fixed dt. If any solver uses
+    //! adaptive dt, then this flag will be false
+    bool m_fixed_dt{true};
     //! Flag indicating whether initialization tasks have been performed
     bool m_initialized{false};
     //! Flag indicating if complementary comms have been initialized

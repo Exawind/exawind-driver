@@ -50,6 +50,7 @@ public:
     ~NaluWind();
     bool is_unstructured() override { return true; }
     bool is_amr() override { return false; }
+    bool is_fixed_timestep_size() override;
     int overset_update_interval() override;
     int time_index() override;
     std::string identifier() override
