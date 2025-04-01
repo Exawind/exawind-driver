@@ -159,6 +159,8 @@ void OversetSimulation::run_timesteps(
             }
 
             if (inonlin < 1) {
+                MPI_Allreduce(
+                    MPI_IN_PLACE, &dt, 1, MPI_DOUBLE, MPI_MIN, m_comm);
                 for (auto& ss : m_solvers) ss->call_set_timestep_size(dt);
             }
 
