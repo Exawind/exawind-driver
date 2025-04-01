@@ -95,8 +95,7 @@ double AMRWind::get_timestep_size() { return m_incflo.time().delta_t(); }
 
 void AMRWind::set_timestep_size(const double dt)
 {
-    double& dt_ref = m_incflo.sim().time().delta_t();
-    dt_ref = dt;
+    m_incflo.sim().time().delta_t() = dt;
 }
 
 void AMRWind::advance_timestep(size_t inonlin) { m_incflo.do_advance(inonlin); }
