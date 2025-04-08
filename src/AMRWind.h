@@ -41,6 +41,7 @@ protected:
     void pre_advance_stage0(size_t inonlin) override;
     void pre_advance_stage1(size_t inonlin) override;
     void pre_advance_stage2(size_t inonlin) override;
+    double get_time() override;
     double get_timestep_size() override;
     void set_timestep_size(const double) override;
     void advance_timestep(size_t inonlin) override;

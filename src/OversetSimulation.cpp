@@ -134,7 +134,10 @@ void OversetSimulation::exchange_solution(bool increment_time)
 }
 
 void OversetSimulation::run_timesteps(
-    const int add_pic_its, const int nonlinear_its, const int nsteps)
+    const int add_pic_its,
+    const int nonlinear_its,
+    const int nsteps,
+    const double max_time)
 {
 
     if (!m_initialized) {
@@ -147,7 +150,12 @@ void OversetSimulation::run_timesteps(
         "Running " + std::to_string(nsteps) + " timesteps starting from " +
         std::to_string(tstart));
 
-    for (int nt = tstart; nt < tend; ++nt) {
+    int nt = tstart;
+    double time = max_time < 0. ? 0. : m_solvers[0]->call_get_time();
+    bool step_check = nsteps > 0 ? nt < tend : true;
+    bool time_check = max_time > 0. ? time < max_time : true;
+    bool do_step = step_check && time_check;
+    while (do_step) {
         m_printer.echo_time_header();
 
         m_timers_exa.tick("TimeStep");
@@ -204,6 +212,12 @@ void OversetSimulation::run_timesteps(
         MPI_Barrier(m_comm);
 
         mem_usage_all(nt);
+
+        ++nt;
+        if (max_time > 0.) time = m_solvers[0]->call_get_time();
+        step_check = nsteps > 0 ? nt < tend : true;
+        time_check = max_time > 0. ? time < max_time : true;
+        do_step = step_check && time_check;
     }
     for (auto& ss : m_solvers) ss->call_dump_simulation_time();
     m_last_timestep = tend;

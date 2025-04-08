@@ -40,6 +40,14 @@ public:
         pre_advance_stage2(inonlin);
         m_timers.tock(name);
     };
+    double call_get_time()
+    {
+        const std::string name = "Pre";
+        m_timers.tick(name);
+        double time = get_time();
+        m_timers.tock(name);
+        return time;
+    }
     double call_get_timestep_size()
     {
         const std::string name = "Pre";
@@ -134,6 +142,7 @@ protected:
     virtual void pre_advance_stage0(size_t inonlin) = 0;
     virtual void pre_advance_stage1(size_t inonlin) = 0;
     virtual void pre_advance_stage2(size_t inonlin) = 0;
+    virtual double get_time() = 0;
     virtual double get_timestep_size() = 0;
     virtual void set_timestep_size(const double) = 0;
     virtual void advance_timestep(size_t inonlin) = 0;

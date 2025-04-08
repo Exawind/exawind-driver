@@ -91,6 +91,8 @@ void AMRWind::pre_advance_stage2(size_t inonlin)
     if (inonlin < 1) m_incflo.pre_advance_stage2();
 }
 
+double AMRWind::get_time() { return m_incflo.time().new_time(); }
+
 double AMRWind::get_timestep_size() { return m_incflo.time().delta_t(); }
 
 void AMRWind::set_timestep_size(const double dt)
