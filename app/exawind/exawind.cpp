@@ -186,7 +186,10 @@ int main(int argc, char** argv)
     sim.set_nw_start_rank(nalu_start_rank);
 
     const auto nalu_vars = node["nalu_vars"].as<std::vector<std::string>>();
-    const int num_timesteps = node["num_timesteps"].as<int>();
+    const int num_timesteps =
+        node["num_timesteps"] ? node["num_timesteps"].as<int>() : -1;
+    const double max_time =
+        node["max_time"] ? node["max_time"].as<double>() : -1.0;
     const int additional_picard_its =
         node["additional_picard_iterations"]
             ? node["additional_picard_iterations"].as<int>()
@@ -198,6 +201,12 @@ int main(int argc, char** argv)
                                  ? node["use_adaptive_holemap"].as<bool>()
                                  : false;
     sim.set_holemap_alg(holemap_alg);
+
+    if (num_timesteps < 0 && max_time < 0.) {
+        throw std::runtime_error(
+            "max_timesteps or num_timesteps must be specified as positive "
+            "values. These are both unspecified or specified as negative.");
+    }
 
     if (node["composite_body"]) {
         const YAML::Node& composite_mesh = node["composite_body"];
@@ -291,7 +300,8 @@ int main(int argc, char** argv)
     sim.echo("Initializing overset simulation");
     sim.initialize();
     sim.echo("Initialization successful");
-    sim.run_timesteps(additional_picard_its, nonlinear_its, num_timesteps);
+    sim.run_timesteps(
+        additional_picard_its, nonlinear_its, num_timesteps, max_time);
     sim.delete_solvers();
 
     if (amr_comm != MPI_COMM_NULL) {

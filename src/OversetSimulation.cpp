@@ -82,7 +82,12 @@ void OversetSimulation::initialize()
     }
     m_last_timestep = m_solvers.at(0)->time_index();
 
-    MPI_Barrier(m_comm);
+    // Determine if any of the solvers have adaptive timestepping
+    for (auto& ss : m_solvers) {
+        m_fixed_dt = m_fixed_dt && ss->is_fixed_timestep_size();
+    }
+    MPI_Allreduce(MPI_IN_PLACE, &m_fixed_dt, 1, MPI_C_BOOL, MPI_LAND, m_comm);
+
     m_initialized = true;
 }
 
@@ -127,7 +132,10 @@ void OversetSimulation::exchange_solution(bool increment_time)
 }
 
 void OversetSimulation::run_timesteps(
-    const int add_pic_its, const int nonlinear_its, const int nsteps)
+    const int add_pic_its,
+    const int nonlinear_its,
+    const int nsteps,
+    const double max_time)
 {
 
     if (!m_initialized) {
@@ -140,7 +148,12 @@ void OversetSimulation::run_timesteps(
         "Running " + std::to_string(nsteps) + " timesteps starting from " +
         std::to_string(tstart));
 
-    for (int nt = tstart; nt < tend; ++nt) {
+    int nt = tstart;
+    double time = max_time < 0. ? 0. : m_solvers[0]->call_get_time();
+    bool step_check = nsteps > 0 ? nt < tend : true;
+    bool time_check = max_time > 0. ? time < max_time : true;
+    bool do_step = step_check && time_check;
+    while (do_step) {
         m_printer.echo_time_header();
 
         m_timers_exa.tick("TimeStep");
@@ -149,6 +162,20 @@ void OversetSimulation::run_timesteps(
              inonlin++) {
 
             bool increment_timer = inonlin > 0 ? true : false;
+
+            double dt{1e8};
+            for (auto& ss : m_solvers) {
+                ss->call_pre_advance_stage0(inonlin, increment_timer);
+                if (inonlin < 1 && !m_fixed_dt) {
+                    dt = std::min(dt, ss->call_get_timestep_size());
+                }
+            }
+
+            if (inonlin < 1 && !m_fixed_dt) {
+                MPI_Allreduce(
+                    MPI_IN_PLACE, &dt, 1, MPI_DOUBLE, MPI_MIN, m_comm);
+                for (auto& ss : m_solvers) ss->call_set_timestep_size(dt);
+            }
 
             for (auto& ss : m_solvers)
                 ss->call_pre_advance_stage1(inonlin, increment_timer);
@@ -183,6 +210,12 @@ void OversetSimulation::run_timesteps(
         MPI_Barrier(m_comm);
 
         mem_usage_all(nt);
+
+        ++nt;
+        if (max_time > 0.) time = m_solvers[0]->call_get_time();
+        step_check = nsteps > 0 ? nt < tend : true;
+        time_check = max_time > 0. ? time < max_time : true;
+        do_step = step_check && time_check;
     }
     for (auto& ss : m_solvers) ss->call_dump_simulation_time();
     m_last_timestep = tend;

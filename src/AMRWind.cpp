@@ -70,11 +70,18 @@ void AMRWind::prepare_solver_epilog()
     m_incflo.prepare_for_time_integration();
 }
 
-void AMRWind::pre_advance_stage1(size_t inonlin)
+void AMRWind::pre_advance_stage0(size_t inonlin)
 {
     if (inonlin < 1) {
         m_incflo.sim().time().new_timestep();
         m_incflo.regrid_and_update();
+        m_incflo.compute_dt();
+    }
+}
+
+void AMRWind::pre_advance_stage1(size_t inonlin)
+{
+    if (inonlin < 1) {
         m_incflo.pre_advance_stage1();
     }
 }
@@ -82,6 +89,20 @@ void AMRWind::pre_advance_stage1(size_t inonlin)
 void AMRWind::pre_advance_stage2(size_t inonlin)
 {
     if (inonlin < 1) m_incflo.pre_advance_stage2();
+}
+
+double AMRWind::get_time() { return m_incflo.time().new_time(); }
+
+double AMRWind::get_timestep_size() { return m_incflo.time().delta_t(); }
+
+void AMRWind::set_timestep_size(const double dt)
+{
+    m_incflo.sim().time().delta_t() = dt;
+}
+
+bool AMRWind::is_fixed_timestep_size()
+{
+    return (!m_incflo.sim().time().adaptive_timestep());
 }
 
 void AMRWind::advance_timestep(size_t inonlin) { m_incflo.do_advance(inonlin); }

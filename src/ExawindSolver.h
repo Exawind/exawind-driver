@@ -19,6 +19,13 @@ public:
     void call_init_epilog() { init_epilog(); };
     void call_prepare_solver_prolog() { prepare_solver_prolog(); };
     void call_prepare_solver_epilog() { prepare_solver_epilog(); };
+    void call_pre_advance_stage0(size_t inonlin, const bool increment)
+    {
+        const std::string name = "Pre";
+        m_timers.tick(name, increment);
+        pre_advance_stage0(inonlin);
+        m_timers.tock(name);
+    }
     void call_pre_advance_stage1(size_t inonlin, const bool increment)
     {
         const std::string name = "Pre";
@@ -31,6 +38,29 @@ public:
         const std::string name = "Pre";
         m_timers.tick(name, increment);
         pre_advance_stage2(inonlin);
+        m_timers.tock(name);
+    };
+    double call_get_time()
+    {
+        const std::string name = "Pre";
+        m_timers.tick(name);
+        double time = get_time();
+        m_timers.tock(name);
+        return time;
+    }
+    double call_get_timestep_size()
+    {
+        const std::string name = "Pre";
+        m_timers.tick(name);
+        double dt = get_timestep_size();
+        m_timers.tock(name);
+        return dt;
+    };
+    void call_set_timestep_size(double dt)
+    {
+        const std::string name = "Pre";
+        m_timers.tick(name);
+        set_timestep_size(dt);
         m_timers.tock(name);
     };
     void call_advance_timestep(size_t inonlin, const bool increment)
@@ -91,6 +121,7 @@ public:
 
     virtual bool is_unstructured() { return false; };
     virtual bool is_amr() { return false; };
+    virtual bool is_fixed_timestep_size() = 0;
     virtual int overset_update_interval() { return 100000000; };
     virtual int time_index() = 0;
     virtual std::string identifier() { return "ExawindSolver"; }
@@ -108,8 +139,12 @@ protected:
     virtual void init_epilog() = 0;
     virtual void prepare_solver_prolog() = 0;
     virtual void prepare_solver_epilog() = 0;
+    virtual void pre_advance_stage0(size_t inonlin) = 0;
     virtual void pre_advance_stage1(size_t inonlin) = 0;
     virtual void pre_advance_stage2(size_t inonlin) = 0;
+    virtual double get_time() = 0;
+    virtual double get_timestep_size() = 0;
+    virtual void set_timestep_size(const double) = 0;
     virtual void advance_timestep(size_t inonlin) = 0;
     virtual void additional_picard_iterations(const int) = 0;
     virtual void post_advance() = 0;
