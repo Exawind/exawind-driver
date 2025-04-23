@@ -88,8 +88,6 @@ void OversetSimulation::initialize()
     }
     MPI_Allreduce(MPI_IN_PLACE, &m_fixed_dt, 1, MPI_C_BOOL, MPI_LAND, m_comm);
 
-    // Should be able to remove this because of the Allreduce, right?
-    MPI_Barrier(m_comm);
     m_initialized = true;
 }
 
