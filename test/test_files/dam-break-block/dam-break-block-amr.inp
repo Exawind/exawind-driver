@@ -53,3 +53,4 @@ zhi.density_type = "mass_inflow"
 zhi.density = 1.
 
 incflo.verbose=0
+amrex.the_arena_init_size = 0

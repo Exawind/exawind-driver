@@ -68,3 +68,4 @@ mac_proj.mg_rtol = 1.0e-12
 mac_proj.mg_atol = 1.0e-12
 nodal_proj.num_pre_smooth = 10
 nodal_proj.num_post_smooth = 10
+amrex.the_arena_init_size = 0
