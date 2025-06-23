@@ -48,4 +48,5 @@ yhi.type =   "slip_wall"
 zlo.type =   "slip_wall"
 zhi.type =   "slip_wall"
 
-incflo.verbose          =   0          # incflo_levelamrex.the_arena_init_size = 0
+incflo.verbose          =   0          # incflo_level
+amrex.the_arena_init_size = 0
