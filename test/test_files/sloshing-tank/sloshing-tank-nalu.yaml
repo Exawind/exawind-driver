@@ -59,13 +59,14 @@ realms:
         target_name: block_1
         user_function_name:
           volume_of_fluid: sloshing_tank
+          pressure: sloshing_tank
         user_function_parameters:
           volume_of_fluid: [0., 0.7, 1.5, 0.06]
+          pressure: [0., 0.7, 1.5, 0.06, 1.5]
 
       - constant: ic_1
         target_name: block_1
         value:
-          pressure: 0.0
           velocity: [0.0, 0.0, 0.0] 
 
     material_properties:
