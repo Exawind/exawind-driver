@@ -12,18 +12,18 @@ concurrency:
 
 jobs:
   Formatting:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v4
-    - uses: DoozyX/clang-format-lint-action@v0.18.2
+    - uses: DoozyX/clang-format-lint-action@v0.20
       with:
         source: './app ./src'
         exclude: '.'
         extensions: 'H,h,cpp'
-        clangFormatVersion: 18
+        clangFormatVersion: 20
   CPU:
     needs: Formatting
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     container:
       image: ecpe4s/exawind-snapshot
       env:
@@ -37,13 +37,11 @@ jobs:
       - name: Tests
         run: |
           /bin/bash -c " \
-            cd ${EXAWIND_MANAGER} && git checkout main && git pull origin main && \
             source ${EXAWIND_MANAGER}/start.sh && spack-start && \
-            quick-create-dev -n my-env -s exawind@master && \
-            cd ${EXAWIND_MANAGER}/environments/my-env && \
-            rm -rf exawind && \
+            spack env activate e4s-build && \
+            cd ${EXAWIND_MANAGER}/environments/e4s-build && \
             ln -s ${GITHUB_WORKSPACE} exawind && \
-            spack manager external ${EXAWIND_MANAGER}/environments/e4s-build --exclude exawind && \
+            spack develop --no-clone exawind@=master && \
             spack concretize -f && \
             spack install && \
             spack cd -b exawind && \
