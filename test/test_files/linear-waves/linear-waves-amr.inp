@@ -75,3 +75,5 @@ zlo.type =     "slip_wall"
 zhi.type =     "slip_wall"
 
 incflo.verbose=0
+
+amrex.the_arena_init_size = 0
