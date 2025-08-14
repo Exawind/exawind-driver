@@ -21,9 +21,9 @@ turbulence.model = Laminar
 incflo.physics = MultiPhase SloshingTank
 MultiPhase.density_fluid1 =1000.
 MultiPhase.density_fluid2 =1.
-MultiPhase.water_level    =-0.1015625
 SloshingTank.amplitude    = 0
 SloshingTank.water_level  =-0.1015625
+SloshingTank.initialize_pressure = true
 
 ICNS.source_terms = GravityForcing
 ICNS.use_perturb_pressure = false
